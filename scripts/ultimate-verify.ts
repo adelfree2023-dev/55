@@ -28,7 +28,6 @@ const tenantName = `final-test-${timestamp}`;
 run(`~/.bun/bin/bun run scripts/provision-tenant.ts --store-name='${tenantName}' --owner-email='admin@apex.dev'`, 'North Star: Provisioning Engine');
 
 // 4. S2 Isolation Test (with real tenant)
-process.env.TEST_HOSTNAME = `${tenantName}.apex.local`;
-run(`~/.bun/bin/bun run tests/security/s2-tenant-isolation.test.ts`, 'S2: Tenant Isolation (Existing Tenant)');
+run(`TEST_HOSTNAME=${tenantName}.apex.local ~/.bun/bin/bun run tests/security/s2-tenant-isolation.test.ts`, 'S2: Tenant Isolation (Existing Tenant)');
 
 console.log('🎉 --- ALL SECURITY PROTOCOLS VERIFIED --- 🎉');
