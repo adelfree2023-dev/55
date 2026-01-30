@@ -2,7 +2,7 @@ import { TenantIsolationMiddleware } from '../../packages/db/src/middleware/tena
 
 console.log('🔍 Execution: S2 Isolation Test');
 // Mocking Request/Response for logic verification
-const mockReq = { hostname: 'tenant-a.apex.local' } as any;
+const mockReq = { hostname: process.env.TEST_HOSTNAME || 'tenant-a.apex.local' } as any;
 const mockRes = { status: (code: number) => ({ json: (data: any) => console.log(`Response ${code}:`, data) }) } as any;
 const mockNext = () => console.log('✅ S2: Middleware passed to next()');
 
