@@ -10,6 +10,6 @@
         "pg": "^8.11.0",
         "@apex/db": "workspace:*",
         "@apex/config": "workspace:*",
-        "drizzle-orm": "^0.29.3"
+        "drizzle-orm": "latest"
     }
 }
