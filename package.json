@@ -12,7 +12,10 @@
     "devDependencies": {
         "turbo": "latest",
         "@biomejs/biome": "latest",
-        "typescript": "latest"
+        "typescript": "latest",
+        "drizzle-orm": "latest",
+        "pg": "^8.11.0",
+        "@types/pg": "latest"
     },
     "workspaces": [
         "apps/*",
