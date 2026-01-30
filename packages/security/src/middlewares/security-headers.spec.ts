@@ -1,3 +1,4 @@
+import { describe, it, expect, mock } from 'bun:test';
 import { SecurityHeadersMiddleware } from './security-headers.middleware';
 
 describe('SecurityHeadersMiddleware (S7)', () => {
@@ -5,11 +6,11 @@ describe('SecurityHeadersMiddleware (S7)', () => {
         const middleware = new SecurityHeadersMiddleware();
         const headers: Record<string, string> = {};
         const mockRes = {
-            setHeader: jest.fn((key: string, value: string) => {
+            setHeader: mock((key: string, value: string) => {
                 headers[key] = value;
             })
         } as any;
-        const mockNext = jest.fn();
+        const mockNext = mock(() => { });
 
         middleware.use({} as any, mockRes, mockNext);
 

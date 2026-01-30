@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'bun:test';
 import { z } from 'zod';
 
 // We test the schema logic specifically

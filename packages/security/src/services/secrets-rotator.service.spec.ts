@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'bun:test';
 import { SecretsRotatorService } from './secrets-rotator.service';
 
 describe('SecretsRotatorService (S8)', () => {

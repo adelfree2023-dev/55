@@ -5,17 +5,14 @@
         "build": "turbo build",
         "dev": "turbo dev",
         "lint": "turbo lint",
-        "test": "jest",
-        "test:coverage": "jest --coverage",
+        "test": "bun test",
+        "test:coverage": "bun test --coverage",
         "provision": "bun scripts/provision-tenant.ts"
     },
     "devDependencies": {
         "turbo": "latest",
         "@biomejs/biome": "latest",
-        "typescript": "latest",
-        "jest": "latest",
-        "ts-jest": "latest",
-        "@types/jest": "latest"
+        "typescript": "latest"
     },
     "workspaces": [
         "apps/*",

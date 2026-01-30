@@ -19,6 +19,7 @@ When delivering Phase 1 to a Tech Lead, ensure:
 > [!IMPORTANT]
 > **Strict Constitutional Rule**: It is strictly forbidden to create any new implementation file (.ts, .js, .tsx) without an accompanying `.spec.ts` (unit/security test) file. 
 > - Every new logic file MUST have a test coverage of **at least 90%**.
+> - **Mandatory Verification**: You MUST ensure all tests are passing and coverage threshold is met before completing any task.
 > - Failure to provide a test file or meet the 90% coverage threshold is a **Protocol Violation**.
 
 ### S1: Environment Verification
