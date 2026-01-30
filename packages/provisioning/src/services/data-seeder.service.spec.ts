@@ -1,8 +1,16 @@
 import { describe, it, expect, mock, beforeEach } from 'bun:test';
 
-// Define mocks BEFORE importing the service
+// Define mocks
 const mockExecute = mock(() => Promise.resolve());
 const mockQuery = mock(() => Promise.resolve({ rows: [] }));
+
+// Mock drizzle-orm
+const fakeSql: any = (strings: any, ...values: any[]) => ({ text: strings[0], values, isFake: true });
+fakeSql.raw = (str: string) => ({ text: str, isRaw: true });
+
+mock.module('drizzle-orm', () => ({
+    sql: fakeSql
+}));
 
 mock.module('drizzle-orm/node-postgres', () => ({
     drizzle: () => ({
@@ -56,18 +64,23 @@ describe('DataSeederService', () => {
 
         await service.seedData('test-u', 'standard');
 
-        // Check for CREATE TABLE calls and INSERT calls
         expect(mockExecute).toHaveBeenCalled();
-        const calls = mockExecute.mock.calls.map(c => c[0].text || c[0].toString());
-        const combined = calls.join(' ');
 
+        // Collect all sql texts from our fakeSql objects
+        const calls = mockExecute.mock.calls.map(c => {
+            if (c[0]?.isRaw || c[0]?.isFake) return c[0].text;
+            return c[0]; // fallback
+        });
+
+        const combined = calls.join(' ');
         expect(combined).toContain('CREATE TABLE');
         expect(combined).toContain('INSERT INTO');
+        expect(combined).toContain('products');
     });
 
     it('should handle empty blueprint', async () => {
         mockQuery.mockResolvedValueOnce({ rows: [{ config: {} }] });
         await service.seedData('test-u', 'empty');
-        expect(mockExecute).toHaveBeenCalled(); // Should still create tables
+        expect(mockExecute).toHaveBeenCalled();
     });
 });
