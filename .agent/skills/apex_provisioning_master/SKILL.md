@@ -33,12 +33,25 @@ The core sequence must complete in **< 60 seconds** (Rule 3.1):
 ## 🌐 Infrastructure & Deployment
 
 - **GitHub Repository**: `https://github.com/adelfree2023-dev/55`
-- **Production Server IP**: `34.102.116.215` (GCP Instance: `instance-20260130-000324`)
-- **Execution Rule**: Windows is for **file management only**. The server is the **final interface** for testing, execution, and deployment.
+- **Production Server IP**: `34.102.116.215`
+- **SSH Access**: `ssh -i ~/.ssh/id_ed25519_apex apex-v2-dev@34.102.116.215`
+- **Execution Rule**: Windows is for **file management only**. The server is the **final interface**.
+
+### 🗄️ Database & Services (Production Context)
+
+| Service | Host | Port | Credentials |
+| :--- | :--- | :--- | :--- |
+| **PostgreSQL** | `localhost` | `5432` | User: `apex` \| Pass: `apex` \| DB: `apex` |
+| **Redis** | `localhost` | `6379` | No Password (Internal Network) |
+| **MinIO API** | `localhost` | `9000` | Access Key: `apex` \| Secret Key: `apex-secret` |
+| **MinIO Console** | `localhost` | `9001` | (Admin Browser Access) |
+| **Traefik Dashboard**| `localhost` | `8080` | (Insecure/Development mode) |
 
 ## 🛠️ Provisioning & Deployment Commands
-- `deploy:sync`: Pushes local changes to GitHub and pulls on the server for final testing.
-- `provision:tenant [subdomain]`: Executes the full onboarding flow on the server.
+- `deploy:sync`: Pushes local changes to GitHub and pulls on the server:
+  `git push origin master && ssh [server] "cd ~/apex-v2 && git pull origin master"`
+- `provision:tenant [subdomain]`: Executes `bun scripts/provision-tenant.ts` on the server.
+- `infra:logs`: `ssh [server] "cd ~/apex-v2/infra && docker-compose logs -f"`
 - `tenant:suspend [id]`: Activates the kill switch for a tenant.
 - `tenant:restore [id] [snapshot]`: Restores a tenant schema from a MinIO backup.
 - `tenant:quota-check [id]`: Audits current resource usage against limits.
