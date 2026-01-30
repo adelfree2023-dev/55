@@ -19,9 +19,6 @@ module.exports = {
         '!packages/**/schema/**',
     ],
     transform: {
-        '^.+\\.tsx?$': ['ts-jest', {
-            tsconfig: 'tsconfig.json',
-            isolatedModules: true, // Speeds up execution
-        }],
+        '^.+\\.(t|j)sx?$': 'babel-jest',
     },
 };

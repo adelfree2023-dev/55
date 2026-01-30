@@ -1,30 +1,37 @@
 const NodeEnvironment = require('jest-environment-node').default;
 
 class CustomEnvironment extends NodeEnvironment {
-    constructor(config, context) {
-        // Attempt to scrub the problematic Bun globals before Jest tries to "protect" them
+    async setup() {
+        await super.setup();
+
+        // Scrub problematic Bun globals from the VM context
         const problematicGlobals = [
             'ReadableStreamBYOBReader',
             'ReadableStreamDefaultReader',
             'WritableStreamDefaultWriter',
             'ReadableStream',
             'WritableStream',
-            'TransformStream'
+            'TransformStream',
+            'Headers',
+            'Request',
+            'Response',
+            'fetch'
         ];
 
         for (const key of problematicGlobals) {
-            if (global[key]) {
+            if (this.global[key]) {
                 try {
-                    // Setting to undefined or deleting to avoid the getter-without-this error
-                    Object.defineProperty(global, key, {
-                        get() { return undefined; },
-                        configurable: true
+                    delete this.global[key];
+                } catch (e) {
+                    // If delete fails, try defining as undefined
+                    Object.defineProperty(this.global, key, {
+                        value: undefined,
+                        configurable: true,
+                        writable: true
                     });
-                } catch (e) { }
+                }
             }
         }
-
-        super(config, context);
     }
 }
 
