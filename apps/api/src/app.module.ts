@@ -5,6 +5,7 @@ import { TenantMiddleware } from './common/middleware/tenant.middleware';
 import { ProvisioningModule } from './modules/provisioning/provisioning.module';
 import { StorefrontModule } from './modules/storefront/storefront.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { HealthController } from './common/controllers/health.controller';
 
 @Module({
     imports: [
@@ -12,7 +13,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
         ProvisioningModule,
         StorefrontModule,
     ],
-    controllers: [],
+    controllers: [HealthController],
     providers: [
         {
             provide: APP_INTERCEPTOR,
