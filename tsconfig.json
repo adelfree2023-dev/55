@@ -2,7 +2,7 @@
     "compilerOptions": {
         "target": "ESNext",
         "module": "ESNext",
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "strict": true,
         "baseUrl": ".",
         "paths": {
@@ -28,9 +28,7 @@
             "DOM"
         ],
         "isolatedModules": true,
-        "esModuleInterop": true,
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true
+        "esModuleInterop": true
     },
     "exclude": [
         "node_modules"

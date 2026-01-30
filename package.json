@@ -5,24 +5,14 @@
         "build": "turbo build",
         "dev": "turbo dev",
         "lint": "turbo lint",
-        "test": "jest",
-        "test:coverage": "jest --coverage",
+        "test": "bun test",
+        "test:coverage": "bun test --coverage --coverage-dir=./coverage",
         "provision": "bun scripts/provision-tenant.ts"
     },
     "devDependencies": {
         "turbo": "latest",
         "@biomejs/biome": "latest",
-        "typescript": "latest",
-        "jest": "^29.7.0",
-        "ts-jest": "^29.1.1",
-        "@types/jest": "^29.5.12",
-        "@babel/core": "latest",
-        "@babel/preset-env": "latest",
-        "@babel/preset-typescript": "latest",
-        "@babel/plugin-proposal-decorators": "latest",
-        "@babel/plugin-proposal-class-properties": "latest",
-        "babel-jest": "latest",
-        "jest-environment-node": "^29.7.0"
+        "typescript": "latest"
     },
     "workspaces": [
         "apps/*",

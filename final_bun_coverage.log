@@ -1,0 +1,92 @@
+bun test v1.3.8 (b64edcb4)
+🔍 Execution: S2 Isolation Test
+🌐 Testing Hostname: myshop.apex.local
+🔹 Extracted Subdomain: myshop
+
+tests/security/s2-tenant-isolation.test.ts:
+
+tests/security/s1-env-validation.test.ts:
+🔍 Execution: S1 Validation Test
+✅ S1: Environment validated successfully
+
+tests/security/s6-rate-limiting.test.ts:
+🔍 Execution: S6 Rate Limiting Test
+
+packages/db/src/index.spec.ts:
+✅ S2: Tenant isolated successfully (Middleware passed to next)
+(pass) DB Core Utils (Packages/DB) > should create tenant schema with quoted identifier
+(pass) DB Core Utils (Packages/DB) > should set search path with quoted identifier
+
+packages/config/src/env.spec.ts:
+✅ S6: Request permitted
+(pass) Env Validation (S1) > should validate correct environment variables [1.00ms]
+(pass) Env Validation (S1) > should fail if JWT_SECRET is too short [1.00ms]
+
+packages/db/src/middleware/tenant-isolation.spec.ts:
+✅ S6: Request permitted
+30 |         const mockQueryResult = { rows: [{ id: 'uuid-1', status: 'active' }] };
+31 |         const mockSchemaResult = { rows: [{ schema_name: 'tenant_tenant1' }] };
+32 | 
+33 |         const pool = (TenantIsolationMiddleware as any).pool;
+34 |         pool.query
+35 |             .mockResolvedValueOnce(mockQueryResult)
+                  ^
+TypeError: pool.query.mockResolvedValueOnce is not a function. (In 'pool.query.mockResolvedValueOnce(mockQueryResult)', 'pool.query.mockResolvedValueOnce' is undefined)
+      at <anonymous> (/home/apex-v2-dev/apex-v2/packages/db/src/middleware/tenant-isolation.spec.ts:35:14)
+(fail) TenantIsolationMiddleware (S2) Unit Test > should extract subdomain and set tenant schema if tenant exists [1.00ms]
+42 |         expect(mockNext).toHaveBeenCalled();
+43 |     });
+44 | 
+45 |     it('should return 404 if tenant not found', async () => {
+46 |         const pool = (TenantIsolationMiddleware as any).pool;
+47 |         pool.query.mockResolvedValueOnce({ rows: [] });
+                        ^
+TypeError: pool.query.mockResolvedValueOnce is not a function. (In 'pool.query.mockResolvedValueOnce({ rows: [] })', 'pool.query.mockResolvedValueOnce' is undefined)
+      at <anonymous> (/home/apex-v2-dev/apex-v2/packages/db/src/middleware/tenant-isolation.spec.ts:47:20)
+(fail) TenantIsolationMiddleware (S2) Unit Test > should return 404 if tenant not found
+53 | 
+54 |     it('should return 503 if schema missing', async () => {
+55 |         const mockQueryResult = { rows: [{ id: 'uuid-1', status: 'active' }] };
+56 |         const pool = (TenantIsolationMiddleware as any).pool;
+57 |         pool.query
+58 |             .mockResolvedValueOnce(mockQueryResult)
+                  ^
+TypeError: pool.query.mockResolvedValueOnce is not a function. (In 'pool.query.mockResolvedValueOnce(mockQueryResult)', 'pool.query.mockResolvedValueOnce' is undefined)
+      at <anonymous> (/home/apex-v2-dev/apex-v2/packages/db/src/middleware/tenant-isolation.spec.ts:58:14)
+(fail) TenantIsolationMiddleware (S2) Unit Test > should return 503 if schema missing
+✅ S6: Request permitted
+(pass) TenantIsolationMiddleware (S2) Unit Test > should instantiate for constructor coverage
+
+packages/security/src/middlewares/security-headers.spec.ts:
+✅ S6: Request permitted
+(pass) SecurityHeadersMiddleware (S7) > should set security headers correctly [2.00ms]
+✅ S6: Request permitted
+✅ S6: Redis connection closed
+🔄 S8: Secrets Rotation Triggered (Stub)
+
+packages/security/src/filters/global-exception.filter.spec.ts:
+(pass) GlobalExceptionFilter (S5) > should format HttpException correctly
+(pass) GlobalExceptionFilter (S5) > should handle generic errors as 500
+
+packages/security/src/services/secrets-rotator.service.spec.ts:
+(pass) SecretsRotatorService (S8) > should rotate secrets (stub)
+------------------------------------------------------------------|---------|---------|-------------------
+File                                                              | % Funcs | % Lines | Uncovered Line #s
+------------------------------------------------------------------|---------|---------|-------------------
+All files                                                         |   96.67 |  100.00 |
+ packages/config/src/env.ts                                       |  100.00 |  100.00 | 
+ packages/config/src/index.ts                                     |  100.00 |  100.00 | 
+ packages/db/src/index.ts                                         |  100.00 |  100.00 | 
+ packages/db/src/middleware/tenant-isolation.ts                   |   66.67 |  100.00 | 
+ packages/db/src/schema/audit-logs.ts                             |  100.00 |  100.00 | 
+ packages/db/src/schema/tenants.ts                                |  100.00 |  100.00 | 
+ packages/security/src/filters/global-exception.filter.ts         |  100.00 |  100.00 | 
+ packages/security/src/middlewares/rate-limiter.middleware.ts     |  100.00 |  100.00 | 
+ packages/security/src/middlewares/security-headers.middleware.ts |  100.00 |  100.00 | 
+ packages/security/src/services/secrets-rotator.service.ts        |  100.00 |  100.00 | 
+------------------------------------------------------------------|---------|---------|-------------------
+
+ 9 pass
+ 3 fail
+ 13 expect() calls
+Ran 12 tests across 9 files. [464.00ms]
