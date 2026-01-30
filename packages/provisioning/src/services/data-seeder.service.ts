@@ -9,9 +9,9 @@ export class DataSeederService {
     private readonly pool: Pool;
     private readonly db: ReturnType<typeof drizzle>;
 
-    constructor() {
-        this.pool = new Pool({ connectionString: process.env.DATABASE_URL });
-        this.db = drizzle(this.pool);
+    constructor(pool?: Pool, db?: ReturnType<typeof drizzle>) {
+        this.pool = pool || new Pool({ connectionString: process.env.DATABASE_URL });
+        this.db = db || drizzle(this.pool);
     }
 
     /**

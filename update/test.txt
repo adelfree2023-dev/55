@@ -1,0 +1,6 @@
+ssh -i "C:/Users/Dell/.ssh/id_ed25519_apex" -o StrictHostKeyChecking=no apex-v2-dev@34.102.116.215 "cd ~/apex-v2 && git pull origin master && ~/.bun/bin/bun install && \
+echo '--- [1] Running Tests & Coverage ---' && \
+~/.bun/bin/bun test --coverage && \
+echo '' && \
+echo '--- [2] Missing Test Files (Files without .spec.ts) ---' && \
+find packages -name '*.ts' ! -name '*.spec.ts' ! -name 'index.ts' | while read file; do [ ! -f \"\${file%.ts}.spec.ts\" ] && echo \"Missing Spec: \$file\"; done"
