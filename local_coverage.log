@@ -1,0 +1,1085 @@
+$ jest --coverage
+FAIL packages/security/src/services/secrets-rotator.service.spec.ts
+  ● Test suite failed to run
+
+    TypeError: Attempted to assign to readonly property.
+
+      at _getMockedNativeModule (node_modules/.bun/jest-runtime@30.2.0/node_modules/jest-runtime/build/index.js:1430:6)
+      at node_modules/.bun/stack-utils@2.0.6/node_modules/stack-utils/index.js:11:9
+      at ./src/toThrowMatchers.ts (node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:1786:30)
+      at __webpack_require__ (node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2042:40)
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2073:66
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2305:2
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2308:11
+      at _expect (node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:23:22)
+      at createJestExpect (node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:44:9)
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:53:56
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:54:2
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:57:11
+      at processTicksAndRejections (native)
+      at processTicksAndRejections (native)
+
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: The ReadableStreamBYOBReader.closed getter can only be used on instances of ReadableStreamBYOBReader
+      at get closed (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: The ReadableStreamDefaultReader.closed getter can only be used on instances of ReadableStreamDefaultReader
+      at get closed (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: The WritableStreamDefaultWriter.closed getter can only be used on instances of WritableStreamDefaultWriter
+      at get closed (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: Value of "this" must be of type WritableStreamDefaultWriter
+ code: "ERR_INVALID_THIS"
+
+      at get ready (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+
+Bun v1.3.8 (Linux x64)
+FAIL packages/security/src/middlewares/security-headers.spec.ts
+  ● Test suite failed to run
+
+    TypeError: Attempted to assign to readonly property.
+
+      at _getMockedNativeModule (node_modules/.bun/jest-runtime@30.2.0/node_modules/jest-runtime/build/index.js:1430:6)
+      at node_modules/.bun/stack-utils@2.0.6/node_modules/stack-utils/index.js:11:9
+      at ./src/toThrowMatchers.ts (node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:1786:30)
+      at __webpack_require__ (node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2042:40)
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2073:66
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2305:2
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2308:11
+      at _expect (node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:23:22)
+      at createJestExpect (node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:44:9)
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:53:56
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:54:2
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:57:11
+      at processTicksAndRejections (native)
+      at processTicksAndRejections (native)
+
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: The ReadableStreamBYOBReader.closed getter can only be used on instances of ReadableStreamBYOBReader
+      at get closed (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: The ReadableStreamDefaultReader.closed getter can only be used on instances of ReadableStreamDefaultReader
+      at get closed (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: The WritableStreamDefaultWriter.closed getter can only be used on instances of WritableStreamDefaultWriter
+      at get closed (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: Value of "this" must be of type WritableStreamDefaultWriter
+ code: "ERR_INVALID_THIS"
+
+      at get ready (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+
+Bun v1.3.8 (Linux x64)
+FAIL packages/db/src/middleware/tenant-isolation.spec.ts
+  ● Test suite failed to run
+
+    TypeError: Attempted to assign to readonly property.
+
+      at _getMockedNativeModule (node_modules/.bun/jest-runtime@30.2.0/node_modules/jest-runtime/build/index.js:1430:6)
+      at node_modules/.bun/stack-utils@2.0.6/node_modules/stack-utils/index.js:11:9
+      at ./src/toThrowMatchers.ts (node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:1786:30)
+      at __webpack_require__ (node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2042:40)
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2073:66
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2305:2
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2308:11
+      at _expect (node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:23:22)
+      at createJestExpect (node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:44:9)
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:53:56
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:54:2
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:57:11
+      at processTicksAndRejections (native)
+      at processTicksAndRejections (native)
+
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: The ReadableStreamBYOBReader.closed getter can only be used on instances of ReadableStreamBYOBReader
+      at get closed (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: The ReadableStreamDefaultReader.closed getter can only be used on instances of ReadableStreamDefaultReader
+      at get closed (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: The WritableStreamDefaultWriter.closed getter can only be used on instances of WritableStreamDefaultWriter
+      at get closed (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: Value of "this" must be of type WritableStreamDefaultWriter
+ code: "ERR_INVALID_THIS"
+
+      at get ready (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+
+Bun v1.3.8 (Linux x64)
+FAIL tests/security/s6-rate-limiting.test.ts
+  ● Test suite failed to run
+
+    TypeError: Attempted to assign to readonly property.
+
+      at _getMockedNativeModule (node_modules/.bun/jest-runtime@30.2.0/node_modules/jest-runtime/build/index.js:1430:6)
+      at node_modules/.bun/stack-utils@2.0.6/node_modules/stack-utils/index.js:11:9
+      at ./src/toThrowMatchers.ts (node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:1786:30)
+      at __webpack_require__ (node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2042:40)
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2073:66
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2305:2
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2308:11
+      at _expect (node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:23:22)
+      at createJestExpect (node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:44:9)
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:53:56
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:54:2
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:57:11
+      at processTicksAndRejections (native)
+      at processTicksAndRejections (native)
+
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: The ReadableStreamBYOBReader.closed getter can only be used on instances of ReadableStreamBYOBReader
+      at get closed (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: The ReadableStreamDefaultReader.closed getter can only be used on instances of ReadableStreamDefaultReader
+      at get closed (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: The WritableStreamDefaultWriter.closed getter can only be used on instances of WritableStreamDefaultWriter
+      at get closed (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: Value of "this" must be of type WritableStreamDefaultWriter
+ code: "ERR_INVALID_THIS"
+
+      at get ready (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+FAIL packages/security/src/filters/global-exception.filter.spec.ts
+  ● Test suite failed to run
+
+    TypeError: Attempted to assign to readonly property.
+
+      at _getMockedNativeModule (node_modules/.bun/jest-runtime@30.2.0/node_modules/jest-runtime/build/index.js:1430:6)
+      at node_modules/.bun/stack-utils@2.0.6/node_modules/stack-utils/index.js:11:9
+      at ./src/toThrowMatchers.ts (node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:1786:30)
+      at __webpack_require__ (node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2042:40)
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2073:66
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2305:2
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2308:11
+      at _expect (node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:23:22)
+      at createJestExpect (node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:44:9)
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:53:56
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:54:2
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:57:11
+      at processTicksAndRejections (native)
+      at processTicksAndRejections (native)
+
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: The ReadableStreamBYOBReader.closed getter can only be used on instances of ReadableStreamBYOBReader
+      at get closed (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: The ReadableStreamDefaultReader.closed getter can only be used on instances of ReadableStreamDefaultReader
+      at get closed (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: The WritableStreamDefaultWriter.closed getter can only be used on instances of WritableStreamDefaultWriter
+      at get closed (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: Value of "this" must be of type WritableStreamDefaultWriter
+ code: "ERR_INVALID_THIS"
+
+      at get ready (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+
+Bun v1.3.8 (Linux x64)
+FAIL packages/config/src/env.spec.ts
+  ● Test suite failed to run
+
+    TypeError: Attempted to assign to readonly property.
+
+      at _getMockedNativeModule (node_modules/.bun/jest-runtime@30.2.0/node_modules/jest-runtime/build/index.js:1430:6)
+      at node_modules/.bun/stack-utils@2.0.6/node_modules/stack-utils/index.js:11:9
+      at ./src/toThrowMatchers.ts (node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:1786:30)
+      at __webpack_require__ (node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2042:40)
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2073:66
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2305:2
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2308:11
+      at _expect (node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:23:22)
+      at createJestExpect (node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:44:9)
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:53:56
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:54:2
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:57:11
+      at processTicksAndRejections (native)
+
+
+Bun v1.3.8 (Linux x64)
+FAIL tests/security/s1-env-validation.test.ts
+  ● Test suite failed to run
+
+    TypeError: Attempted to assign to readonly property.
+
+      at _getMockedNativeModule (node_modules/.bun/jest-runtime@30.2.0/node_modules/jest-runtime/build/index.js:1430:6)
+      at node_modules/.bun/stack-utils@2.0.6/node_modules/stack-utils/index.js:11:9
+      at ./src/toThrowMatchers.ts (node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:1786:30)
+      at __webpack_require__ (node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2042:40)
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2073:66
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2305:2
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2308:11
+      at _expect (node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:23:22)
+      at createJestExpect (node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:44:9)
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:53:56
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:54:2
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:57:11
+      at processTicksAndRejections (native)
+      at processTicksAndRejections (native)
+
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: The ReadableStreamBYOBReader.closed getter can only be used on instances of ReadableStreamBYOBReader
+      at get closed (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: The ReadableStreamDefaultReader.closed getter can only be used on instances of ReadableStreamDefaultReader
+      at get closed (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: The WritableStreamDefaultWriter.closed getter can only be used on instances of WritableStreamDefaultWriter
+      at get closed (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: Value of "this" must be of type WritableStreamDefaultWriter
+ code: "ERR_INVALID_THIS"
+
+      at get ready (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+
+Bun v1.3.8 (Linux x64)
+FAIL tests/security/s2-tenant-isolation.test.ts
+  ● Test suite failed to run
+
+    TypeError: Attempted to assign to readonly property.
+
+      at _getMockedNativeModule (node_modules/.bun/jest-runtime@30.2.0/node_modules/jest-runtime/build/index.js:1430:6)
+      at node_modules/.bun/stack-utils@2.0.6/node_modules/stack-utils/index.js:11:9
+      at ./src/toThrowMatchers.ts (node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:1786:30)
+      at __webpack_require__ (node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2042:40)
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2073:66
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2305:2
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2308:11
+      at _expect (node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:23:22)
+      at createJestExpect (node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:44:9)
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:53:56
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:54:2
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:57:11
+      at processTicksAndRejections (native)
+      at processTicksAndRejections (native)
+
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: The ReadableStreamBYOBReader.closed getter can only be used on instances of ReadableStreamBYOBReader
+      at get closed (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: The ReadableStreamDefaultReader.closed getter can only be used on instances of ReadableStreamDefaultReader
+      at get closed (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: The WritableStreamDefaultWriter.closed getter can only be used on instances of WritableStreamDefaultWriter
+      at get closed (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: Value of "this" must be of type WritableStreamDefaultWriter
+ code: "ERR_INVALID_THIS"
+
+      at get ready (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+
+Bun v1.3.8 (Linux x64)
+FAIL packages/db/src/index.spec.ts
+  ● Test suite failed to run
+
+    TypeError: Attempted to assign to readonly property.
+
+      at _getMockedNativeModule (node_modules/.bun/jest-runtime@30.2.0/node_modules/jest-runtime/build/index.js:1430:6)
+      at node_modules/.bun/stack-utils@2.0.6/node_modules/stack-utils/index.js:11:9
+      at ./src/toThrowMatchers.ts (node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:1786:30)
+      at __webpack_require__ (node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2042:40)
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2073:66
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2305:2
+      at node_modules/.bun/expect@30.2.0/node_modules/expect/build/index.js:2308:11
+      at _expect (node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:23:22)
+      at createJestExpect (node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:44:9)
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:53:56
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:54:2
+      at node_modules/.bun/@jest+expect@30.2.0/node_modules/@jest/expect/build/index.js:57:11
+      at processTicksAndRejections (native)
+      at processTicksAndRejections (native)
+
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: The ReadableStreamBYOBReader.closed getter can only be used on instances of ReadableStreamBYOBReader
+      at get closed (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: The ReadableStreamDefaultReader.closed getter can only be used on instances of ReadableStreamDefaultReader
+      at get closed (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: The WritableStreamDefaultWriter.closed getter can only be used on instances of WritableStreamDefaultWriter
+      at get closed (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+451 |         value: properties,
+452 |         writable: true
+453 |       });
+454 |       for (const key of getProtectedKeys(value, properties)) {
+455 |         try {
+456 |           const nested = Reflect.get(value, key);
+                ^
+TypeError: Value of "this" must be of type WritableStreamDefaultWriter
+ code: "ERR_INVALID_THIS"
+
+      at get ready (1:11)
+      at get (1:11)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:456:34)
+      at protectProperties (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-util@30.2.0/node_modules/jest-util/build/index.js:457:11)
+      at new NodeEnvironment (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-environment-node@30.2.0/node_modules/jest-environment-node/build/index.js:110:23)
+      at runTestInternal (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:171:23)
+      at async runTest (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:343:13)
+      at async worker (/home/apex-v2-dev/apex-v2/node_modules/.bun/jest-runner@30.2.0/node_modules/jest-runner/build/testWorker.js:497:31)
+
+Bun v1.3.8 (Linux x64)
+Failed to collect coverage from /home/apex-v2-dev/apex-v2/packages/security/src/services/secrets-rotator.service.ts
+ERROR: /home/apex-v2-dev/apex-v2/packages/security/src/services/secrets-rotator.service.ts: Support for the experimental syntax 'decorators' isn't currently enabled (5:1):
+
+  3 | exports.SecretsRotatorService = void 0;
+  4 | const common_1 = require("@nestjs/common");
+> 5 | @(0, common_1.Injectable)()
+    | ^
+  6 | class SecretsRotatorService {
+  7 |     async rotateSecrets() {
+  8 |         console.log('🔄 S8: Secrets Rotation Triggered (Stub)');
+
+Add @babel/plugin-proposal-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-proposal-decorators) to the 'plugins' section of your Babel config to enable transformation.
+If you want to leave it as-is, add @babel/plugin-syntax-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-syntax-decorators) to the 'plugins' section to enable parsing.
+
+If you already added the plugin for this syntax to your config, it's possible that your config isn't being loaded.
+You can re-run Babel with the BABEL_SHOW_CONFIG_FOR environment variable to show the loaded configuration:
+	npx cross-env BABEL_SHOW_CONFIG_FOR=/home/apex-v2-dev/apex-v2/packages/security/src/services/secrets-rotator.service.ts <your build command>
+See https://babeljs.io/docs/configuration#print-effective-configs for more info.
+
+STACK: Error: /home/apex-v2-dev/apex-v2/packages/security/src/services/secrets-rotator.service.ts: Support for the experimental syntax 'decorators' isn't currently enabled (5:1):
+
+  3 | exports.SecretsRotatorService = void 0;
+  4 | const common_1 = require("@nestjs/common");
+> 5 | @(0, common_1.Injectable)()
+    | ^
+  6 | class SecretsRotatorService {
+  7 |     async rotateSecrets() {
+  8 |         console.log('🔄 S8: Secrets Rotation Triggered (Stub)');
+
+Add @babel/plugin-proposal-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-proposal-decorators) to the 'plugins' section of your Babel config to enable transformation.
+If you want to leave it as-is, add @babel/plugin-syntax-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-syntax-decorators) to the 'plugins' section to enable parsing.
+
+If you already added the plugin for this syntax to your config, it's possible that your config isn't being loaded.
+You can re-run Babel with the BABEL_SHOW_CONFIG_FOR environment variable to show the loaded configuration:
+	npx cross-env BABEL_SHOW_CONFIG_FOR=/home/apex-v2-dev/apex-v2/packages/security/src/services/secrets-rotator.service.ts <your build command>
+See https://babeljs.io/docs/configuration#print-effective-configs for more info.
+
+    at constructor (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:365:23)
+    at raise (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:6599:19)
+    at expectOnePlugin (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:6633:18)
+    at parseDecorator (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12938:10)
+    at parseDecorators (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12923:28)
+    at parseStatementLike (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12755:25)
+    at parseBlockOrModuleBlockBody (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:13306:36)
+    at parseBlockBody (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:13299:10)
+    at parseProgram (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12612:10)
+    at parseTopLevel (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12602:25)
+    at parse (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:14478:25)
+    at parser (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+core@7.28.6+9dbbb5d0ed27ea40/node_modules/@babel/core/lib/parser/index.js:41:28)
+    at normalizeFile (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+core@7.28.6+9dbbb5d0ed27ea40/node_modules/@babel/core/lib/transformation/normalize-file.js:64:11)
+    at run (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+core@7.28.6+9dbbb5d0ed27ea40/node_modules/@babel/core/lib/transformation/index.js:22:16)
+    at transform (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+core@7.28.6+9dbbb5d0ed27ea40/node_modules/@babel/core/lib/transform.js:22:10)
+    at evaluateSync (/home/apex-v2-dev/apex-v2/node_modules/.bun/gensync@1.0.0-beta.2/node_modules/gensync/index.js:251:28)
+    at _instrumentFile (/home/apex-v2-dev/apex-v2/node_modules/.bun/@jest+transform@30.2.0/node_modules/@jest/transform/build/index.js:301:32)
+    at _buildTransformResult (/home/apex-v2-dev/apex-v2/node_modules/.bun/@jest+transform@30.2.0/node_modules/@jest/transform/build/index.js:376:33)
+    at generateEmptyCoverage (/home/apex-v2-dev/apex-v2/node_modules/.bun/@jest+reporters@30.2.0/node_modules/@jest/reporters/build/CoverageWorker.js:92:33)
+    at processTicksAndRejections (native)
+    at processTicksAndRejections (native)
+Failed to collect coverage from /home/apex-v2-dev/apex-v2/packages/security/src/middlewares/rate-limiter.middleware.ts
+ERROR: /home/apex-v2-dev/apex-v2/packages/security/src/middlewares/rate-limiter.middleware.ts: Support for the experimental syntax 'decorators' isn't currently enabled (6:1):
+
+  4 | const common_1 = require("@nestjs/common");
+  5 | const redis_1 = require("redis");
+> 6 | @(0, common_1.Injectable)()
+    | ^
+  7 | class RateLimiterMiddleware {
+  8 |     static client = (0, redis_1.createClient)({ url: process.env.REDIS_URL });
+  9 |     static async use(req, res, next) {
+
+Add @babel/plugin-proposal-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-proposal-decorators) to the 'plugins' section of your Babel config to enable transformation.
+If you want to leave it as-is, add @babel/plugin-syntax-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-syntax-decorators) to the 'plugins' section to enable parsing.
+
+If you already added the plugin for this syntax to your config, it's possible that your config isn't being loaded.
+You can re-run Babel with the BABEL_SHOW_CONFIG_FOR environment variable to show the loaded configuration:
+	npx cross-env BABEL_SHOW_CONFIG_FOR=/home/apex-v2-dev/apex-v2/packages/security/src/middlewares/rate-limiter.middleware.ts <your build command>
+See https://babeljs.io/docs/configuration#print-effective-configs for more info.
+
+STACK: Error: /home/apex-v2-dev/apex-v2/packages/security/src/middlewares/rate-limiter.middleware.ts: Support for the experimental syntax 'decorators' isn't currently enabled (6:1):
+
+  4 | const common_1 = require("@nestjs/common");
+  5 | const redis_1 = require("redis");
+> 6 | @(0, common_1.Injectable)()
+    | ^
+  7 | class RateLimiterMiddleware {
+  8 |     static client = (0, redis_1.createClient)({ url: process.env.REDIS_URL });
+  9 |     static async use(req, res, next) {
+
+Add @babel/plugin-proposal-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-proposal-decorators) to the 'plugins' section of your Babel config to enable transformation.
+If you want to leave it as-is, add @babel/plugin-syntax-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-syntax-decorators) to the 'plugins' section to enable parsing.
+
+If you already added the plugin for this syntax to your config, it's possible that your config isn't being loaded.
+You can re-run Babel with the BABEL_SHOW_CONFIG_FOR environment variable to show the loaded configuration:
+	npx cross-env BABEL_SHOW_CONFIG_FOR=/home/apex-v2-dev/apex-v2/packages/security/src/middlewares/rate-limiter.middleware.ts <your build command>
+See https://babeljs.io/docs/configuration#print-effective-configs for more info.
+
+    at constructor (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:365:23)
+    at raise (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:6599:19)
+    at expectOnePlugin (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:6633:18)
+    at parseDecorator (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12938:10)
+    at parseDecorators (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12923:28)
+    at parseStatementLike (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12755:25)
+    at parseBlockOrModuleBlockBody (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:13306:36)
+    at parseBlockBody (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:13299:10)
+    at parseProgram (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12612:10)
+    at parseTopLevel (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12602:25)
+    at parse (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:14478:25)
+    at parser (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+core@7.28.6+9dbbb5d0ed27ea40/node_modules/@babel/core/lib/parser/index.js:41:28)
+    at normalizeFile (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+core@7.28.6+9dbbb5d0ed27ea40/node_modules/@babel/core/lib/transformation/normalize-file.js:64:11)
+    at run (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+core@7.28.6+9dbbb5d0ed27ea40/node_modules/@babel/core/lib/transformation/index.js:22:16)
+    at transform (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+core@7.28.6+9dbbb5d0ed27ea40/node_modules/@babel/core/lib/transform.js:22:10)
+    at evaluateSync (/home/apex-v2-dev/apex-v2/node_modules/.bun/gensync@1.0.0-beta.2/node_modules/gensync/index.js:251:28)
+    at _instrumentFile (/home/apex-v2-dev/apex-v2/node_modules/.bun/@jest+transform@30.2.0/node_modules/@jest/transform/build/index.js:301:32)
+    at _buildTransformResult (/home/apex-v2-dev/apex-v2/node_modules/.bun/@jest+transform@30.2.0/node_modules/@jest/transform/build/index.js:376:33)
+    at generateEmptyCoverage (/home/apex-v2-dev/apex-v2/node_modules/.bun/@jest+reporters@30.2.0/node_modules/@jest/reporters/build/CoverageWorker.js:92:33)
+    at processTicksAndRejections (native)
+Failed to collect coverage from /home/apex-v2-dev/apex-v2/packages/security/src/security.module.ts
+ERROR: /home/apex-v2-dev/apex-v2/packages/security/src/security.module.ts: Support for the experimental syntax 'decorators' isn't currently enabled (6:1):
+
+  4 | const common_1 = require("@nestjs/common");
+  5 | const secrets_rotator_service_1 = require("./services/secrets-rotator.service");
+> 6 | @(0, common_1.Global)()
+    | ^
+  7 | @(0, common_1.Module)({
+  8 |     providers: [secrets_rotator_service_1.SecretsRotatorService],
+  9 |     exports: [secrets_rotator_service_1.SecretsRotatorService],
+
+Add @babel/plugin-proposal-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-proposal-decorators) to the 'plugins' section of your Babel config to enable transformation.
+If you want to leave it as-is, add @babel/plugin-syntax-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-syntax-decorators) to the 'plugins' section to enable parsing.
+
+If you already added the plugin for this syntax to your config, it's possible that your config isn't being loaded.
+You can re-run Babel with the BABEL_SHOW_CONFIG_FOR environment variable to show the loaded configuration:
+	npx cross-env BABEL_SHOW_CONFIG_FOR=/home/apex-v2-dev/apex-v2/packages/security/src/security.module.ts <your build command>
+See https://babeljs.io/docs/configuration#print-effective-configs for more info.
+
+STACK: Error: /home/apex-v2-dev/apex-v2/packages/security/src/security.module.ts: Support for the experimental syntax 'decorators' isn't currently enabled (6:1):
+
+  4 | const common_1 = require("@nestjs/common");
+  5 | const secrets_rotator_service_1 = require("./services/secrets-rotator.service");
+> 6 | @(0, common_1.Global)()
+    | ^
+  7 | @(0, common_1.Module)({
+  8 |     providers: [secrets_rotator_service_1.SecretsRotatorService],
+  9 |     exports: [secrets_rotator_service_1.SecretsRotatorService],
+
+Add @babel/plugin-proposal-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-proposal-decorators) to the 'plugins' section of your Babel config to enable transformation.
+If you want to leave it as-is, add @babel/plugin-syntax-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-syntax-decorators) to the 'plugins' section to enable parsing.
+
+If you already added the plugin for this syntax to your config, it's possible that your config isn't being loaded.
+You can re-run Babel with the BABEL_SHOW_CONFIG_FOR environment variable to show the loaded configuration:
+	npx cross-env BABEL_SHOW_CONFIG_FOR=/home/apex-v2-dev/apex-v2/packages/security/src/security.module.ts <your build command>
+See https://babeljs.io/docs/configuration#print-effective-configs for more info.
+
+    at constructor (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:365:23)
+    at raise (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:6599:19)
+    at expectOnePlugin (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:6633:18)
+    at parseDecorator (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12938:10)
+    at parseDecorators (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12923:28)
+    at parseStatementLike (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12755:25)
+    at parseBlockOrModuleBlockBody (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:13306:36)
+    at parseBlockBody (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:13299:10)
+    at parseProgram (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12612:10)
+    at parseTopLevel (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12602:25)
+    at parse (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:14478:25)
+    at parser (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+core@7.28.6+9dbbb5d0ed27ea40/node_modules/@babel/core/lib/parser/index.js:41:28)
+    at normalizeFile (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+core@7.28.6+9dbbb5d0ed27ea40/node_modules/@babel/core/lib/transformation/normalize-file.js:64:11)
+    at run (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+core@7.28.6+9dbbb5d0ed27ea40/node_modules/@babel/core/lib/transformation/index.js:22:16)
+    at transform (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+core@7.28.6+9dbbb5d0ed27ea40/node_modules/@babel/core/lib/transform.js:22:10)
+    at evaluateSync (/home/apex-v2-dev/apex-v2/node_modules/.bun/gensync@1.0.0-beta.2/node_modules/gensync/index.js:251:28)
+    at _instrumentFile (/home/apex-v2-dev/apex-v2/node_modules/.bun/@jest+transform@30.2.0/node_modules/@jest/transform/build/index.js:301:32)
+    at _buildTransformResult (/home/apex-v2-dev/apex-v2/node_modules/.bun/@jest+transform@30.2.0/node_modules/@jest/transform/build/index.js:376:33)
+    at generateEmptyCoverage (/home/apex-v2-dev/apex-v2/node_modules/.bun/@jest+reporters@30.2.0/node_modules/@jest/reporters/build/CoverageWorker.js:92:33)
+    at processTicksAndRejections (native)
+    at processTicksAndRejections (native)
+Failed to collect coverage from /home/apex-v2-dev/apex-v2/packages/security/src/middlewares/security-headers.middleware.ts
+ERROR: /home/apex-v2-dev/apex-v2/packages/security/src/middlewares/security-headers.middleware.ts: Support for the experimental syntax 'decorators' isn't currently enabled (5:1):
+
+  3 | exports.SecurityHeadersMiddleware = void 0;
+  4 | const common_1 = require("@nestjs/common");
+> 5 | @(0, common_1.Injectable)()
+    | ^
+  6 | class SecurityHeadersMiddleware {
+  7 |     use(req, res, next) {
+  8 |         // Basic security headers
+
+Add @babel/plugin-proposal-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-proposal-decorators) to the 'plugins' section of your Babel config to enable transformation.
+If you want to leave it as-is, add @babel/plugin-syntax-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-syntax-decorators) to the 'plugins' section to enable parsing.
+
+If you already added the plugin for this syntax to your config, it's possible that your config isn't being loaded.
+You can re-run Babel with the BABEL_SHOW_CONFIG_FOR environment variable to show the loaded configuration:
+	npx cross-env BABEL_SHOW_CONFIG_FOR=/home/apex-v2-dev/apex-v2/packages/security/src/middlewares/security-headers.middleware.ts <your build command>
+See https://babeljs.io/docs/configuration#print-effective-configs for more info.
+
+STACK: Error: /home/apex-v2-dev/apex-v2/packages/security/src/middlewares/security-headers.middleware.ts: Support for the experimental syntax 'decorators' isn't currently enabled (5:1):
+
+  3 | exports.SecurityHeadersMiddleware = void 0;
+  4 | const common_1 = require("@nestjs/common");
+> 5 | @(0, common_1.Injectable)()
+    | ^
+  6 | class SecurityHeadersMiddleware {
+  7 |     use(req, res, next) {
+  8 |         // Basic security headers
+
+Add @babel/plugin-proposal-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-proposal-decorators) to the 'plugins' section of your Babel config to enable transformation.
+If you want to leave it as-is, add @babel/plugin-syntax-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-syntax-decorators) to the 'plugins' section to enable parsing.
+
+If you already added the plugin for this syntax to your config, it's possible that your config isn't being loaded.
+You can re-run Babel with the BABEL_SHOW_CONFIG_FOR environment variable to show the loaded configuration:
+	npx cross-env BABEL_SHOW_CONFIG_FOR=/home/apex-v2-dev/apex-v2/packages/security/src/middlewares/security-headers.middleware.ts <your build command>
+See https://babeljs.io/docs/configuration#print-effective-configs for more info.
+
+    at constructor (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:365:23)
+    at raise (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:6599:19)
+    at expectOnePlugin (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:6633:18)
+    at parseDecorator (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12938:10)
+    at parseDecorators (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12923:28)
+    at parseStatementLike (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12755:25)
+    at parseBlockOrModuleBlockBody (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:13306:36)
+    at parseBlockBody (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:13299:10)
+    at parseProgram (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12612:10)
+    at parseTopLevel (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12602:25)
+    at parse (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:14478:25)
+    at parser (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+core@7.28.6+9dbbb5d0ed27ea40/node_modules/@babel/core/lib/parser/index.js:41:28)
+    at normalizeFile (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+core@7.28.6+9dbbb5d0ed27ea40/node_modules/@babel/core/lib/transformation/normalize-file.js:64:11)
+    at run (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+core@7.28.6+9dbbb5d0ed27ea40/node_modules/@babel/core/lib/transformation/index.js:22:16)
+    at transform (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+core@7.28.6+9dbbb5d0ed27ea40/node_modules/@babel/core/lib/transform.js:22:10)
+    at evaluateSync (/home/apex-v2-dev/apex-v2/node_modules/.bun/gensync@1.0.0-beta.2/node_modules/gensync/index.js:251:28)
+    at _instrumentFile (/home/apex-v2-dev/apex-v2/node_modules/.bun/@jest+transform@30.2.0/node_modules/@jest/transform/build/index.js:301:32)
+    at _buildTransformResult (/home/apex-v2-dev/apex-v2/node_modules/.bun/@jest+transform@30.2.0/node_modules/@jest/transform/build/index.js:376:33)
+    at generateEmptyCoverage (/home/apex-v2-dev/apex-v2/node_modules/.bun/@jest+reporters@30.2.0/node_modules/@jest/reporters/build/CoverageWorker.js:92:33)
+    at processTicksAndRejections (native)
+Failed to collect coverage from /home/apex-v2-dev/apex-v2/packages/security/src/filters/global-exception.filter.ts
+ERROR: /home/apex-v2-dev/apex-v2/packages/security/src/filters/global-exception.filter.ts: Support for the experimental syntax 'decorators' isn't currently enabled (5:1):
+
+  3 | exports.GlobalExceptionFilter = void 0;
+  4 | const common_1 = require("@nestjs/common");
+> 5 | @(0, common_1.Catch)()
+    | ^
+  6 | class GlobalExceptionFilter {
+  7 |     catch(exception, host) {
+  8 |         const ctx = host.switchToHttp();
+
+Add @babel/plugin-proposal-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-proposal-decorators) to the 'plugins' section of your Babel config to enable transformation.
+If you want to leave it as-is, add @babel/plugin-syntax-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-syntax-decorators) to the 'plugins' section to enable parsing.
+
+If you already added the plugin for this syntax to your config, it's possible that your config isn't being loaded.
+You can re-run Babel with the BABEL_SHOW_CONFIG_FOR environment variable to show the loaded configuration:
+	npx cross-env BABEL_SHOW_CONFIG_FOR=/home/apex-v2-dev/apex-v2/packages/security/src/filters/global-exception.filter.ts <your build command>
+See https://babeljs.io/docs/configuration#print-effective-configs for more info.
+
+STACK: Error: /home/apex-v2-dev/apex-v2/packages/security/src/filters/global-exception.filter.ts: Support for the experimental syntax 'decorators' isn't currently enabled (5:1):
+
+  3 | exports.GlobalExceptionFilter = void 0;
+  4 | const common_1 = require("@nestjs/common");
+> 5 | @(0, common_1.Catch)()
+    | ^
+  6 | class GlobalExceptionFilter {
+  7 |     catch(exception, host) {
+  8 |         const ctx = host.switchToHttp();
+
+Add @babel/plugin-proposal-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-proposal-decorators) to the 'plugins' section of your Babel config to enable transformation.
+If you want to leave it as-is, add @babel/plugin-syntax-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-syntax-decorators) to the 'plugins' section to enable parsing.
+
+If you already added the plugin for this syntax to your config, it's possible that your config isn't being loaded.
+You can re-run Babel with the BABEL_SHOW_CONFIG_FOR environment variable to show the loaded configuration:
+	npx cross-env BABEL_SHOW_CONFIG_FOR=/home/apex-v2-dev/apex-v2/packages/security/src/filters/global-exception.filter.ts <your build command>
+See https://babeljs.io/docs/configuration#print-effective-configs for more info.
+
+    at constructor (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:365:23)
+    at raise (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:6599:19)
+    at expectOnePlugin (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:6633:18)
+    at parseDecorator (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12938:10)
+    at parseDecorators (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12923:28)
+    at parseStatementLike (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12755:25)
+    at parseBlockOrModuleBlockBody (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:13306:36)
+    at parseBlockBody (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:13299:10)
+    at parseProgram (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12612:10)
+    at parseTopLevel (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12602:25)
+    at parse (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:14478:25)
+    at parser (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+core@7.28.6+9dbbb5d0ed27ea40/node_modules/@babel/core/lib/parser/index.js:41:28)
+    at normalizeFile (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+core@7.28.6+9dbbb5d0ed27ea40/node_modules/@babel/core/lib/transformation/normalize-file.js:64:11)
+    at run (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+core@7.28.6+9dbbb5d0ed27ea40/node_modules/@babel/core/lib/transformation/index.js:22:16)
+    at transform (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+core@7.28.6+9dbbb5d0ed27ea40/node_modules/@babel/core/lib/transform.js:22:10)
+    at evaluateSync (/home/apex-v2-dev/apex-v2/node_modules/.bun/gensync@1.0.0-beta.2/node_modules/gensync/index.js:251:28)
+    at _instrumentFile (/home/apex-v2-dev/apex-v2/node_modules/.bun/@jest+transform@30.2.0/node_modules/@jest/transform/build/index.js:301:32)
+    at _buildTransformResult (/home/apex-v2-dev/apex-v2/node_modules/.bun/@jest+transform@30.2.0/node_modules/@jest/transform/build/index.js:376:33)
+    at generateEmptyCoverage (/home/apex-v2-dev/apex-v2/node_modules/.bun/@jest+reporters@30.2.0/node_modules/@jest/reporters/build/CoverageWorker.js:92:33)
+    at processTicksAndRejections (native)
+    at processTicksAndRejections (native)
+Failed to collect coverage from /home/apex-v2-dev/apex-v2/packages/security/src/interceptors/audit-logger.interceptor.ts
+ERROR: /home/apex-v2-dev/apex-v2/packages/security/src/interceptors/audit-logger.interceptor.ts: Support for the experimental syntax 'decorators' isn't currently enabled (9:1):
+
+   7 | const pg_1 = require("pg");
+   8 | const audit_logs_1 = require("../../../db/src/schema/audit-logs");
+>  9 | @(0, common_1.Injectable)()
+     | ^
+  10 | class AuditLoggerInterceptor {
+  11 |     static pool = new pg_1.Pool({ connectionString: process.env.DATABASE_URL });
+  12 |     static db = (0, node_postgres_1.drizzle)(this.pool);
+
+Add @babel/plugin-proposal-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-proposal-decorators) to the 'plugins' section of your Babel config to enable transformation.
+If you want to leave it as-is, add @babel/plugin-syntax-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-syntax-decorators) to the 'plugins' section to enable parsing.
+
+If you already added the plugin for this syntax to your config, it's possible that your config isn't being loaded.
+You can re-run Babel with the BABEL_SHOW_CONFIG_FOR environment variable to show the loaded configuration:
+	npx cross-env BABEL_SHOW_CONFIG_FOR=/home/apex-v2-dev/apex-v2/packages/security/src/interceptors/audit-logger.interceptor.ts <your build command>
+See https://babeljs.io/docs/configuration#print-effective-configs for more info.
+
+STACK: Error: /home/apex-v2-dev/apex-v2/packages/security/src/interceptors/audit-logger.interceptor.ts: Support for the experimental syntax 'decorators' isn't currently enabled (9:1):
+
+   7 | const pg_1 = require("pg");
+   8 | const audit_logs_1 = require("../../../db/src/schema/audit-logs");
+>  9 | @(0, common_1.Injectable)()
+     | ^
+  10 | class AuditLoggerInterceptor {
+  11 |     static pool = new pg_1.Pool({ connectionString: process.env.DATABASE_URL });
+  12 |     static db = (0, node_postgres_1.drizzle)(this.pool);
+
+Add @babel/plugin-proposal-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-proposal-decorators) to the 'plugins' section of your Babel config to enable transformation.
+If you want to leave it as-is, add @babel/plugin-syntax-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-syntax-decorators) to the 'plugins' section to enable parsing.
+
+If you already added the plugin for this syntax to your config, it's possible that your config isn't being loaded.
+You can re-run Babel with the BABEL_SHOW_CONFIG_FOR environment variable to show the loaded configuration:
+	npx cross-env BABEL_SHOW_CONFIG_FOR=/home/apex-v2-dev/apex-v2/packages/security/src/interceptors/audit-logger.interceptor.ts <your build command>
+See https://babeljs.io/docs/configuration#print-effective-configs for more info.
+
+    at constructor (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:365:23)
+    at raise (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:6599:19)
+    at expectOnePlugin (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:6633:18)
+    at parseDecorator (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12938:10)
+    at parseDecorators (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12923:28)
+    at parseStatementLike (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12755:25)
+    at parseBlockOrModuleBlockBody (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:13306:36)
+    at parseBlockBody (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:13299:10)
+    at parseProgram (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12612:10)
+    at parseTopLevel (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:12602:25)
+    at parse (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+parser@7.28.6/node_modules/@babel/parser/lib/index.js:14478:25)
+    at parser (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+core@7.28.6+9dbbb5d0ed27ea40/node_modules/@babel/core/lib/parser/index.js:41:28)
+    at normalizeFile (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+core@7.28.6+9dbbb5d0ed27ea40/node_modules/@babel/core/lib/transformation/normalize-file.js:64:11)
+    at run (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+core@7.28.6+9dbbb5d0ed27ea40/node_modules/@babel/core/lib/transformation/index.js:22:16)
+    at transform (/home/apex-v2-dev/apex-v2/node_modules/.bun/@babel+core@7.28.6+9dbbb5d0ed27ea40/node_modules/@babel/core/lib/transform.js:22:10)
+    at evaluateSync (/home/apex-v2-dev/apex-v2/node_modules/.bun/gensync@1.0.0-beta.2/node_modules/gensync/index.js:251:28)
+    at _instrumentFile (/home/apex-v2-dev/apex-v2/node_modules/.bun/@jest+transform@30.2.0/node_modules/@jest/transform/build/index.js:301:32)
+    at _buildTransformResult (/home/apex-v2-dev/apex-v2/node_modules/.bun/@jest+transform@30.2.0/node_modules/@jest/transform/build/index.js:376:33)
+    at generateEmptyCoverage (/home/apex-v2-dev/apex-v2/node_modules/.bun/@jest+reporters@30.2.0/node_modules/@jest/reporters/build/CoverageWorker.js:92:33)
+    at processTicksAndRejections (native)
+    at processTicksAndRejections (native)
+----------------------|---------|----------|---------|---------|-------------------
+File                  | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+----------------------|---------|----------|---------|---------|-------------------
+All files             |       0 |        0 |       0 |       0 |                   
+ config/src           |       0 |      100 |     100 |       0 |                   
+  env.ts              |       0 |      100 |     100 |       0 | 1-15              
+ db/src/middleware    |       0 |        0 |       0 |       0 |                   
+  tenant-isolation.ts |       0 |        0 |       0 |       0 | 3-39              
+----------------------|---------|----------|---------|---------|-------------------
+Test Suites: 9 failed, 9 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        2.872 s
+Ran all test suites.
+error: script "test:coverage" exited with code 1

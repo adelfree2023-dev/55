@@ -15,7 +15,13 @@
         "typescript": "latest",
         "jest": "^29.7.0",
         "ts-jest": "^29.1.1",
-        "@types/jest": "^29.5.12"
+        "@types/jest": "^29.5.12",
+        "@babel/core": "latest",
+        "@babel/preset-env": "latest",
+        "@babel/preset-typescript": "latest",
+        "@babel/plugin-proposal-decorators": "latest",
+        "@babel/plugin-proposal-class-properties": "latest",
+        "babel-jest": "latest"
     },
     "workspaces": [
         "apps/*",

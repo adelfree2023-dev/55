@@ -1,0 +1,10 @@
+config
+gcp_key.pub
+gcp_key_new
+gcp_key_new.pub
+id_ed25519_apex
+id_ed25519_apex.pub
+id_rsa
+id_rsa.pub
+known_hosts
+known_hosts.old
