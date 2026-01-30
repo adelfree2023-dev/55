@@ -9,8 +9,9 @@ console.log('🔹 Extracted Subdomain:', testHostname.split('.')[0]);
 const mockReq = { hostname: testHostname } as any;
 const mockRes = {
     status: (code: number) => ({
-        json: (data: any) => {
+        json: async (data: any) => {
             console.error(`❌ S2 Failure (Code ${code}):`, data);
+            await TenantIsolationMiddleware.pool.end();
             process.exit(1);
         }
     })
