@@ -4,3 +4,8 @@ echo '--- [1] Running Tests & Coverage ---' && \
 echo '' && \
 echo '--- [2] Missing Test Files (Files without .spec.ts) ---' && \
 find packages -name '*.ts' ! -name '*.spec.ts' ! -name 'index.ts' | while read file; do [ ! -f \"\${file%.ts}.spec.ts\" ] && echo \"Missing Spec: \$file\"; done"
+
+
+
+
+---------------------->  ssh -i "C:/Users/Dell/.ssh/id_ed25519_apex" apex-v2-dev@34.102.116.215 "cd ~/apex-v2/packages && find . -name '*.ts' ! -name '*.spec.ts' ! -name 'index.ts' | while read file; do [ ! -f \"\${file%.ts}.spec.ts\" ] && echo \"Missing Test: \$file\"; done"

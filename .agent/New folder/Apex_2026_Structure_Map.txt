@@ -1,0 +1,19 @@
+﻿========================================================
+🗺️  PROJECT STRUCTURE MAP
+========================================================
+📅 Generated: 2026-01-30 06:13
+📂 Files Included: 3
+🚫 Noise Filtered: Lockfiles, Logs, Assets
+🔒 Security Filter: ACTIVE
+========================================================
+
+├── 📂 New folder
+│   ├── 📄 Apex_2026_Structure_Map.txt
+│   └── 📄 Collect-Project.ps1 ➤ ===============================================...
+└── 📂 skills
+    ├── 📂 apex_lego_builder
+    │   └── 📄 SKILL.md ➤ 🧱 Apex LEGO Builder
+    ├── 📂 apex_protocol_enforcer
+    │   └── 📄 SKILL.md ➤ 🛡️ Apex Protocol Enforcer
+    └── 📂 apex_provisioning_master
+        └── 📄 SKILL.md ➤ ⚡ Apex Provisioning Master (v2.0)

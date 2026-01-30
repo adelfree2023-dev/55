@@ -48,7 +48,7 @@ describe('ProvisioningService', () => {
         expect(eventEmitter.emit).toHaveBeenCalled();
         const emitCall = eventEmitter.emit.mock.calls[0];
         expect(emitCall[0]).toBe('tenant.provisioned');
-        expect(emitCall[1].duration).toBeDefined();
+        expect(emitCall[1].payload.duration).toBeDefined();
     });
 
     it('should handle provisioning errors', async () => {
@@ -67,7 +67,7 @@ describe('ProvisioningService', () => {
         const emitCall = eventEmitter.emit.mock.calls[0];
         expect(emitCall[0]).toBe('tenant.failed');
         expect(emitCall[1]).toBeInstanceOf(TenantFailedEvent);
-        expect(emitCall[1].error).toBe('DB Error');
+        expect(emitCall[1].payload.error).toBe('DB Error');
     });
 
     it('should validate subdomain availability', async () => {
@@ -104,7 +104,7 @@ describe('ProvisioningService', () => {
             error: 'fail',
             duration: 100
         });
-        expect(event.subdomain).toBe('test');
-        expect(event.error).toBe('fail');
+        expect(event.payload.subdomain).toBe('test');
+        expect(event.payload.error).toBe('fail');
     });
 });
