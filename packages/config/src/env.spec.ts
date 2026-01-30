@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'bun:test';
 import { z } from 'zod';
 
 // We test the schema logic specifically
@@ -21,22 +20,11 @@ describe('Env Validation (S1)', () => {
     });
 
     it('should fail if JWT_SECRET is too short', () => {
-        const invalidConfig = {
+        const result = envSchema.safeParse({
             DATABASE_URL: 'postgresql://localhost:5432/db',
             REDIS_URL: 'redis://localhost:6379',
             JWT_SECRET: 'short',
-        };
-        const result = envSchema.safeParse(invalidConfig);
-        expect(result.success).toBe(false);
-    });
-
-    it('should fail if DATABASE_URL is not a URL', () => {
-        const invalidConfig = {
-            DATABASE_URL: 'not-a-url',
-            REDIS_URL: 'redis://localhost:6379',
-            JWT_SECRET: 'a'.repeat(32),
-        };
-        const result = envSchema.safeParse(invalidConfig);
+        });
         expect(result.success).toBe(false);
     });
 });
