@@ -121,8 +121,8 @@ describe('CacheService (Redis)', () => {
         if (options?.socket?.reconnectStrategy) {
             const strat = options.socket.reconnectStrategy;
             expect(strat(1)).toBe(50);
+            expect(strat(10)).toBe(500); // 10 * 50
             expect(strat(11)).toBe(false);
-            expect(strat(50)).toBe(2000);
         }
     });
 });
