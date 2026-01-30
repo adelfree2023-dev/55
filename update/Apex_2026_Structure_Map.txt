@@ -1,0 +1,57 @@
+﻿========================================================
+🗺️  PROJECT STRUCTURE MAP
+========================================================
+📅 Generated: 2026-01-30 02:42
+📂 Files Included: 20
+🚫 Noise Filtered: Lockfiles, Logs, Assets
+🔒 Security Filter: ACTIVE
+========================================================
+
+├── 📂 .agent
+│   └── 📂 skills
+│       ├── 📂 apex_lego_builder
+│       │   └── 📄 SKILL.md ➤ 🧱 Apex LEGO Builder
+│       ├── 📂 apex_protocol_enforcer
+│       │   └── 📄 SKILL.md ➤ 🛡️ Apex Protocol Enforcer
+│       └── 📂 apex_provisioning_master
+│           └── 📄 SKILL.md ➤ ⚡ Apex Provisioning Master
+├── 📂 apps
+│   ├── 📂 admin
+│   ├── 📂 api
+│   ├── 📂 landing
+│   ├── 📂 mobile
+│   ├── 📂 storefront
+│   └── 📂 super-admin
+├── 📂 doc
+├── 📂 docs
+│   ├── 📄 admin-dashboard-masterlist.md ➤ 🎛️ Apex v2 Admin Dashboard: World-Class Contro...
+│   ├── 📄 Apex v2 Engineering Constitution & Modular Protocol .md ➤ 📜 Apex v2 Engineering Constitution & Modular P...
+│   ├── 📄 architecture.md ➤ 🏗️ Apex v2: Modern Secure Multi-Tenant Archite...
+│   ├── 📄 landing-page-masterlist.md ➤ 🌐 Apex v2 Marketing Website: Master Page List
+│   ├── 📄 plan.md ➤ 📜 APEX V2 FINAL MASTER EXECUTION REGISTER
+│   ├── 📄 store-features-masterlist.md ➤ 🛒 Apex v2 Storefront: Master Page & Feature List
+│   ├── 📄 super-admin-masterlist.md ➤ 👑 Apex v2 Super Admin: Platform Governance (Go...
+│   └── 📄 🧱 Apex v2 Strategic Roadmap & Lego-Architecture Blueprint .md ➤ 🧱 Apex v2 Strategic Roadmap & Lego-Architectur...
+├── 📂 infra
+│   ├── 📂 docker
+│   │   ├── 📂 minio
+│   │   │   └── 📄 config.json
+│   │   ├── 📂 postgres
+│   │   │   └── 📄 init.sql
+│   │   ├── 📂 redis
+│   │   └── 📂 traefik
+│   │       ├── 📄 dynamic.yml
+│   │       └── 📄 traefik.yml
+│   └── 📄 docker-compose.yml
+├── 📂 packages
+│   ├── 📂 auth-client
+│   ├── 📂 core
+│   ├── 📂 db
+│   ├── 📂 types
+│   └── 📂 ui
+├── 📂 scripts
+│   └── 📄 provision-tenant.ts ➤ Tenant Provisioning Script Placeholder
+├── 📄 biome.json
+├── 📄 package.json
+├── 📄 tsconfig.json
+└── 📄 turbo.json
