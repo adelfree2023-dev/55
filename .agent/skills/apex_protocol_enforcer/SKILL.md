@@ -15,6 +15,12 @@ When delivering Phase 1 to a Tech Lead, ensure:
 
 ## 📋 Security Protocols (S1-S8)
 
+### 🏗️ S0: The Zero-Tolerance Testing Rule (Mandatory)
+> [!IMPORTANT]
+> **Strict Constitutional Rule**: It is strictly forbidden to create any new implementation file (.ts, .js, .tsx) without an accompanying `.spec.ts` (unit/security test) file. 
+> - Every new logic file MUST have a test coverage of **at least 90%**.
+> - Failure to provide a test file or meet the 90% coverage threshold is a **Protocol Violation**.
+
 ### S1: Environment Verification
 - **Requirement**: Use Zod with `@nestjs/config`.
 - **Enforcement**: Check `packages/config` or main app entry points for Zod validation logic. The app must crash if env vars are missing.

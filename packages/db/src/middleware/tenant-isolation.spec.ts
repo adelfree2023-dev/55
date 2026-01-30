@@ -45,14 +45,21 @@ describe('TenantIsolationMiddleware (S2) Unit Test', () => {
         expect(mockNext).toHaveBeenCalled();
     });
 
-    it('should return 404 if tenant does not exist', async () => {
+    it('should return 503 if tenant schema does not exist', async () => {
+        const mockQueryResult = {
+            rows: [{ id: 'uuid-1', status: 'active' }],
+        };
         (TenantIsolationMiddleware as any).pool = {
-            query: mock(() => Promise.resolve({ rows: [] })),
+            query: mock((sql: string) => {
+                if (sql.includes('public.tenants')) return Promise.resolve(mockQueryResult);
+                if (sql.includes('information_schema.schemata')) return Promise.resolve({ rows: [] });
+                return Promise.resolve({ rows: [] });
+            }),
         };
 
         await TenantIsolationMiddleware.setTenantSchema(mockReq, mockRes, mockNext);
 
-        expect(mockRes.status).toHaveBeenCalledWith(404);
+        expect(mockRes.status).toHaveBeenCalledWith(503);
         expect(mockNext).not.toHaveBeenCalled();
     });
 });
