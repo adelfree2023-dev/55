@@ -14,7 +14,8 @@ export class AuditLoggerInterceptor implements NestInterceptor {
         const request = context.switchToHttp().getRequest();
         const user = request.user?.id || 'anonymous';
         const tenantId = request.tenantId || null;
-        const action = `${request.method}:${request.route.path}`;
+        const routePath = request.route?.path || request.url || 'unknown';
+        const action = `${request.method}:${routePath}`;
         const startTime = Date.now();
 
         return next.handle().pipe(

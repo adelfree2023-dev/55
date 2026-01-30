@@ -3,12 +3,14 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AuditLoggerInterceptor } from '@apex/security';
 import { TenantMiddleware } from './common/middleware/tenant.middleware';
 import { ProvisioningModule } from './modules/provisioning/provisioning.module';
+import { StorefrontModule } from './modules/storefront/storefront.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
     imports: [
         EventEmitterModule.forRoot(),
         ProvisioningModule,
+        StorefrontModule,
     ],
     controllers: [],
     providers: [
@@ -22,6 +24,7 @@ export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
         consumer
             .apply(TenantMiddleware)
+            .exclude('provisioning/(.*)')
             .forRoutes({ path: '*', method: RequestMethod.ALL });
     }
 }

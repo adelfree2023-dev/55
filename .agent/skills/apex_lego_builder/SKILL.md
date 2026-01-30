@@ -3,46 +3,21 @@ name: apex_lego_builder
 description: Scaffolds modules and components following the Apex v2 "LEGO" philosophy.
 ---
 
-# 🧱 Apex LEGO Builder
+# 🧱 System Architecture Mapping & Modular Design (v2.0)
 
-This skill accelerates development by generating boilerplate and components that "snap together" according to the project's modular architecture.
+**Focus**: System Architecture Mapping (1).
 
-## 🏗️ Module Scaffolding
+---
 
-Generate a new domain module in `apps/admin` or `apps/storefront` with the following structure:
-```bash
-modules/[name]/
-├── src/
-│   ├── domain/        # Entities, Value Objects
-│   ├── application/   # Use Cases (Command Handlers)
-│   ├── infrastructure/ # Repositories, API Clients
-│   ├── interfaces/    # Controllers, DTOs (Zod)
-│   └── [name].module.ts
-├── tests/             # Vitest unit/integration tests
-└── events/            # Zod-defined events
-```
+## 🏗️ Architecture Protocols
+- **Interdependency Mapping**: Map complex interdependencies between the SaaS platform, POS terminals, and Browser Extensions. Ensure zero circular dependencies.
+- **DDD-Structured Modules**: Enforce modular design using Domain-Driven Design (DDD). Modules must contain `domain`, `application`, `infrastructure`, and `interfaces` layers.
+- **Micro-Frontends (Islands)**: Scaffolds UI components as independent islands to support cross-app reuse without bloating bundles.
 
-## 🎨 UI Component Generation
+## 🚀 Root Solutions (Scaffolding)
+- **Zero-Shot Scaffolding**: Generate full CRUD flows (Zod -> Entity -> Service -> Controller) that "snap together" with zero manual glue code required.
+- **Extension-Centric Design**: Ensure all architectural components account for secure communication with browser extensions from the ground up (Requirement 12).
+- **Audit-Ready Code**: Automatically inject `AuditLoggerInterceptor` and security guards into newly scaffolded modules.
 
-Generate components using **Radix UI**, **TailwindCSS**, and **NativeWind** for cross-platform compatibility.
-
-- **Tokens**: Use the shared design tokens from `packages/ui`.
-- **Responsive**: Components must be mobile-first and responsive.
-- **Server-Driven**: Support for dynamic branding (loading colors/logos from tenant config).
-
-## 📝 Zod-First Workflow
-
-1. **Define Schema**: Start with a Zod schema in `events/` or `interfaces/`.
-2. **Generate DTOs**: Use `z.infer<typeof Schema>` to create types.
-3. **Generate Mocks**: Use `zod-mock` or similar to generate test data.
-4. **Generate Documentation**: Ensure Zod schemas are linked to Scalar API docs.
-
-## 🛠️ Builder Commands
-- `scaffold:module [name]`: Creates a full DDD-structured NestJS module.
-- `scaffold:component [name]`: Creates a shared UI component for Web/Mobile.
-- `scaffold:crud [entity]`: Generates a full CRUD flow (Zod -> Entity -> Service -> Controller).
-
-## 📏 LEGO Rules
-- **No Glue Code**: Modules must be self-contained.
-- **Strict Typing**: No `any`. Everything must be typed via Zod or TypeScript.
-- **Tests First**: Every generated module must include base Vitest suites.
+## ⚖️ LEGO Rules
+Modules must be self-contained. Every snap-on component must include its own unit tests and Zod validation schema.

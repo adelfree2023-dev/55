@@ -1,0 +1,204 @@
+version: '3.8'
+
+services:
+  # PostgreSQL with pgvector extension
+  postgres:
+    image: ankane/pgvector:latest
+    container_name: apex-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: apex
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-apex2026}
+      POSTGRES_DB: apex
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/docker/postgres/extensions.sql:/docker-entrypoint-initdb.d/02-extensions.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U apex"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - apex-network
+
+  # Redis for caching & rate limiting
+  redis:
+    image: redis:7-alpine
+    container_name: apex-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./infra/docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - redis_data:/data
+    command: redis-server /usr/local/etc/redis/redis.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - apex-network
+
+  # MinIO for S3-compatible storage
+  minio:
+    image: minio/minio:latest
+    container_name: apex-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-admin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minio2026}
+      MINIO_BROWSER: "on"
+      MINIO_DOMAIN: apex.localhost
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks:
+      - apex-network
+
+  # Mailpit for email testing
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: apex-mailpit
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    environment:
+      MP_SMTP_BIND_ADDR: ":1025"
+      MP_UI_BIND_ADDR: ":8025"
+      MP_MAX_MESSAGES: "500"
+    volumes:
+      - mailpit_data:/data
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8025/api/v1/info"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - apex-network
+
+  # Traefik for reverse proxy & SSL
+  traefik:
+    image: traefik:v3.0
+    container_name: apex-traefik
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.file.directory=/etc/traefik/dynamic"
+      - "--providers.file.watch=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myresolver.acme.email=admin@apex-v2.duckdns.org"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./infra/docker/traefik/dynamic:/etc/traefik/dynamic
+      - traefik_certs:/letsencrypt
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/api/overview"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - apex-network
+
+  # Apex Backend API
+  apex-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api-runner
+    container_name: apex-api
+    ports:
+      - "3001:3000" # Map host 3001 to container 3000 (NestJS default)
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgresql://apex:apex2026@apex-postgres:5432/apex
+      - REDIS_URL=redis://apex-redis:6379
+      - MINIO_ENDPOINT=apex-minio
+      - PORT=3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "bun", "-e", "fetch('http://localhost:3000/storefront/al-taqwa/home').then(r => process.exit(r.ok ? 0 : 1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.apex-api.rule=Host(`api.apex-v2.duckdns.org`)"
+      - "traefik.http.routers.apex-api.entrypoints=websecure"
+      - "traefik.http.routers.apex-api.tls=true"
+      - "traefik.http.routers.apex-api.tls.certresolver=myresolver"
+      - "traefik.http.services.apex-api.loadbalancer.server.port=3000"
+    networks:
+      - apex-network
+
+  # Apex Storefront
+  apex-storefront:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: storefront-runner
+    container_name: apex-storefront
+    ports:
+      - "3002:3002"
+    env_file: .env
+    environment:
+      - REDIS_URL=redis://apex-redis:6379
+      - DATABASE_URL=postgresql://apex:apex2026@apex-postgres:5432/apex
+      - BACKEND_URL=http://apex-api:3000
+      - NEXT_PUBLIC_API_URL=http://apex-api:3000
+      - NODE_ENV=production
+    depends_on:
+      - apex-api
+    healthcheck:
+      test: ["CMD", "bun", "-e", "fetch('http://localhost:3002/al-taqwa').then(r => process.exit(r.ok ? 0 : 1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.apex-storefront.rule=Host(`apex-v2.duckdns.org`) || HostRegexp(`{subdomain:[a-z0-9-]+}.apex-v2.duckdns.org`)"
+      - "traefik.http.routers.apex-storefront.entrypoints=websecure"
+      - "traefik.http.routers.apex-storefront.tls=true"
+      - "traefik.http.routers.apex-storefront.tls.certresolver=myresolver"
+      - "traefik.http.services.apex-storefront.loadbalancer.server.port=3002"
+    networks:
+      - apex-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  minio_data:
+    driver: local
+  mailpit_data:
+    driver: local
+  traefik_certs:
+    driver: local
+
+networks:
+  apex-network:
+    driver: bridge

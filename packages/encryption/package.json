@@ -1,0 +1,16 @@
+{
+    "name": "@apex/encryption",
+    "version": "1.0.0",
+    "description": "AES-256-GCM encryption service for Apex v2",
+    "main": "src/index.ts",
+    "scripts": {
+        "test": "bun test"
+    },
+    "dependencies": {
+        "@nestjs/common": "^10.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^20.0.0",
+        "bun-types": "latest"
+    }
+}

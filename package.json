@@ -7,7 +7,12 @@
         "lint": "turbo lint",
         "test": "bun test",
         "test:coverage": "bun test --coverage --coverage-dir=./coverage",
-        "provision": "bun scripts/provision-tenant.ts"
+        "provision": "bun scripts/provision-tenant.ts",
+        "nuclear-test": "bun scripts/nuclear-test-phase-1.ts",
+        "verify": "bun scripts/verify-infrastructure.ts",
+        "docker:up": "docker compose up -d",
+        "docker:down": "docker compose down",
+        "docker:ps": "docker compose ps"
     },
     "devDependencies": {
         "turbo": "latest",
@@ -18,8 +23,8 @@
         "@types/pg": "latest"
     },
     "workspaces": [
-        "apps/*",
-        "packages/*"
+        "packages/*",
+        "apps/*"
     ],
-    "packageManager": "bun@1.x"
+    "packageManager": "bun@1.1.38"
 }

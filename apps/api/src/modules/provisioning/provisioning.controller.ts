@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseInterceptors, Logger, Headers } from '@nestjs/common';
+import { Controller, Post, Body, UseInterceptors, Logger, Headers, Inject } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { CreateTenantDto } from './dto/create-tenant.dto';
@@ -12,7 +12,10 @@ import { CreateTenantSchema } from '@apex/validators';
 export class ProvisioningController {
     private readonly logger = new Logger(ProvisioningController.name);
 
-    constructor(private readonly provisioningService: ProvisioningService) { }
+    constructor(
+        @Inject('PROVISIONING_SERVICE')
+        private readonly provisioningService: ProvisioningService
+    ) { }
 
     @Post('tenants')
     @ApiOperation({ summary: 'Create new tenant (S2 Isolation + S4 Audit)' })

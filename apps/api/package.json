@@ -16,7 +16,9 @@
         "@apex/validators": "workspace:*",
         "@apex/security": "workspace:*",
         "@apex/provisioning": "workspace:*",
+        "@apex/cache": "workspace:*",
         "@nestjs/event-emitter": "^2.0.0",
+        "@nestjs/swagger": "^7.2.0",
         "zod": "^3.22.4",
         "reflect-metadata": "^0.1.13",
         "rxjs": "^7.8.1"

@@ -52,4 +52,33 @@ describe('TenantIsolationMiddleware (S2) Unit Test', () => {
         const instance = new TenantIsolationMiddleware();
         expect(instance).toBeDefined();
     });
+
+    it('should handle subdomain with special characters safely', async () => {
+        mockReq.hostname = 'test-tenant_123.apex.local';
+        (TenantIsolationMiddleware as any).pool.query = mock((sql: string) => {
+            if (sql.includes('public.tenants')) return Promise.resolve({ rows: [{ id: 'uuid-2', status: 'active' }] });
+            if (sql.includes('information_schema.schemata')) return Promise.resolve({ rows: [{ schema_name: 'tenant_test-tenant_123' }] });
+            return Promise.resolve({ rows: [] });
+        });
+
+        await TenantIsolationMiddleware.setTenantSchema(mockReq, mockRes, mockNext);
+
+        expect(mockReq.tenantSchema).toBe('tenant_test-tenant_123');
+        expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should reject SQL injection attempts in subdomain', async () => {
+        mockReq.hostname = 'tenant1\'; DROP TABLE tenants; --.apex.local';
+        (TenantIsolationMiddleware as any).pool.query = mock(() => Promise.resolve({ rows: [] }));
+
+        await TenantIsolationMiddleware.setTenantSchema(mockReq, mockRes, mockNext);
+
+        expect(mockRes.status).toHaveBeenCalledWith(404);
+    });
+
+    it('should have static pool initialized', () => {
+        // Test static field initializer for 100% function coverage
+        expect(TenantIsolationMiddleware.pool).toBeDefined();
+        expect(typeof TenantIsolationMiddleware.pool.query).toBe('function');
+    });
 });

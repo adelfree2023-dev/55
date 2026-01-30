@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS public.onboarding_blueprints (
 
 -- Seed a default blueprint
 INSERT INTO public.onboarding_blueprints (name, config, is_default)
-VALUES ('Standard E-commerce', '{"products": [], "pages": [{"title": "Home", "content": "Welcome"}]}', true)
+VALUES ('standard', '{"products": [], "pages": [{"title": "Home", "content": "Welcome"}]}', true)
 ON CONFLICT (name) DO NOTHING;
 
 -- Audit logs table in public schema

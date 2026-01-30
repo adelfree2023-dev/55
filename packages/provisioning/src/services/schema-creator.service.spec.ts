@@ -28,19 +28,16 @@ describe('SchemaCreatorService', () => {
 
         expect(result).toBe('tenant_test-id');
 
-        // precise call checks
-        expect(mockDb.execute).toHaveBeenCalledTimes(3);
+        // db.execute should be called for CREATE SCHEMA and GRANT ALL only (not audit)
+        expect(mockDb.execute).toHaveBeenCalledTimes(2);
 
         // Check arguments directly
         const calls = mockDb.execute.mock.calls;
         expect(calls[0][0]).toContain('CREATE SCHEMA');
         expect(calls[1][0]).toContain('GRANT ALL');
 
-        // For the SQL tag call (audit log), it might be an object
-        // We can check it safely
-        const auditCall = calls[2][0];
-        const auditText = typeof auditCall === 'string' ? auditCall : JSON.stringify(auditCall);
-        expect(auditText).toContain('audit_logs');
+        // pool.query should be called for schema check + audit log
+        expect(mockPool.query).toHaveBeenCalledTimes(2);
     });
 
     it('should return existing schema if idempotent', async () => {
@@ -49,7 +46,10 @@ describe('SchemaCreatorService', () => {
         const result = await service.createSchema('test-id');
 
         expect(result).toBe('tenant_test-id');
-        expect(mockDb.execute).toHaveBeenCalledTimes(1); // Only audit
+        // No db.execute calls (schema already exists, no CREATE/GRANT)
+        expect(mockDb.execute).toHaveBeenCalledTimes(0);
+        // pool.query called for schema check + audit log
+        expect(mockPool.query).toHaveBeenCalledTimes(2);
     });
 
     it('should set search path', async () => {

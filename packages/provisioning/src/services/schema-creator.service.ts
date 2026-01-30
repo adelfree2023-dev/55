@@ -84,10 +84,11 @@ export class SchemaCreatorService {
    */
   private async logAudit(action: string, tenantId: string, duration: number): Promise<void> {
     try {
-      await this.db.execute(sql`
-        INSERT INTO public.audit_logs (user_id, action, tenant_id, duration, status)
-        VALUES ('system', ${action}, ${tenantId}, ${duration}, 'success')
-      `);
+      await this.pool.query(
+        `INSERT INTO public.audit_logs (user_id, action, tenant_id, duration, status)
+         VALUES ($1, $2, $3, $4, $5)`,
+        ['system', action, tenantId, duration, 'success']
+      );
     } catch (e) {
       this.logger.error(`Failed to log audit: ${e.message}`);
     }

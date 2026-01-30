@@ -1,4 +1,4 @@
-import { Injectable, Logger, BadRequestException, InternalServerErrorException, Optional } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException, InternalServerErrorException, Optional, Inject } from '@nestjs/common';
 import { Pool } from 'pg';
 import { SchemaCreatorService, DataSeederService, TraefikRouterService } from '@apex/provisioning';
 import { CreateTenantDto } from '../../dto/create-tenant.dto';
@@ -11,9 +11,13 @@ export class ProvisioningService {
     private readonly logger = new Logger(ProvisioningService.name);
 
     constructor(
+        @Inject('SCHEMA_CREATOR_SERVICE')
         private readonly schemaCreator: SchemaCreatorService,
+        @Inject('DATA_SEEDER_SERVICE')
         private readonly dataSeeder: DataSeederService,
+        @Inject('TRAEFIK_ROUTER_SERVICE')
         private readonly traefikRouter: TraefikRouterService,
+        @Inject(EventEmitter2)
         private readonly eventEmitter: EventEmitter2,
         @Optional() private readonly pool: Pool = new Pool({ connectionString: process.env.DATABASE_URL }),
     ) { }

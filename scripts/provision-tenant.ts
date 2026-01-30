@@ -35,7 +35,7 @@ async function provisionTenant(name: string, email: string) {
 
         // PHASE 4: Register Tenant
         console.log('\n📝 PHASE 4: Tenant Registration');
-        await db.execute(`
+        await pool.query(`
       INSERT INTO public.tenants (name, subdomain, owner_email, status)
       VALUES ($1, $2, $3, 'active')
       ON CONFLICT (subdomain) DO NOTHING
@@ -44,10 +44,11 @@ async function provisionTenant(name: string, email: string) {
 
         // PHASE 5: Audit Logging
         console.log('\n📝 PHASE 5: Audit Logging (S4)');
-        await db.execute(`
-      INSERT INTO public.audit_logs (user_id, action, tenant_id, status)
-      VALUES ('cli', 'TENANT_PROVISIONED', $1, 'success')
-    `, [name]);
+        const provisionDuration = Date.now() - startTime;
+        await pool.query(`
+      INSERT INTO public.audit_logs (user_id, action, tenant_id, duration, status)
+      VALUES ('cli', 'TENANT_PROVISIONED', $1, $2, 'success')
+    `, [name, provisionDuration]);
         console.log(`✅ Audit log created`);
 
         // Calculate duration
