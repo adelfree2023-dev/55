@@ -1,5 +1,5 @@
 // Tenant Provisioning Script Placeholder
-import { db, createTenantSchema, setSchemaPath } from "@apex/db";
+import { db, createTenantSchema, setSchemaPath } from "../packages/db/src/index";
 
 async function provisionTenant(name: string, email: string) {
     const startTime = Date.now();
