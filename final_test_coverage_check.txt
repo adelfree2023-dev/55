@@ -1,0 +1,200 @@
+From https://github.com/adelfree2023-dev/55
+ * branch            master     -> FETCH_HEAD
+   4c2b5a6..860992a  master     -> origin/master
+Updating 4c2b5a6..860992a
+Fast-forward
+ final_verification_v4.txt                          |  0
+ .../src/services/data-seeder.service.spec.ts       | 50 ++++++++++++++++++----
+ .../src/services/schema-creator.service.spec.ts    | 35 ++++++++++++---
+ 3 files changed, 70 insertions(+), 15 deletions(-)
+ create mode 100644 final_verification_v4.txt
+[0.07ms] ".env"
+bun install v1.3.8 (b64edcb4)
+
+Checked 399 installs across 451 packages (no changes) [11.00ms]
+bun test v1.3.8 (b64edcb4)
+
+tests/provisioning/provisioning.service.spec.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module '../../events/tenant-provisioned.event' from '/home/apex-v2-dev/apex-v2/apps/api/src/modules/provisioning/provisioning.service.ts'
+-------------------------------
+
+
+tests/security/s2-tenant-isolation.test.ts:
+🔍 Execution: S2 Isolation Test
+[MockDB] SQL: SELECT id FROM public.tenants WHERE subdomain = $1 AND status = 'active' | Params: tenant-a
+[MockDB] SQL: SELECT schema_name FROM information_schema.schemata WHERE schema_name = $1 | Params: tenant_tenant-a
+[MockDB] SQL: SET search_path TO "tenant_tenant-a", public | Params: undefined
+✅ S2: Middleware called next()
+🔍 Execution: S1 Validation Test
+✅ S1: Environment validated successfully
+(pass) S2 Integration Test > should isolate tenant successfully [3.00ms]
+
+tests/security/s1-env-validation.test.ts:
+(pass) S1 Integration Test > should validate environment
+
+tests/security/s6-rate-limiting.test.ts:
+🔍 Execution: S6 Rate Limiting Test
+[32m[Nest] 36640  - [39m01/30/2026, 3:23:11 AM [32m    LOG[39m [38;5;3m[DataSeederService] [39m[32mSeeding data for test-u using blueprint: invalid-bp[39m
+[32m[Nest] 36640  - [39m01/30/2026, 3:23:11 AM [32m    LOG[39m [38;5;3m[DataSeederService] [39m[32mSeeding data for test-u using blueprint: standard[39m
+[95m[Nest] 36640  - [39m01/30/2026, 3:23:11 AM [95m  DEBUG[39m [38;5;3m[DataSeederService] [39m[95mCore tables created for tenant_test-u[39m
+[95m[Nest] 36640  - [39m01/30/2026, 3:23:11 AM [95m  DEBUG[39m [38;5;3m[DataSeederService] [39m[95mSeeded 1 products[39m
+[95m[Nest] 36640  - [39m01/30/2026, 3:23:11 AM [95m  DEBUG[39m [38;5;3m[DataSeederService] [39m[95mSeeded 1 pages[39m
+[95m[Nest] 36640  - [39m01/30/2026, 3:23:11 AM [95m  DEBUG[39m [38;5;3m[DataSeederService] [39m[95mSeeded settings[39m
+[32m[Nest] 36640  - [39m01/30/2026, 3:23:11 AM [32m    LOG[39m [38;5;3m[DataSeederService] [39m[32m✅ Data seeded in 1ms for test-u[39m
+[32m[Nest] 36640  - [39m01/30/2026, 3:23:11 AM [32m    LOG[39m [38;5;3m[DataSeederService] [39m[32mSeeding data for test-u using blueprint: empty[39m
+[95m[Nest] 36640  - [39m01/30/2026, 3:23:11 AM [95m  DEBUG[39m [38;5;3m[DataSeederService] [39m[95mCore tables created for tenant_test-u[39m
+[95m[Nest] 36640  - [39m01/30/2026, 3:23:11 AM [95m  DEBUG[39m [38;5;3m[DataSeederService] [39m[95mSeeded settings[39m
+[32m[Nest] 36640  - [39m01/30/2026, 3:23:11 AM [32m    LOG[39m [38;5;3m[DataSeederService] [39m[32m✅ Data seeded in 0ms for test-u[39m
+[32m[Nest] 36640  - [39m01/30/2026, 3:23:11 AM [32m    LOG[39m [38;5;3m[SchemaCreatorService] [39m[32mCreating schema: tenant_test-id[39m
+(pass) S6 Integration Test > should handle rate limiting requests
+
+packages/db/src/index.spec.ts:
+(pass) DB Core Utils (Packages/DB) > should create tenant schema with quoted identifier
+(pass) DB Core Utils (Packages/DB) > should set search path with quoted identifier
+
+packages/config/src/env.spec.ts:
+(pass) Env Validation (S1) > should validate correct environment variables [1.00ms]
+(pass) Env Validation (S1) > should fail if JWT_SECRET is too short
+
+packages/security/src/security.module.spec.ts:
+(pass) SecurityModule > should be defined
+
+packages/provisioning/src/services/data-seeder.service.spec.ts:
+[31m[Nest] 36640  - [39m01/30/2026, 3:23:11 AM [31m  ERROR[39m [38;5;3m[DataSeederService] [39m[31mFailed to seed data: Blueprint invalid-bp not found[39m
+(pass) DataSeederService > should fail if blueprint not found [4.00ms]
+64 |         // Verify specific calls
+65 |         const calls = mockExecute.mock.calls.map(c => c[0].text || c[0]); // .text for sql`` template literal or string
+66 |         const combinedSQL = calls.map(c => typeof c === 'string' ? c : c.toString()).join(' ');
+67 | 
+68 |         // Check for table creation
+69 |         expect(combinedSQL).toContain('CREATE TABLE IF NOT EXISTS "tenant_test-u".products');
+                                 ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "CREATE TABLE IF NOT EXISTS \"tenant_test-u\".products"
+Received: "[object Object] [object Object] [object Object] [object Object] [object Object] [object Object] [object Object]"
+
+      at <anonymous> (/home/apex-v2-dev/apex-v2/packages/provisioning/src/services/data-seeder.service.spec.ts:69:29)
+(fail) DataSeederService > should seed data successfully [1.00ms]
+(pass) DataSeederService > should handle empty blueprint sections [1.00ms]
+
+packages/provisioning/src/services/schema-creator.service.spec.ts:
+[32m[Nest] 36640  - [39m01/30/2026, 3:23:11 AM [32m    LOG[39m [38;5;3m[SchemaCreatorService] [39m[32m✅ Schema created in 1ms: tenant_test-id[39m
+[32m[Nest] 36640  - [39m01/30/2026, 3:23:11 AM [32m    LOG[39m [38;5;3m[SchemaCreatorService] [39m[32mCreating schema: tenant_test-id[39m
+[33m[Nest] 36640  - [39m01/30/2026, 3:23:11 AM [33m   WARN[39m [38;5;3m[SchemaCreatorService] [39m[33mSchema tenant_test-id already exists (idempotent)[39m
+[32m[Nest] 36640  - [39m01/30/2026, 3:23:11 AM [32m    LOG[39m [38;5;3m[SchemaCreatorService] [39m[32mCreating schema: tenant_test-id[39m
+[95m[Nest] 36640  - [39m01/30/2026, 3:23:11 AM [95m  DEBUG[39m [38;5;3m[SchemaCreatorService] [39m[95mSearch path set to: tenant_test-id[39m
+36 |         // 2. Grant Privileges
+37 |         // 3. Log Audit
+38 |         expect(mockExecute).toHaveBeenCalledTimes(3);
+39 |         expect(mockExecute.mock.calls[0][0]).toContain('CREATE SCHEMA');
+40 |         expect(mockExecute.mock.calls[1][0]).toContain('GRANT ALL');
+41 |         expect(mockExecute.mock.calls[2][0].text).toContain('INSERT INTO public.audit_logs');
+                                                       ^
+error: Received value must be an array type, or both received and expected values must be strings.
+      at <anonymous> (/home/apex-v2-dev/apex-v2/packages/provisioning/src/services/schema-creator.service.spec.ts:41:51)
+(fail) SchemaCreatorService > should create schema if not exists [2.00ms]
+47 |         const result = await service.createSchema('test-id');
+48 | 
+49 |         expect(result).toBe('tenant_test-id');
+50 |         // Only Audit Log
+51 |         expect(mockExecute).toHaveBeenCalledTimes(1);
+52 |         expect(mockExecute.mock.calls[0][0].text).toContain('INSERT INTO public.audit_logs');
+                                                       ^
+error: Received value must be an array type, or both received and expected values must be strings.
+      at <anonymous> (/home/apex-v2-dev/apex-v2/packages/provisioning/src/services/schema-creator.service.spec.ts:52:51)
+(fail) SchemaCreatorService > should return existing schema if idempotent
+[31m[Nest] 36640  - [39m01/30/2026, 3:23:11 AM [31m  ERROR[39m [38;5;3m[SchemaCreatorService] [39m[31mFailed to create schema tenant_test-id: DB Error[39m
+(pass) SchemaCreatorService > should handle creation errors [1.00ms]
+[32m[Nest] 36640  - [39m01/30/2026, 3:23:11 AM [32m    LOG[39m [38;5;3m[TraefikRouterService] [39m[32mCreating Traefik route: myshop-route[39m
+[32m[Nest] 36640  - [39m01/30/2026, 3:23:11 AM [32m    LOG[39m [38;5;3m[TraefikRouterService] [39m[32m✅ Traefik route created in 0ms: infra/docker/traefik/dynamic/myshop-route.yml[39m
+65 |     });
+66 | 
+67 |     it('should set search path', async () => {
+68 |         await service.setSearchPath('test-id');
+69 |         expect(mockExecute).toHaveBeenCalled();
+70 |         expect(mockExecute.mock.calls[0][0].text).toContain('SET search_path');
+                                                       ^
+error: Received value must be an array type, or both received and expected values must be strings.
+      at <anonymous> (/home/apex-v2-dev/apex-v2/packages/provisioning/src/services/schema-creator.service.spec.ts:70:51)
+(fail) SchemaCreatorService > should set search path
+
+packages/provisioning/src/services/traefik-router.service.spec.ts:
+(pass) TraefikRouterService > should generate and write yaml config [1.00ms]
+
+packages/db/src/middleware/tenant-isolation.spec.ts:
+(pass) TenantIsolationMiddleware (S2) Unit Test > should extract subdomain and set tenant schema if tenant exists [1.00ms]
+(pass) TenantIsolationMiddleware (S2) Unit Test > should return 404 if tenant not found
+(pass) TenantIsolationMiddleware (S2) Unit Test > should return 503 if schema missing
+(pass) TenantIsolationMiddleware (S2) Unit Test > should instantiate for constructor coverage
+
+packages/db/src/schema/audit-logs.spec.ts:
+(pass) AuditLogs Schema > should have correct metadata
+
+packages/db/src/schema/tenants.spec.ts:
+(pass) Tenants Schema > should have correct metadata
+
+packages/validators/src/provisioning/stripe-webhook.schema.spec.ts:
+(pass) StripeWebhookSchema (S3) > should validate correct webhook payload [2.00ms]
+(pass) StripeWebhookSchema (S3) > should reject invalid event type [1.00ms]
+
+packages/validators/src/provisioning/create-tenant.schema.spec.ts:
+(pass) CreateTenantSchema (S3) > should validate correct tenant data
+(pass) CreateTenantSchema (S3) > should reject invalid subdomain [1.00ms]
+🔄 S8: Secrets Rotation Triggered (Stub)
+(pass) CreateTenantSchema (S3) > should reject invalid email
+
+packages/validators/src/auth/login.schema.spec.ts:
+(pass) Login Schema (S3) > should validate correct login data
+(pass) Login Schema (S3) > should reject invalid email
+(pass) Login Schema (S3) > should reject short password [1.00ms]
+
+packages/validators/src/orders/create-order.schema.spec.ts:
+(pass) Order Schema (S3) > should validate correct order data
+(pass) Order Schema (S3) > should reject empty items
+
+packages/validators/src/products/create-product.schema.spec.ts:
+(pass) Product Schema (S3) > should validate correct product data
+(pass) Product Schema (S3) > should reject invalid price [1.00ms]
+
+packages/security/src/middlewares/security-headers.spec.ts:
+(pass) SecurityHeadersMiddleware (S7) > should set security headers correctly [1.00ms]
+
+packages/security/src/middlewares/rate-limiter.middleware.spec.ts:
+(pass) RateLimiterMiddleware (S6) > should permit request if below limit
+(pass) RateLimiterMiddleware (S6) > should block request if above limit
+(pass) RateLimiterMiddleware (S6) > should connect if client is closed
+
+packages/security/src/middlewares/security-headers.middleware.spec.ts:
+(pass) SecurityHeadersMiddleware (S7) Unit Test > should set all security headers [1.00ms]
+
+packages/security/src/filters/global-exception.filter.spec.ts:
+(pass) GlobalExceptionFilter (S5) > should format HttpException correctly
+(pass) GlobalExceptionFilter (S5) > should handle generic errors as 500
+
+packages/security/src/interceptors/audit-logger.interceptor.spec.ts:
+(pass) AuditLoggerInterceptor (S3) > should log success audit [3.00ms]
+(pass) AuditLoggerInterceptor (S3) > should log error audit [1.00ms]
+
+packages/security/src/services/secrets-rotator.service.spec.ts:
+(pass) SecretsRotatorService (S8) > should rotate secrets (stub)
+
+apps/api/src/common/pipes/zod-validation.pipe.spec.ts:
+(pass) ZodValidationPipe (S3) > should validate and transform body [1.00ms]
+(pass) ZodValidationPipe (S3) > should throw BadRequestException on validation failure [1.00ms]
+(pass) ZodValidationPipe (S3) > should ignore non-body arguments
+
+5 tests failed:
+(fail) DataSeederService > should seed data successfully [1.00ms]
+(fail) SchemaCreatorService > should create schema if not exists [2.00ms]
+(fail) SchemaCreatorService > should return existing schema if idempotent
+(fail) SchemaCreatorService > should set search path
+
+ 43 pass
+ 5 fail
+ 1 error
+ 78 expect() calls
+Ran 48 tests across 25 files. [508.00ms]
