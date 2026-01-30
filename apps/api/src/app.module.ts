@@ -2,9 +2,14 @@ import { Module, NestModule, MiddlewareConsumer, RequestMethod } from '@nestjs/c
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AuditLoggerInterceptor } from '@apex/security';
 import { TenantMiddleware } from './common/middleware/tenant.middleware';
+import { ProvisioningModule } from './modules/provisioning/provisioning.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
-    imports: [],
+    imports: [
+        EventEmitterModule.forRoot(),
+        ProvisioningModule,
+    ],
     controllers: [],
     providers: [
         {

@@ -1,0 +1,89 @@
+import { Injectable, Logger } from '@nestjs/common';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { Pool } from 'pg';
+import { AuditLoggerInterceptor } from '@apex/security';
+
+@Injectable()
+export class SchemaCreatorService {
+  private readonly logger = new Logger(SchemaCreatorService.name);
+  private static pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  private static db = drizzle(this.pool);
+
+  /**
+   * Creates isolated schema for tenant with idempotency check
+   * @param tenantId - Unique identifier for the tenant
+   * @returns Schema name created
+   */
+  async createSchema(tenantId: string): Promise<string> {
+    const startTime = Date.now();
+    const schemaName = `tenant_${tenantId}`;
+
+    this.logger.log(`Creating schema: ${schemaName}`);
+
+    try {
+      // Idempotency check: Schema already exists
+      const exists = await this.schemaExists(schemaName);
+      if (exists) {
+        this.logger.warn(`Schema ${schemaName} already exists (idempotent)`);
+        await this.logAudit('SCHEMA_EXISTS', tenantId, Date.now() - startTime);
+        return schemaName;
+      }
+
+      // Create schema
+      await SchemaCreatorService.db.execute(
+        `CREATE SCHEMA IF NOT EXISTS "${schemaName}"`
+      );
+
+      // Set default privileges
+      await SchemaCreatorService.db.execute(
+        `GRANT ALL ON SCHEMA "${schemaName}" TO CURRENT_USER`
+      );
+
+      const duration = Date.now() - startTime;
+      this.logger.log(`✅ Schema created in ${duration}ms: ${schemaName}`);
+      
+      await this.logAudit('SCHEMA_CREATED', tenantId, duration);
+      return schemaName;
+    } catch (error) {
+      this.logger.error(`Failed to create schema ${schemaName}: ${error.message}`);
+      throw new Error(`Schema creation failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Sets search_path for current connection
+   * @param tenantId - Tenant identifier
+   */
+  async setSearchPath(tenantId: string): Promise<void> {
+    const schemaName = `tenant_${tenantId}`;
+    await SchemaCreatorService.db.execute(
+      `SET search_path TO "${schemaName}", public`
+    );
+    this.logger.debug(`Search path set to: ${schemaName}`);
+  }
+
+  /**
+   * Checks if schema exists
+   */
+  private async schemaExists(schemaName: string): Promise<boolean> {
+    const result = await SchemaCreatorService.pool.query(
+      `SELECT schema_name FROM information_schema.schemata WHERE schema_name = $1`,
+      [schemaName]
+    );
+    return result.rows.length > 0;
+  }
+
+  /**
+   * Logs audit entry for schema operations
+   */
+  private async logAudit(action: string, tenantId: string, duration: number): Promise<void> {
+    try {
+      await SchemaCreatorService.db.execute(`
+        INSERT INTO public.audit_logs (user_id, action, tenant_id, duration, status)
+        VALUES ('system', $1, $2, $3, 'success')
+      `, [action, tenantId, duration]);
+    } catch (e) {
+      this.logger.error(`Failed to log audit: ${e.message}`);
+    }
+  }
+}

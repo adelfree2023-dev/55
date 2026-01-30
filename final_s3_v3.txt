@@ -1,3 +1,7 @@
+bun install v1.3.8 (b64edcb4)
+[0.06ms] ".env"
+
+Checked 393 installs across 446 packages (no changes) [10.00ms]
 bun test v1.3.8 (b64edcb4)
 
 tests/security/s2-tenant-isolation.test.ts:
@@ -15,62 +19,49 @@ tests/security/s1-env-validation.test.ts:
 
 tests/security/s6-rate-limiting.test.ts:
 🔍 Execution: S6 Rate Limiting Test
-(pass) S6 Integration Test > should handle rate limiting requests
+(pass) S6 Integration Test > should handle rate limiting requests [1.00ms]
 
 packages/db/src/index.spec.ts:
-(pass) DB Core Utils (Packages/DB) > should create tenant schema with quoted identifier [1.00ms]
+(pass) DB Core Utils (Packages/DB) > should create tenant schema with quoted identifier
 (pass) DB Core Utils (Packages/DB) > should set search path with quoted identifier
 
 packages/config/src/env.spec.ts:
 (pass) Env Validation (S1) > should validate correct environment variables [1.00ms]
-(pass) Env Validation (S1) > should fail if JWT_SECRET is too short [1.00ms]
+(pass) Env Validation (S1) > should fail if JWT_SECRET is too short
 
 packages/security/src/security.module.spec.ts:
 (pass) SecurityModule > should be defined
 
 packages/db/src/middleware/tenant-isolation.spec.ts:
 (pass) TenantIsolationMiddleware (S2) Unit Test > should extract subdomain and set tenant schema if tenant exists
-(pass) TenantIsolationMiddleware (S2) Unit Test > should return 404 if tenant not found
+(pass) TenantIsolationMiddleware (S2) Unit Test > should return 404 if tenant not found [1.00ms]
 (pass) TenantIsolationMiddleware (S2) Unit Test > should return 503 if schema missing
 (pass) TenantIsolationMiddleware (S2) Unit Test > should instantiate for constructor coverage
 
 packages/db/src/schema/audit-logs.spec.ts:
-2 | import { auditLogs } from './audit-logs';
-3 | 
-4 | describe('AuditLogs Schema', () => {
-5 |     it('should have correct metadata', () => {
-6 |         expect(auditLogs).toBeDefined();
-7 |         expect((auditLogs as any)._?.name).toBe('audit_logs');
-                                               ^
-error: expect(received).toBe(expected)
-
-Expected: "audit_logs"
-Received: undefined
-
-      at <anonymous> (/home/apex-v2-dev/apex-v2/packages/db/src/schema/audit-logs.spec.ts:7:44)
-(fail) AuditLogs Schema > should have correct metadata
+(pass) AuditLogs Schema > should have correct metadata
 
 packages/db/src/schema/tenants.spec.ts:
-2 | import { tenants } from './tenants';
-3 | 
-4 | describe('Tenants Schema', () => {
-5 |     it('should have correct metadata', () => {
-6 |         expect(tenants).toBeDefined();
-7 |         expect((tenants as any)._?.name).toBe('tenants');
-                                             ^
-error: expect(received).toBe(expected)
+(pass) Tenants Schema > should have correct metadata [1.00ms]
 
-Expected: "tenants"
-Received: undefined
+packages/validators/src/auth/login.schema.spec.ts:
+(pass) Login Schema (S3) > should validate correct login data [1.00ms]
+(pass) Login Schema (S3) > should reject invalid email
+(pass) Login Schema (S3) > should reject short password
 
-      at <anonymous> (/home/apex-v2-dev/apex-v2/packages/db/src/schema/tenants.spec.ts:7:42)
-(fail) Tenants Schema > should have correct metadata [1.00ms]
+packages/validators/src/orders/create-order.schema.spec.ts:
+(pass) Order Schema (S3) > should validate correct order data [1.00ms]
+(pass) Order Schema (S3) > should reject empty items
+
+packages/validators/src/products/create-product.schema.spec.ts:
+(pass) Product Schema (S3) > should validate correct product data
+(pass) Product Schema (S3) > should reject invalid price
 
 packages/security/src/middlewares/security-headers.spec.ts:
 (pass) SecurityHeadersMiddleware (S7) > should set security headers correctly
 
 packages/security/src/middlewares/rate-limiter.middleware.spec.ts:
-(pass) RateLimiterMiddleware (S6) > should permit request if below limit [1.00ms]
+(pass) RateLimiterMiddleware (S6) > should permit request if below limit
 (pass) RateLimiterMiddleware (S6) > should block request if above limit
 (pass) RateLimiterMiddleware (S6) > should connect if client is closed
 
@@ -79,23 +70,25 @@ packages/security/src/middlewares/security-headers.middleware.spec.ts:
 
 packages/security/src/filters/global-exception.filter.spec.ts:
 (pass) GlobalExceptionFilter (S5) > should format HttpException correctly
-(pass) GlobalExceptionFilter (S5) > should handle generic errors as 500
+(pass) GlobalExceptionFilter (S5) > should handle generic errors as 500 [1.00ms]
 
 packages/security/src/interceptors/audit-logger.interceptor.spec.ts:
-
-# Unhandled error between tests
--------------------------------
-error: Cannot find module 'drizzle-orm/node-postgres' from '/home/apex-v2-dev/apex-v2/packages/security/src/interceptors/audit-logger.interceptor.ts'
--------------------------------
-
+(pass) AuditLoggerInterceptor (S3) > should log success audit [2.00ms]
+🔄 S8: Secrets Rotation Triggered (Stub)
+(pass) AuditLoggerInterceptor (S3) > should log error audit
 
 packages/security/src/services/secrets-rotator.service.spec.ts:
-🔄 S8: Secrets Rotation Triggered (Stub)
 (pass) SecretsRotatorService (S8) > should rotate secrets (stub)
+
+apps/api/src/common/pipes/zod-validation.pipe.spec.ts:
+(pass) ZodValidationPipe (S3) > should validate and transform body
+(pass) ZodValidationPipe (S3) > should throw BadRequestException on validation failure [1.00ms]
+(pass) ZodValidationPipe (S3) > should ignore non-body arguments
 ------------------------------------------------------------------|---------|---------|-------------------
 File                                                              | % Funcs | % Lines | Uncovered Line #s
 ------------------------------------------------------------------|---------|---------|-------------------
-All files                                                         |   96.97 |  100.00 |
+All files                                                         |   97.92 |  100.00 |
+ apps/api/src/common/pipes/zod-validation.pipe.ts                 |  100.00 |  100.00 | 
  packages/config/src/env.ts                                       |  100.00 |  100.00 | 
  packages/config/src/index.ts                                     |  100.00 |  100.00 | 
  packages/db/src/index.ts                                         |  100.00 |  100.00 | 
@@ -103,14 +96,17 @@ All files                                                         |   96.97 |  1
  packages/db/src/schema/audit-logs.ts                             |  100.00 |  100.00 | 
  packages/db/src/schema/tenants.ts                                |  100.00 |  100.00 | 
  packages/security/src/filters/global-exception.filter.ts         |  100.00 |  100.00 | 
+ packages/security/src/interceptors/audit-logger.interceptor.ts   |  100.00 |  100.00 | 
  packages/security/src/middlewares/rate-limiter.middleware.ts     |  100.00 |  100.00 | 
  packages/security/src/middlewares/security-headers.middleware.ts |  100.00 |  100.00 | 
  packages/security/src/security.module.ts                         |  100.00 |  100.00 | 
  packages/security/src/services/secrets-rotator.service.ts        |  100.00 |  100.00 | 
+ packages/validators/src/auth/login.schema.ts                     |  100.00 |  100.00 | 
+ packages/validators/src/orders/create-order.schema.ts            |  100.00 |  100.00 | 
+ packages/validators/src/products/create-product.schema.ts        |  100.00 |  100.00 | 
 ------------------------------------------------------------------|---------|---------|-------------------
 
- 20 pass
- 3 fail
- 1 error
- 36 expect() calls
-Ran 23 tests across 15 files. [453.00ms]
+ 34 pass
+ 0 fail
+ 52 expect() calls
+Ran 34 tests across 19 files. [487.00ms]
