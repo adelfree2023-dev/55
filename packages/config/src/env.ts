@@ -13,9 +13,3 @@ const envSchema = z.object({
 });
 
 export const env = envSchema.parse(process.env);
-
-// Fast fail on missing required variables
-if (!env.DATABASE_URL) {
-    console.error('❌ S1 VIOLATION: Missing required environment variables');
-    process.exit(1);
-}

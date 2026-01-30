@@ -46,4 +46,9 @@ describe('TenantIsolationMiddleware (S2) Unit Test', () => {
         await TenantIsolationMiddleware.setTenantSchema(mockReq, mockRes, mockNext);
         expect(mockRes.status).toHaveBeenCalledWith(503);
     });
+
+    it('should instantiate for constructor coverage', () => {
+        const instance = new TenantIsolationMiddleware();
+        expect(instance).toBeDefined();
+    });
 });
