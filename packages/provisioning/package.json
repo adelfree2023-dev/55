@@ -12,7 +12,7 @@
     },
     "devDependencies": {
         "bun-types": "latest",
-        "@types/bg": "latest",
+        "@types/pg": "latest",
         "@types/node": "latest"
     }
 }
