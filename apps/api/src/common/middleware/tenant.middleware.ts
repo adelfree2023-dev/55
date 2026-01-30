@@ -28,9 +28,11 @@ export class TenantMiddleware implements NestMiddleware {
         // Ignore certain subdomains like 'api', 'www', or if still empty
         if (!subdomain || ['api', 'www', 'localhost', 'apex-v2'].includes(subdomain.toLowerCase())) {
             // For provisioning routes, we already exclude them in AppModule
-            // For others, if we need a tenant and don't have one, we might want to fail
-            // But let's check if this is a route that REQUIRES a tenant
+            // For others, if we need a tenant and don't have one, we MUST fail per test requirement
             this.logger.debug(`No tenant context for host: ${req.headers['host']}`);
+            if (!subdomain) {
+                throw new BadRequestException('X-Tenant-Id header is missing or invalid host');
+            }
             return next();
         }
 

@@ -104,7 +104,7 @@ describe('RedisService', () => {
         (service as any).isConnected = true;
         await service.get('key');
         await service.set('key', 'val');
-        await service.setEx('key', 10, 'val');
+        await service.set('key', 'val', 10);
         await service.del('key');
         await service.incr('key');
         await service.expire('key', 10);

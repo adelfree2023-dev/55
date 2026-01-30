@@ -1,6 +1,25 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { CacheService } from './cache.service';
 
+// Mock the redis factory
+mock.module('redis', () => ({
+    createClient: mock((options: any) => ({
+        connect: mock(() => Promise.resolve()),
+        get: mock(() => Promise.resolve(null)),
+        set: mock(() => Promise.resolve()),
+        setEx: mock(() => Promise.resolve()),
+        del: mock(() => Promise.resolve(0)),
+        exists: mock(() => Promise.resolve(0)),
+        incr: mock(() => Promise.resolve(0)),
+        expire: mock(() => Promise.resolve(true)),
+        mGet: mock(() => Promise.resolve([])),
+        mSet: mock(() => Promise.resolve()),
+        quit: mock(() => Promise.resolve()),
+        on: mock(() => { }),
+        options // Expose options for testing reconnect strategy
+    })),
+}));
+
 describe('CacheService (Redis)', () => {
     let service: CacheService;
     let mockClient: any;

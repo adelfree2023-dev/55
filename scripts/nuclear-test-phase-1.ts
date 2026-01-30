@@ -85,7 +85,7 @@ await test('Arch-Core-01: turbo.json exists and valid', async () => {
     const { stdout } = runCommand('cat turbo.json');
     try {
         const config = JSON.parse(stdout);
-        return config.pipeline !== undefined && config.$schema !== undefined;
+        return (config.tasks !== undefined || config.pipeline !== undefined) && config.$schema !== undefined;
     } catch {
         return false;
     }
