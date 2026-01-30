@@ -1,4 +1,6 @@
+import { describe, it, expect, mock } from 'bun:test';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { GlobalExceptionFilter } from './global-exception.filter';
 
 describe('GlobalExceptionFilter (S5)', () => {
     const filter = new GlobalExceptionFilter();

@@ -61,7 +61,7 @@ describe('TenantIsolationMiddleware (S2) Unit Test', () => {
             rows: [{ id: 'uuid-1', status: 'active' }],
         };
         (TenantIsolationMiddleware as any).pool = {
-            query: mock((sql: string) => {
+            query: mock((sql: string, params: any[]) => {
                 if (sql.includes('public.tenants')) return Promise.resolve(mockQueryResult);
                 if (sql.includes('information_schema.schemata')) return Promise.resolve({ rows: [] });
                 return Promise.resolve({ rows: [] });
