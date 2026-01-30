@@ -13,6 +13,20 @@ CREATE TABLE IF NOT EXISTS public.tenants (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Onboarding blueprints for tenant seeding
+CREATE TABLE IF NOT EXISTS public.onboarding_blueprints (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) UNIQUE NOT NULL,
+    config JSONB NOT NULL, -- Contains starter products, pages, settings
+    is_default BOOLEAN DEFAULT false,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Seed a default blueprint
+INSERT INTO public.onboarding_blueprints (name, config, is_default)
+VALUES ('Standard E-commerce', '{"products": [], "pages": [{"title": "Home", "content": "Welcome"}]}', true)
+ON CONFLICT (name) DO NOTHING;
+
 -- Audit logs table in public schema
 CREATE TABLE IF NOT EXISTS public.audit_logs (
     id SERIAL PRIMARY KEY,
