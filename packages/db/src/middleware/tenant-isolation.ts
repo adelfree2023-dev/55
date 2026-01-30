@@ -33,6 +33,9 @@ export class TenantIsolationMiddleware {
             return res.status(503).json({ error: 'Tenant schema not provisioned' });
         }
 
+        // Set the search_path for the current connection
+        await this.pool.query(`SET search_path TO "${req.tenantSchema}", public`);
+
         next();
     }
 }

@@ -14,9 +14,9 @@ async function provisionTenant(name: string, email: string) {
         await setSchemaPath(name);
         // TODO: In a real app, we'd run migrations or seed tables here
         // For now, we simulate the DB setup
-        await db.execute(`CREATE TABLE IF NOT EXISTS ${schemaName}.settings (key TEXT PRIMARY KEY, value TEXT)`);
-        await db.execute(`INSERT INTO ${schemaName}.settings (key, value) VALUES ('store_name', '${name}')`);
-        console.log(`✅ Starter data seeded for ${schemaName}`);
+        await db.execute(`CREATE TABLE IF NOT EXISTS "${schemaName}".settings (key TEXT PRIMARY KEY, value TEXT)`);
+        await db.execute(`INSERT INTO "${schemaName}".settings (key, value) VALUES ('store_name', '${name}')`);
+        console.log(`✅ Starter data seeded for "${schemaName}"`);
 
         // 3. Register in Public Tenants (Audit S4)
         await db.execute(`
