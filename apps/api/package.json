@@ -13,6 +13,9 @@
         "@nestjs/platform-fastify": "^10.0.0",
         "@apex/config": "workspace:*",
         "@apex/db": "workspace:*",
+        "@apex/validators": "workspace:*",
+        "@apex/security": "workspace:*",
+        "zod": "^3.22.4",
         "reflect-metadata": "^0.1.13",
         "rxjs": "^7.8.1"
     },
