@@ -1,6 +1,7 @@
 module.exports = {
     preset: 'ts-jest',
     testEnvironment: 'node',
+    setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
     moduleNameMapper: {
         '^@apex/config$': '<rootDir>/packages/config/src/index.ts',
         '^@apex/security$': '<rootDir>/packages/security/src/index.ts',
@@ -15,5 +16,12 @@ module.exports = {
         '!packages/**/*.spec.ts',
         '!packages/**/*.test.ts',
         '!packages/**/index.ts',
+        '!packages/**/schema/**',
     ],
+    transform: {
+        '^.+\\.tsx?$': ['ts-jest', {
+            tsconfig: 'tsconfig.json',
+            isolatedModules: true, // Speeds up execution
+        }],
+    },
 };

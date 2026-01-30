@@ -1,7 +1,5 @@
-import { describe, it, expect } from 'bun:test';
 import { z } from 'zod';
 
-// We test the schema logic specifically
 const envSchema = z.object({
     NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
     DATABASE_URL: z.string().url(),
