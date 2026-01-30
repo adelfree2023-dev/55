@@ -13,6 +13,10 @@ async function runTest() {
     for (let i = 0; i < 5; i++) {
         await RateLimiterMiddleware.use(mockReq, mockRes, mockNext);
     }
+
+    // Close connection to allow process to exit
+    await RateLimiterMiddleware.client.quit();
+    console.log('✅ S6: Redis connection closed');
 }
 
 runTest().catch(console.error);

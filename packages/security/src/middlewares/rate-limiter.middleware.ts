@@ -4,7 +4,7 @@ import { createClient } from 'redis';
 
 @Injectable()
 export class RateLimiterMiddleware implements NestMiddleware {
-    private static client = createClient({ url: process.env.REDIS_URL });
+    public static client = createClient({ url: process.env.REDIS_URL });
 
     static async use(req: any, res: Response, next: NextFunction) {
         if (!RateLimiterMiddleware.client.isOpen) {
