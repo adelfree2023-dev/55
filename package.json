@@ -21,7 +21,8 @@
         "@babel/preset-typescript": "latest",
         "@babel/plugin-proposal-decorators": "latest",
         "@babel/plugin-proposal-class-properties": "latest",
-        "babel-jest": "latest"
+        "babel-jest": "latest",
+        "jest-environment-node": "^29.7.0"
     },
     "workspaces": [
         "apps/*",
