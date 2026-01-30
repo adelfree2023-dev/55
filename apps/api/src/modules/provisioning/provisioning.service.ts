@@ -1,4 +1,4 @@
-import { Injectable, Logger, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException, InternalServerErrorException, Optional } from '@nestjs/common';
 import { Pool } from 'pg';
 import { SchemaCreatorService, DataSeederService, TraefikRouterService } from '@apex/provisioning';
 import { CreateTenantDto } from '../../dto/create-tenant.dto';
@@ -15,6 +15,7 @@ export class ProvisioningService {
         private readonly dataSeeder: DataSeederService,
         private readonly traefikRouter: TraefikRouterService,
         private readonly eventEmitter: EventEmitter2,
+        @Optional() private readonly pool: Pool = new Pool({ connectionString: process.env.DATABASE_URL }),
     ) { }
 
     /**
@@ -158,12 +159,10 @@ export class ProvisioningService {
         }
 
         // Availability check
-        const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-        const result = await pool.query(
+        const result = await this.pool.query(
             `SELECT id FROM public.tenants WHERE subdomain = $1`,
             [subdomain]
         );
-        await pool.end();
 
         if (result.rows.length > 0) {
             throw new BadRequestException(`Subdomain "${subdomain}" is already taken`);

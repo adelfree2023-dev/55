@@ -1,0 +1,3 @@
+ERROR:  column "status" does not exist
+LINE 1: SELECT action, tenant_id, status, duration FROM public.audit...
+                                  ^
