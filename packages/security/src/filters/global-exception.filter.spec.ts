@@ -1,6 +1,6 @@
 import { describe, it, expect, mock } from 'bun:test';
-import { HttpException, HttpStatus } from '@nestjs/common';
 import { GlobalExceptionFilter } from './global-exception.filter';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 describe('GlobalExceptionFilter (S5)', () => {
     const filter = new GlobalExceptionFilter();
@@ -33,7 +33,7 @@ describe('GlobalExceptionFilter (S5)', () => {
             })),
         };
         const host = getMockHost(mockResponse);
-        const exception = new Error('Something went wrong');
+        const exception = new Error('Database connection failed');
 
         filter.catch(exception, host);
 

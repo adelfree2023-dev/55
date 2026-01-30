@@ -2,10 +2,12 @@ import { describe, it, expect } from 'bun:test';
 import { SecretsRotatorService } from './secrets-rotator.service';
 
 describe('SecretsRotatorService (S8)', () => {
-    it('should rotate keys (stub)', async () => {
+    it('should execute rotation logic (stub)', async () => {
         const service = new SecretsRotatorService();
-        // Since it's a stub, we just verify it exists and runs without error
-        await service.rotateSecrets();
-        expect(true).toBe(true);
+        const result = await service.rotateSecrets();
+
+        expect(result).toBeDefined();
+        expect(result.status).toBe('rotated');
+        expect(result.timestamp).toBeDefined();
     });
 });
