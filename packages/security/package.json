@@ -9,6 +9,7 @@
         "redis": "^4.6.0",
         "pg": "^8.11.0",
         "@apex/db": "workspace:*",
-        "@apex/config": "workspace:*"
+        "@apex/config": "workspace:*",
+        "drizzle-orm": "^0.29.3"
     }
 }

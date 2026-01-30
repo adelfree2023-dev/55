@@ -1,0 +1,116 @@
+bun test v1.3.8 (b64edcb4)
+
+tests/security/s2-tenant-isolation.test.ts:
+🔍 Execution: S2 Isolation Test
+[MockDB] SQL: SELECT id FROM public.tenants WHERE subdomain = $1 AND status = 'active' | Params: tenant-a
+[MockDB] SQL: SELECT schema_name FROM information_schema.schemata WHERE schema_name = $1 | Params: tenant_tenant-a
+[MockDB] SQL: SET search_path TO "tenant_tenant-a", public | Params: undefined
+✅ S2: Middleware called next()
+(pass) S2 Integration Test > should isolate tenant successfully [4.00ms]
+
+tests/security/s1-env-validation.test.ts:
+🔍 Execution: S1 Validation Test
+✅ S1: Environment validated successfully
+(pass) S1 Integration Test > should validate environment
+
+tests/security/s6-rate-limiting.test.ts:
+🔍 Execution: S6 Rate Limiting Test
+(pass) S6 Integration Test > should handle rate limiting requests
+
+packages/db/src/index.spec.ts:
+(pass) DB Core Utils (Packages/DB) > should create tenant schema with quoted identifier
+(pass) DB Core Utils (Packages/DB) > should set search path with quoted identifier
+
+packages/config/src/env.spec.ts:
+(pass) Env Validation (S1) > should validate correct environment variables [1.00ms]
+(pass) Env Validation (S1) > should fail if JWT_SECRET is too short [1.00ms]
+
+packages/security/src/security.module.spec.ts:
+(pass) SecurityModule > should be defined
+
+packages/db/src/middleware/tenant-isolation.spec.ts:
+(pass) TenantIsolationMiddleware (S2) Unit Test > should extract subdomain and set tenant schema if tenant exists [1.00ms]
+(pass) TenantIsolationMiddleware (S2) Unit Test > should return 404 if tenant not found
+(pass) TenantIsolationMiddleware (S2) Unit Test > should return 503 if schema missing
+(pass) TenantIsolationMiddleware (S2) Unit Test > should instantiate for constructor coverage
+
+packages/db/src/schema/audit-logs.spec.ts:
+2 | import { auditLogs } from './audit-logs';
+3 | 
+4 | describe('AuditLogs Schema', () => {
+5 |     it('should have correct metadata', () => {
+6 |         expect(auditLogs).toBeDefined();
+7 |         expect((auditLogs as any)._?.name).toBe('audit_logs');
+                                               ^
+error: expect(received).toBe(expected)
+
+Expected: "audit_logs"
+Received: undefined
+
+      at <anonymous> (/home/apex-v2-dev/apex-v2/packages/db/src/schema/audit-logs.spec.ts:7:44)
+(fail) AuditLogs Schema > should have correct metadata [1.00ms]
+
+packages/db/src/schema/tenants.spec.ts:
+2 | import { tenants } from './tenants';
+3 | 
+4 | describe('Tenants Schema', () => {
+5 |     it('should have correct metadata', () => {
+6 |         expect(tenants).toBeDefined();
+7 |         expect((tenants as any)._?.name).toBe('tenants');
+                                             ^
+error: expect(received).toBe(expected)
+
+Expected: "tenants"
+Received: undefined
+
+      at <anonymous> (/home/apex-v2-dev/apex-v2/packages/db/src/schema/tenants.spec.ts:7:42)
+(fail) Tenants Schema > should have correct metadata [1.00ms]
+
+packages/security/src/middlewares/security-headers.spec.ts:
+(pass) SecurityHeadersMiddleware (S7) > should set security headers correctly
+
+packages/security/src/middlewares/rate-limiter.middleware.spec.ts:
+🔄 S8: Secrets Rotation Triggered (Stub)
+(pass) RateLimiterMiddleware (S6) > should permit request if below limit [1.00ms]
+(pass) RateLimiterMiddleware (S6) > should block request if above limit
+(pass) RateLimiterMiddleware (S6) > should connect if client is closed
+
+packages/security/src/middlewares/security-headers.middleware.spec.ts:
+(pass) SecurityHeadersMiddleware (S7) Unit Test > should set all security headers [1.00ms]
+
+packages/security/src/filters/global-exception.filter.spec.ts:
+(pass) GlobalExceptionFilter (S5) > should format HttpException correctly [1.00ms]
+(pass) GlobalExceptionFilter (S5) > should handle generic errors as 500
+
+packages/security/src/interceptors/audit-logger.interceptor.spec.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module 'drizzle-orm/node-postgres' from '/home/apex-v2-dev/apex-v2/packages/security/src/interceptors/audit-logger.interceptor.ts'
+-------------------------------
+
+
+packages/security/src/services/secrets-rotator.service.spec.ts:
+(pass) SecretsRotatorService (S8) > should rotate secrets (stub)
+------------------------------------------------------------------|---------|---------|-------------------
+File                                                              | % Funcs | % Lines | Uncovered Line #s
+------------------------------------------------------------------|---------|---------|-------------------
+All files                                                         |   96.97 |  100.00 |
+ packages/config/src/env.ts                                       |  100.00 |  100.00 | 
+ packages/config/src/index.ts                                     |  100.00 |  100.00 | 
+ packages/db/src/index.ts                                         |  100.00 |  100.00 | 
+ packages/db/src/middleware/tenant-isolation.ts                   |   66.67 |  100.00 | 
+ packages/db/src/schema/audit-logs.ts                             |  100.00 |  100.00 | 
+ packages/db/src/schema/tenants.ts                                |  100.00 |  100.00 | 
+ packages/security/src/filters/global-exception.filter.ts         |  100.00 |  100.00 | 
+ packages/security/src/middlewares/rate-limiter.middleware.ts     |  100.00 |  100.00 | 
+ packages/security/src/middlewares/security-headers.middleware.ts |  100.00 |  100.00 | 
+ packages/security/src/security.module.ts                         |  100.00 |  100.00 | 
+ packages/security/src/services/secrets-rotator.service.ts        |  100.00 |  100.00 | 
+------------------------------------------------------------------|---------|---------|-------------------
+
+ 20 pass
+ 3 fail
+ 1 error
+ 36 expect() calls
+Ran 23 tests across 15 files. [435.00ms]
