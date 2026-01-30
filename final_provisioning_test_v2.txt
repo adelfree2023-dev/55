@@ -1,0 +1,28 @@
+Updating 130e85d..1fd963d
+Fast-forward
+From https://github.com/adelfree2023-dev/55
+ * branch            master     -> FETCH_HEAD
+   130e85d..1fd963d  master     -> origin/master
+ packages/provisioning/package.json | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+bun install v1.3.8 (b64edcb4)
+[0.08ms] ".env"
+Resolving dependencies
+
+8 packages installed [96.00ms]
+bun test v1.3.8 (b64edcb4)
+Resolved, downloaded and extracted [1]
+Saved lockfile
+
+tests/provisioning/provisioning.service.spec.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module '../../events/tenant-provisioned.event' from '/home/apex-v2-dev/apex-v2/apps/api/src/modules/provisioning/provisioning.service.ts'
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [22.00ms]

@@ -1,0 +1,60 @@
+From https://github.com/adelfree2023-dev/55
+ * branch            master     -> FETCH_HEAD
+   1fd963d..6be8d80  master     -> origin/master
+Updating 1fd963d..6be8d80
+Fast-forward
+ package.json | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+bun install v1.3.8 (b64edcb4)
+[0.08ms] ".env"
+Resolving dependencies
+Resolved, downloaded and extracted [3]
+
+Checked 399 installs across 451 packages (no changes) [85.00ms]
+Saved lockfile
+$ bun scripts/provision-tenant.ts "--store-name=test-final" "--owner-email=admin@test.com"
+🚀 Starting Provisioning Flow for: test-final...
+============================================================
+
+🔧 PHASE 1: Schema Creation (S2 Isolation)
+[32m[Nest] 35265  - [39m01/30/2026, 3:16:23 AM [32m    LOG[39m [38;5;3m[SchemaCreatorService] [39m[32mCreating schema: tenant_test-final[39m
+[32m[Nest] 35265  - [39m01/30/2026, 3:16:23 AM [32m    LOG[39m [38;5;3m[SchemaCreatorService] [39m[32m✅ Schema created in 50ms: tenant_test-final[39m
+✅ Schema created: tenant_test-final
+
+🌱 PHASE 2: Data Seeding
+[32m[Nest] 35265  - [39m01/30/2026, 3:16:23 AM [32m    LOG[39m [38;5;3m[DataSeederService] [39m[32mSeeding data for test-final using blueprint: standard[39m
+[31m[Nest] 35265  - [39m01/30/2026, 3:16:23 AM [31m  ERROR[39m [38;5;3m[SchemaCreatorService] [39m[31mFailed to log audit: Failed query: 
+        INSERT INTO public.audit_logs (user_id, action, tenant_id, duration, status)
+        VALUES ('system', $1, $2, $3, 'success')
+      
+params: [39m
+[31m[Nest] 35265  - [39m01/30/2026, 3:16:23 AM [31m  ERROR[39m [38;5;3m[DataSeederService] [39m[31mFailed to seed data: relation "public.onboarding_blueprints" does not exist[39m
+
+❌ PROVISIONING FAILED:
+40 |     res = resolve
+41 |     rej = reject
+42 |   }).catch((err) => {
+43 |     // replace the stack trace that leads to `TCP.onStreamRead` with one that leads back to the
+44 |     // application that created the query
+45 |     Error.captureStackTrace(err)
+               ^
+error: relation "public.onboarding_blueprints" does not exist
+     length: 127,
+   severity: "ERROR",
+     detail: undefined,
+       hint: undefined,
+   position: "20",
+ internalPosition: undefined,
+ internalQuery: undefined,
+      where: undefined,
+     schema: undefined,
+      table: undefined,
+   dataType: undefined,
+ constraint: undefined,
+       file: "parse_relation.c",
+    routine: "parserOpenTable",
+       code: "42P01"
+
+      at <anonymous> (/home/apex-v2-dev/apex-v2/node_modules/.bun/pg-pool@3.11.0+5b6060c982e03003/node_modules/pg-pool/index.js:45:11)
+
+error: script "provision" exited with code 1
