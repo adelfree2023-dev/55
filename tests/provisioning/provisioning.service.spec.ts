@@ -36,6 +36,7 @@ describe('ProvisioningService', () => {
         };
 
         const result = await service.provisionTenant(dto);
+        console.log('Provision result:', JSON.stringify(result));
 
         expect(result.success).toBe(true);
         expect(result.schemaName).toBe('tenant_test');
@@ -43,10 +44,13 @@ describe('ProvisioningService', () => {
         expect(dataSeeder.seedData).toHaveBeenCalledWith('test-store', 'standard');
         expect(traefikRouter.createRoute).toHaveBeenCalledWith('test-store');
 
+        console.log('Pool calls:', mockPool.query.mock.calls.length);
         // Register phase expectations
         expect(mockPool.query).toHaveBeenCalledTimes(2); // Insert tenant + Audit
         expect(eventEmitter.emit).toHaveBeenCalled();
         const emitCall = eventEmitter.emit.mock.calls[0];
+        console.log('Event Name:', emitCall[0]);
+        console.log('Event Payload:', JSON.stringify(emitCall[1]));
         expect(emitCall[0]).toBe('tenant.provisioned');
         expect(emitCall[1].payload.duration).toBeDefined();
     });
