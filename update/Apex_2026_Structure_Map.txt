@@ -1,8 +1,8 @@
 ﻿========================================================
 🗺️  PROJECT STRUCTURE MAP
 ========================================================
-📅 Generated: 2026-01-30 02:42
-📂 Files Included: 20
+📅 Generated: 2026-01-30 03:00
+📂 Files Included: 29
 🚫 Noise Filtered: Lockfiles, Logs, Assets
 🔒 Security Filter: ACTIVE
 ========================================================
@@ -18,11 +18,17 @@
 ├── 📂 apps
 │   ├── 📂 admin
 │   ├── 📂 api
+│   │   ├── 📂 src
+│   │   │   ├── 📂 common
+│   │   │   │   └── 📂 middleware
+│   │   │   │       └── 📄 tenant.middleware.ts
+│   │   │   ├── 📄 app.module.ts
+│   │   │   └── 📄 main.ts
+│   │   └── 📄 package.json
 │   ├── 📂 landing
 │   ├── 📂 mobile
 │   ├── 📂 storefront
 │   └── 📂 super-admin
-├── 📂 doc
 ├── 📂 docs
 │   ├── 📄 admin-dashboard-masterlist.md ➤ 🎛️ Apex v2 Admin Dashboard: World-Class Contro...
 │   ├── 📄 Apex v2 Engineering Constitution & Modular Protocol .md ➤ 📜 Apex v2 Engineering Constitution & Modular P...
@@ -45,12 +51,21 @@
 │   └── 📄 docker-compose.yml
 ├── 📂 packages
 │   ├── 📂 auth-client
+│   ├── 📂 config
+│   │   ├── 📂 src
+│   │   │   └── 📄 index.ts
+│   │   └── 📄 package.json
+│   ├── 📂 config,
 │   ├── 📂 core
 │   ├── 📂 db
+│   │   ├── 📂 src
+│   │   │   └── 📄 index.ts
+│   │   └── 📄 package.json
 │   ├── 📂 types
 │   └── 📂 ui
 ├── 📂 scripts
-│   └── 📄 provision-tenant.ts ➤ Tenant Provisioning Script Placeholder
+│   ├── 📄 provision-tenant.ts ➤ Tenant Provisioning Script Placeholder
+│   └── 📄 test-s1.ts
 ├── 📄 biome.json
 ├── 📄 package.json
 ├── 📄 tsconfig.json

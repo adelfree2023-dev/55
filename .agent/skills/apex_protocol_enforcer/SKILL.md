@@ -7,6 +7,12 @@ description: Ensures code compliance with Apex v2 S1-S8 security protocols and E
 
 This skill is responsible for auditing and enforcing the **S1-S8 Security Protocols** and the **Engineering Constitution** of Apex v2.
 
+## 🏁 Handover Verification (Phase 1)
+When delivering Phase 1 to a Tech Lead, ensure:
+1. `bun run scripts/test-s1.ts` returns success.
+2. The provisioning script execution time is logged and is `< 55s`.
+3. The server `docker ps` reflects all 4 core containers.
+
 ## 📋 Security Protocols (S1-S8)
 
 ### S1: Environment Verification

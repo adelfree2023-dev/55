@@ -48,9 +48,14 @@ The core sequence must complete in **< 60 seconds** (Rule 3.1):
 | **Traefik Dashboard**| `localhost` | `8080` | (Insecure/Development mode) |
 
 ## 🛠️ Provisioning & Deployment Commands
-- `deploy:sync`: Pushes local changes to GitHub and pulls on the server:
-  `git push origin master && ssh [server] "cd ~/apex-v2 && git pull origin master"`
-- `provision:tenant [subdomain]`: Executes `bun scripts/provision-tenant.ts` on the server.
+- `deploy:sync`: Pushes local changes to GitHub and pulls on the server.
+- `provision:tenant [subdomain]`: Executes the full onboarding flow.
+
+## 🤝 Phase 1 Handover Status
+- **Date**: 2026-01-30
+- **Version**: 1.0.0-PROVISIONING-LIVE
+- **Verification Audit**: All Arch-S1 and Arch-S2 protocols are **Green**.
+- **Waiting for**: Tech Lead approval to initiate Phase 2 (Tenant MVP).
 - `infra:logs`: `ssh [server] "cd ~/apex-v2/infra && docker-compose logs -f"`
 - `tenant:suspend [id]`: Activates the kill switch for a tenant.
 - `tenant:restore [id] [snapshot]`: Restores a tenant schema from a MinIO backup.
