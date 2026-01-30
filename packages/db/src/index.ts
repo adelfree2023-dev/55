@@ -16,3 +16,5 @@ export async function setSchemaPath(tenantId: string) {
 }
 
 export * from "drizzle-orm";
+export * from "./schema/audit-logs";
+export * from "./schema/tenants";
