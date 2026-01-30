@@ -122,10 +122,9 @@ export class ProvisioningService {
         ownerEmail: string,
         dto: CreateTenantDto,
     ): Promise<void> {
-        const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-
+        // Use injected pool
         try {
-            await pool.query(
+            await this.pool.query(
                 `INSERT INTO public.tenants (name, subdomain, owner_email, plan_id, status)
          VALUES ($1, $2, $3, $4, 'active')
          ON CONFLICT (subdomain) DO UPDATE SET updated_at = CURRENT_TIMESTAMP`,
@@ -133,15 +132,12 @@ export class ProvisioningService {
             );
 
             // Log audit
-            await pool.query(
+            await this.pool.query(
                 `INSERT INTO public.audit_logs (user_id, action, tenant_id, status)
          VALUES ('system', 'TENANT_REGISTERED', $1, 'success')`,
                 [subdomain]
             );
-
-            await pool.end();
         } catch (error) {
-            await pool.end();
             throw error;
         }
     }
