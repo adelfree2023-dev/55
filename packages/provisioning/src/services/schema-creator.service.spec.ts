@@ -5,7 +5,6 @@ import { SchemaCreatorService } from './schema-creator.service';
 const mockExecute = mock(() => Promise.resolve());
 const mockQuery = mock(() => Promise.resolve({ rows: [] }));
 
-// Mock drizzle-orm and pg
 mock.module('drizzle-orm/node-postgres', () => ({
     drizzle: () => ({
         execute: mockExecute
@@ -23,9 +22,9 @@ describe('SchemaCreatorService', () => {
     let service: SchemaCreatorService;
 
     beforeEach(() => {
-        service = new SchemaCreatorService();
         mockExecute.mockClear();
         mockQuery.mockClear();
+        service = new SchemaCreatorService();
     });
 
     it('should create schema if not exists', async () => {
@@ -35,7 +34,8 @@ describe('SchemaCreatorService', () => {
         const result = await service.createSchema('test-id');
 
         expect(result).toBe('tenant_test-id');
-        expect(mockExecute).toHaveBeenCalledTimes(3); // Create, Grant, Audit
+        // We expect calls for: CREATE SCHEMA, GRANT, AUDIT
+        expect(mockExecute).toHaveBeenCalledTimes(3);
     });
 
     it('should return existing schema if idempotent', async () => {
@@ -45,7 +45,7 @@ describe('SchemaCreatorService', () => {
         const result = await service.createSchema('test-id');
 
         expect(result).toBe('tenant_test-id');
-        // Should only log audit, not create schema
+        // Should only log audit (1 call), not create schema
         expect(mockExecute).toHaveBeenCalledTimes(1);
     });
 });

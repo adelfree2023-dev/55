@@ -6,8 +6,13 @@ import { sql } from 'drizzle-orm';
 @Injectable()
 export class DataSeederService {
     private readonly logger = new Logger(DataSeederService.name);
-    private static pool = new Pool({ connectionString: process.env.DATABASE_URL });
-    private static db = drizzle(this.pool);
+    private readonly pool: Pool;
+    private readonly db: ReturnType<typeof drizzle>;
+
+    constructor() {
+        this.pool = new Pool({ connectionString: process.env.DATABASE_URL });
+        this.db = drizzle(this.pool);
+    }
 
     /**
      * Seeds starter data from onboarding blueprint
@@ -99,7 +104,7 @@ export class DataSeederService {
         ];
 
         for (const query of queries) {
-            await DataSeederService.db.execute(sql.raw(query));
+            await this.db.execute(sql.raw(query));
         }
 
         this.logger.debug(`Core tables created for ${schemaName}`);
@@ -115,7 +120,7 @@ export class DataSeederService {
             `('${p.name}', '${p.slug}', '${p.description || ''}', ${p.price}, ${p.stock || 0}, '${JSON.stringify(p.images || [])}'::jsonb)`
         ).join(',');
 
-        await DataSeederService.db.execute(sql.raw(`
+        await this.db.execute(sql.raw(`
       INSERT INTO "${schemaName}".products (name, slug, description, price, stock, images)
       VALUES ${values}
       ON CONFLICT (slug) DO NOTHING
@@ -134,7 +139,7 @@ export class DataSeederService {
             `('${p.title}', '${p.slug}', '${p.content || ''}', true)`
         ).join(',');
 
-        await DataSeederService.db.execute(sql.raw(`
+        await this.db.execute(sql.raw(`
       INSERT INTO "${schemaName}".pages (title, slug, content, published)
       VALUES ${values}
       ON CONFLICT (slug) DO NOTHING
@@ -152,7 +157,7 @@ export class DataSeederService {
         ).join(',');
 
         if (entries) {
-            await DataSeederService.db.execute(sql.raw(`
+            await this.db.execute(sql.raw(`
         INSERT INTO "${schemaName}".settings (key, value)
         VALUES ${entries}
         ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value
@@ -166,7 +171,7 @@ export class DataSeederService {
      * Fetches blueprint configuration
      */
     private async getBlueprint(blueprintId: string) {
-        const result = await DataSeederService.pool.query(
+        const result = await this.pool.query(
             `SELECT config FROM public.onboarding_blueprints WHERE name = $1 OR id::text = $1 LIMIT 1`,
             [blueprintId]
         );

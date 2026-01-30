@@ -1,7 +1,29 @@
+From https://github.com/adelfree2023-dev/55
+ * branch            master     -> FETCH_HEAD
+   6be8d80..6f4dd75  master     -> origin/master
+Updating 6be8d80..6f4dd75
+Fast-forward
+ final_provision_run.txt                            | 60 ++++++++++++++++++++++
+ final_provisioning_test.txt                        |  9 ++++
+ final_provisioning_test_v2.txt                     | 28 ++++++++++
+ .../src/services/data-seeder.service.spec.ts       | 58 +++++++++++++++++++++
+ .../src/services/schema-creator.service.spec.ts    | 51 ++++++++++++++++++
+ .../src/services/traefik-router.service.spec.ts    | 35 +++++++++++++
+ .../src/provisioning/create-tenant.schema.spec.ts  | 32 ++++++++++++
+ .../src/provisioning/stripe-webhook.schema.spec.ts | 40 +++++++++++++++
+ 8 files changed, 313 insertions(+)
+ create mode 100644 final_provision_run.txt
+ create mode 100644 final_provisioning_test.txt
+ create mode 100644 final_provisioning_test_v2.txt
+ create mode 100644 packages/provisioning/src/services/data-seeder.service.spec.ts
+ create mode 100644 packages/provisioning/src/services/schema-creator.service.spec.ts
+ create mode 100644 packages/provisioning/src/services/traefik-router.service.spec.ts
+ create mode 100644 packages/validators/src/provisioning/create-tenant.schema.spec.ts
+ create mode 100644 packages/validators/src/provisioning/stripe-webhook.schema.spec.ts
 bun install v1.3.8 (b64edcb4)
-[0.08ms] ".env"
+[0.06ms] ".env"
 
-Checked 399 installs across 451 packages (no changes) [12.00ms]
+Checked 399 installs across 451 packages (no changes) [13.00ms]
 bun test v1.3.8 (b64edcb4)
 
 tests/provisioning/provisioning.service.spec.ts:
@@ -27,14 +49,10 @@ tests/security/s1-env-validation.test.ts:
 
 tests/security/s6-rate-limiting.test.ts:
 🔍 Execution: S6 Rate Limiting Test
-[32m[Nest] 36291  - [39m01/30/2026, 3:21:24 AM [32m    LOG[39m [38;5;3m[DataSeederService] [39m[32mSeeding data for test-u using blueprint: invalid-bp[39m
-[32m[Nest] 36291  - [39m01/30/2026, 3:21:24 AM [32m    LOG[39m [38;5;3m[DataSeederService] [39m[32mSeeding data for test-u using blueprint: standard[39m
-[32m[Nest] 36291  - [39m01/30/2026, 3:21:24 AM [32m    LOG[39m [38;5;3m[SchemaCreatorService] [39m[32mCreating schema: tenant_test-id[39m
-[32m[Nest] 36291  - [39m01/30/2026, 3:21:24 AM [32m    LOG[39m [38;5;3m[SchemaCreatorService] [39m[32m✅ Schema created in 0ms: tenant_test-id[39m
-(pass) S6 Integration Test > should handle rate limiting requests [1.00ms]
+(pass) S6 Integration Test > should handle rate limiting requests
 
 packages/db/src/index.spec.ts:
-(pass) DB Core Utils (Packages/DB) > should create tenant schema with quoted identifier [1.00ms]
+(pass) DB Core Utils (Packages/DB) > should create tenant schema with quoted identifier
 (pass) DB Core Utils (Packages/DB) > should set search path with quoted identifier
 
 packages/config/src/env.spec.ts:
@@ -45,7 +63,8 @@ packages/security/src/security.module.spec.ts:
 (pass) SecurityModule > should be defined
 
 packages/provisioning/src/services/data-seeder.service.spec.ts:
-[31m[Nest] 36291  - [39m01/30/2026, 3:21:24 AM [31m  ERROR[39m [38;5;3m[DataSeederService] [39m[31mFailed to seed data: relation "public.onboarding_blueprints" does not exist[39m
+[32m[Nest] 35864  - [39m01/30/2026, 3:18:03 AM [32m    LOG[39m [38;5;3m[DataSeederService] [39m[32mSeeding data for test-u using blueprint: invalid-bp[39m
+[31m[Nest] 35864  - [39m01/30/2026, 3:18:03 AM [31m  ERROR[39m [38;5;3m[DataSeederService] [39m[31mFailed to seed data: relation "public.onboarding_blueprints" does not exist[39m
 32 | 
 33 |         try {
 34 |             await service.seedData('test-u', 'invalid-bp');
@@ -59,8 +78,9 @@ Expected to contain: "Blueprint invalid-bp not found"
 Received: "relation \"public.onboarding_blueprints\" does not exist"
 
       at <anonymous> (/home/apex-v2-dev/apex-v2/packages/provisioning/src/services/data-seeder.service.spec.ts:37:31)
-(fail) DataSeederService > should fail if blueprint not found [26.00ms]
-[31m[Nest] 36291  - [39m01/30/2026, 3:21:24 AM [31m  ERROR[39m [38;5;3m[DataSeederService] [39m[31mFailed to seed data: relation "public.onboarding_blueprints" does not exist[39m
+(fail) DataSeederService > should fail if blueprint not found [33.00ms]
+[32m[Nest] 35864  - [39m01/30/2026, 3:18:03 AM [32m    LOG[39m [38;5;3m[DataSeederService] [39m[32mSeeding data for test-u using blueprint: standard[39m
+[31m[Nest] 35864  - [39m01/30/2026, 3:18:03 AM [31m  ERROR[39m [38;5;3m[DataSeederService] [39m[31mFailed to seed data: relation "public.onboarding_blueprints" does not exist[39m
 40 |     res = resolve
 41 |     rej = reject
 42 |   }).catch((err) => {
@@ -86,11 +106,15 @@ error: relation "public.onboarding_blueprints" does not exist
        code: "42P01"
 
       at <anonymous> (/home/apex-v2-dev/apex-v2/node_modules/.bun/pg-pool@3.11.0+5b6060c982e03003/node_modules/pg-pool/index.js:45:11)
-(fail) DataSeederService > should seed data successfully [12.00ms]
+(fail) DataSeederService > should seed data successfully [14.00ms]
 
 packages/provisioning/src/services/schema-creator.service.spec.ts:
-[32m[Nest] 36291  - [39m01/30/2026, 3:21:24 AM [32m    LOG[39m [38;5;3m[SchemaCreatorService] [39m[32mCreating schema: tenant_test-id[39m
-[33m[Nest] 36291  - [39m01/30/2026, 3:21:24 AM [33m   WARN[39m [38;5;3m[SchemaCreatorService] [39m[33mSchema tenant_test-id already exists (idempotent)[39m
+[32m[Nest] 35864  - [39m01/30/2026, 3:18:03 AM [32m    LOG[39m [38;5;3m[SchemaCreatorService] [39m[32mCreating schema: tenant_test-id[39m
+[32m[Nest] 35864  - [39m01/30/2026, 3:18:03 AM [32m    LOG[39m [38;5;3m[SchemaCreatorService] [39m[32m✅ Schema created in 1ms: tenant_test-id[39m
+[32m[Nest] 35864  - [39m01/30/2026, 3:18:03 AM [32m    LOG[39m [38;5;3m[SchemaCreatorService] [39m[32mCreating schema: tenant_test-id[39m
+[33m[Nest] 35864  - [39m01/30/2026, 3:18:03 AM [33m   WARN[39m [38;5;3m[SchemaCreatorService] [39m[33mSchema tenant_test-id already exists (idempotent)[39m
+[32m[Nest] 35864  - [39m01/30/2026, 3:18:03 AM [32m    LOG[39m [38;5;3m[TraefikRouterService] [39m[32mCreating Traefik route: myshop-route[39m
+[32m[Nest] 35864  - [39m01/30/2026, 3:18:03 AM [32m    LOG[39m [38;5;3m[TraefikRouterService] [39m[32m✅ Traefik route created in 1ms: infra/docker/traefik/dynamic/myshop-route.yml[39m
 33 |         mockQuery.mockResolvedValueOnce({ rows: [] });
 34 | 
 35 |         const result = await service.createSchema('test-id');
@@ -105,8 +129,6 @@ Received number of calls: 0
 
       at <anonymous> (/home/apex-v2-dev/apex-v2/packages/provisioning/src/services/schema-creator.service.spec.ts:38:29)
 (fail) SchemaCreatorService > should create schema if not exists [2.00ms]
-[32m[Nest] 36291  - [39m01/30/2026, 3:21:24 AM [32m    LOG[39m [38;5;3m[TraefikRouterService] [39m[32mCreating Traefik route: myshop-route[39m
-[32m[Nest] 36291  - [39m01/30/2026, 3:21:24 AM [32m    LOG[39m [38;5;3m[TraefikRouterService] [39m[32m✅ Traefik route created in 0ms: infra/docker/traefik/dynamic/myshop-route.yml[39m
 44 | 
 45 |         const result = await service.createSchema('test-id');
 46 | 
@@ -135,19 +157,19 @@ packages/db/src/schema/audit-logs.spec.ts:
 (pass) AuditLogs Schema > should have correct metadata
 
 packages/db/src/schema/tenants.spec.ts:
-(pass) Tenants Schema > should have correct metadata
+(pass) Tenants Schema > should have correct metadata [1.00ms]
 
 packages/validators/src/provisioning/stripe-webhook.schema.spec.ts:
-(pass) StripeWebhookSchema (S3) > should validate correct webhook payload [6.00ms]
-(pass) StripeWebhookSchema (S3) > should reject invalid event type [1.00ms]
+(pass) StripeWebhookSchema (S3) > should validate correct webhook payload [2.00ms]
+(pass) StripeWebhookSchema (S3) > should reject invalid event type
 
 packages/validators/src/provisioning/create-tenant.schema.spec.ts:
 (pass) CreateTenantSchema (S3) > should validate correct tenant data
 (pass) CreateTenantSchema (S3) > should reject invalid subdomain
-(pass) CreateTenantSchema (S3) > should reject invalid email
+(pass) CreateTenantSchema (S3) > should reject invalid email [1.00ms]
 
 packages/validators/src/auth/login.schema.spec.ts:
-(pass) Login Schema (S3) > should validate correct login data [1.00ms]
+(pass) Login Schema (S3) > should validate correct login data
 (pass) Login Schema (S3) > should reject invalid email
 (pass) Login Schema (S3) > should reject short password
 
@@ -156,19 +178,20 @@ packages/validators/src/orders/create-order.schema.spec.ts:
 (pass) Order Schema (S3) > should reject empty items
 
 packages/validators/src/products/create-product.schema.spec.ts:
-(pass) Product Schema (S3) > should validate correct product data
-(pass) Product Schema (S3) > should reject invalid price [1.00ms]
+(pass) Product Schema (S3) > should validate correct product data [1.00ms]
+(pass) Product Schema (S3) > should reject invalid price
 
 packages/security/src/middlewares/security-headers.spec.ts:
-(pass) SecurityHeadersMiddleware (S7) > should set security headers correctly [1.00ms]
+(pass) SecurityHeadersMiddleware (S7) > should set security headers correctly [2.00ms]
 
 packages/security/src/middlewares/rate-limiter.middleware.spec.ts:
 (pass) RateLimiterMiddleware (S6) > should permit request if below limit
 (pass) RateLimiterMiddleware (S6) > should block request if above limit
-(pass) RateLimiterMiddleware (S6) > should connect if client is closed
+(pass) RateLimiterMiddleware (S6) > should connect if client is closed [1.00ms]
 
 packages/security/src/middlewares/security-headers.middleware.spec.ts:
-(pass) SecurityHeadersMiddleware (S7) Unit Test > should set all security headers [1.00ms]
+(pass) SecurityHeadersMiddleware (S7) Unit Test > should set all security headers
+🔄 S8: Secrets Rotation Triggered (Stub)
 
 packages/security/src/filters/global-exception.filter.spec.ts:
 (pass) GlobalExceptionFilter (S5) > should format HttpException correctly
@@ -176,7 +199,6 @@ packages/security/src/filters/global-exception.filter.spec.ts:
 
 packages/security/src/interceptors/audit-logger.interceptor.spec.ts:
 (pass) AuditLoggerInterceptor (S3) > should log success audit [3.00ms]
-🔄 S8: Secrets Rotation Triggered (Stub)
 (pass) AuditLoggerInterceptor (S3) > should log error audit
 
 packages/security/src/services/secrets-rotator.service.spec.ts:
@@ -188,39 +210,13 @@ apps/api/src/common/pipes/zod-validation.pipe.spec.ts:
 (pass) ZodValidationPipe (S3) > should ignore non-body arguments
 
 5 tests failed:
-(fail) DataSeederService > should fail if blueprint not found [26.00ms]
-(fail) DataSeederService > should seed data successfully [12.00ms]
+(fail) DataSeederService > should fail if blueprint not found [33.00ms]
+(fail) DataSeederService > should seed data successfully [14.00ms]
 (fail) SchemaCreatorService > should create schema if not exists [2.00ms]
 (fail) SchemaCreatorService > should return existing schema if idempotent
-------------------------------------------------------------------|---------|---------|-------------------
-File                                                              | % Funcs | % Lines | Uncovered Line #s
-------------------------------------------------------------------|---------|---------|-------------------
-All files                                                         |   94.16 |   94.54 |
- apps/api/src/common/pipes/zod-validation.pipe.ts                 |  100.00 |  100.00 | 
- packages/config/src/env.ts                                       |  100.00 |  100.00 | 
- packages/config/src/index.ts                                     |  100.00 |  100.00 | 
- packages/db/src/index.ts                                         |  100.00 |  100.00 | 
- packages/db/src/middleware/tenant-isolation.ts                   |   66.67 |  100.00 | 
- packages/db/src/schema/audit-logs.ts                             |  100.00 |  100.00 | 
- packages/db/src/schema/tenants.ts                                |  100.00 |  100.00 | 
- packages/provisioning/src/services/data-seeder.service.ts        |   50.00 |   25.83 | 50-161
- packages/provisioning/src/services/schema-creator.service.ts     |   85.71 |   77.59 | 49-61
- packages/provisioning/src/services/traefik-router.service.ts     |   75.00 |   81.93 | 67-81
- packages/security/src/filters/global-exception.filter.ts         |  100.00 |  100.00 | 
- packages/security/src/interceptors/audit-logger.interceptor.ts   |  100.00 |  100.00 | 
- packages/security/src/middlewares/rate-limiter.middleware.ts     |  100.00 |  100.00 | 
- packages/security/src/middlewares/security-headers.middleware.ts |  100.00 |  100.00 | 
- packages/security/src/security.module.ts                         |  100.00 |  100.00 | 
- packages/security/src/services/secrets-rotator.service.ts        |  100.00 |  100.00 | 
- packages/validators/src/auth/login.schema.ts                     |  100.00 |  100.00 | 
- packages/validators/src/orders/create-order.schema.ts            |  100.00 |  100.00 | 
- packages/validators/src/products/create-product.schema.ts        |  100.00 |  100.00 | 
- packages/validators/src/provisioning/create-tenant.schema.ts     |  100.00 |  100.00 | 
- packages/validators/src/provisioning/stripe-webhook.schema.ts    |  100.00 |  100.00 | 
-------------------------------------------------------------------|---------|---------|-------------------
 
  40 pass
  5 fail
  1 error
  68 expect() calls
-Ran 45 tests across 25 files. [588.00ms]
+Ran 45 tests across 25 files. [586.00ms]

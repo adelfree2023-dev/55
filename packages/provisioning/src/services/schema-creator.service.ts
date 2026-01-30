@@ -2,12 +2,18 @@ import { Injectable, Logger } from '@nestjs/common';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import { AuditLoggerInterceptor } from '@apex/security';
+import { sql } from 'drizzle-orm';
 
 @Injectable()
 export class SchemaCreatorService {
   private readonly logger = new Logger(SchemaCreatorService.name);
-  private static pool = new Pool({ connectionString: process.env.DATABASE_URL });
-  private static db = drizzle(this.pool);
+  private readonly pool: Pool;
+  private readonly db: ReturnType<typeof drizzle>;
+
+  constructor() {
+    this.pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    this.db = drizzle(this.pool);
+  }
 
   /**
    * Creates isolated schema for tenant with idempotency check
@@ -30,18 +36,18 @@ export class SchemaCreatorService {
       }
 
       // Create schema
-      await SchemaCreatorService.db.execute(
+      await this.db.execute(
         `CREATE SCHEMA IF NOT EXISTS "${schemaName}"`
       );
 
       // Set default privileges
-      await SchemaCreatorService.db.execute(
+      await this.db.execute(
         `GRANT ALL ON SCHEMA "${schemaName}" TO CURRENT_USER`
       );
 
       const duration = Date.now() - startTime;
       this.logger.log(`✅ Schema created in ${duration}ms: ${schemaName}`);
-      
+
       await this.logAudit('SCHEMA_CREATED', tenantId, duration);
       return schemaName;
     } catch (error) {
@@ -56,9 +62,9 @@ export class SchemaCreatorService {
    */
   async setSearchPath(tenantId: string): Promise<void> {
     const schemaName = `tenant_${tenantId}`;
-    await SchemaCreatorService.db.execute(
+    await this.db.execute(sql.raw(
       `SET search_path TO "${schemaName}", public`
-    );
+    ));
     this.logger.debug(`Search path set to: ${schemaName}`);
   }
 
@@ -66,7 +72,7 @@ export class SchemaCreatorService {
    * Checks if schema exists
    */
   private async schemaExists(schemaName: string): Promise<boolean> {
-    const result = await SchemaCreatorService.pool.query(
+    const result = await this.pool.query(
       `SELECT schema_name FROM information_schema.schemata WHERE schema_name = $1`,
       [schemaName]
     );
@@ -78,10 +84,10 @@ export class SchemaCreatorService {
    */
   private async logAudit(action: string, tenantId: string, duration: number): Promise<void> {
     try {
-      await SchemaCreatorService.db.execute(`
+      await this.db.execute(sql`
         INSERT INTO public.audit_logs (user_id, action, tenant_id, duration, status)
-        VALUES ('system', $1, $2, $3, 'success')
-      `, [action, tenantId, duration]);
+        VALUES ('system', ${action}, ${tenantId}, ${duration}, 'success')
+      `);
     } catch (e) {
       this.logger.error(`Failed to log audit: ${e.message}`);
     }
