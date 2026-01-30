@@ -6,4 +6,6 @@ const mockReq = { hostname: process.env.TEST_HOSTNAME || 'tenant-a.apex.local' }
 const mockRes = { status: (code: number) => ({ json: (data: any) => console.log(`Response ${code}:`, data) }) } as any;
 const mockNext = () => console.log('✅ S2: Middleware passed to next()');
 
-TenantIsolationMiddleware.setTenantSchema(mockReq, mockRes, mockNext);
+TenantIsolationMiddleware.setTenantSchema(mockReq, mockRes, mockNext).then(async () => {
+    await TenantIsolationMiddleware.pool.end();
+});

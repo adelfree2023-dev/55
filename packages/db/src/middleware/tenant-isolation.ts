@@ -3,7 +3,7 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 
 export class TenantIsolationMiddleware {
-    private static pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    public static pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
     static async setTenantSchema(req: any, res: Response, next: NextFunction) {
         const subdomain = req.hostname.split('.')[0];

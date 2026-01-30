@@ -1,5 +1,5 @@
 // Tenant Provisioning Script Placeholder
-import { db, createTenantSchema, setSchemaPath } from "../packages/db/src/index";
+import { db, createTenantSchema, setSchemaPath, client } from "../packages/db/src/index";
 
 async function provisionTenant(name: string, email: string) {
     const startTime = Date.now();
@@ -39,8 +39,10 @@ async function provisionTenant(name: string, email: string) {
             console.log("🎯 North Star Goal Met: < 55s");
         }
 
+        await client.end();
     } catch (error) {
         console.error("❌ Provisioning Failed:", error);
+        await client.end();
         process.exit(1);
     }
 }
