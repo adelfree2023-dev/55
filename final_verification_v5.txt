@@ -1,0 +1,159 @@
+Updating fa32a7d..2f829f8
+Fast-forward
+ final_coverage_check_v3.txt                        | 182 +++++++++++++++++++++
+ final_test_check_v4.txt                            | 182 +++++++++++++++++++++
+ .../src/services/data-seeder.service.spec.ts       |  60 +++----
+ .../src/services/data-seeder.service.ts            |   6 +-
+ .../src/services/schema-creator.service.spec.ts    |  87 +++++-----
+ .../src/services/schema-creator.service.ts         |   6 +-
+ update/test.txt                                    |   6 +
+ 7 files changed, 437 insertions(+), 92 deletions(-)
+ create mode 100644 final_coverage_check_v3.txt
+ create mode 100644 final_test_check_v4.txt
+ create mode 100644 update/test.txt
+bun install v1.3.8 (b64edcb4)
+
+Checked 399 installs across 451 packages (no changes) [12.00ms]
+From https://github.com/adelfree2023-dev/55
+ * branch            master     -> FETCH_HEAD
+   fa32a7d..2f829f8  master     -> origin/master
+[0.08ms] ".env"
+bun test v1.3.8 (b64edcb4)
+
+tests/provisioning/provisioning.service.spec.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module '../../events/tenant-provisioned.event' from '/home/apex-v2-dev/apex-v2/apps/api/src/modules/provisioning/provisioning.service.ts'
+-------------------------------
+
+🔍 Execution: S2 Isolation Test
+[MockDB] SQL: SELECT id FROM public.tenants WHERE subdomain = $1 AND status = 'active' | Params: tenant-a
+[MockDB] SQL: SELECT schema_name FROM information_schema.schemata WHERE schema_name = $1 | Params: tenant_tenant-a
+[MockDB] SQL: SET search_path TO "tenant_tenant-a", public | Params: undefined
+✅ S2: Middleware called next()
+🔍 Execution: S1 Validation Test
+✅ S1: Environment validated successfully
+
+tests/security/s2-tenant-isolation.test.ts:
+(pass) S2 Integration Test > should isolate tenant successfully [3.00ms]
+
+tests/security/s1-env-validation.test.ts:
+(pass) S1 Integration Test > should validate environment
+
+tests/security/s6-rate-limiting.test.ts:
+🔍 Execution: S6 Rate Limiting Test
+(pass) S6 Integration Test > should handle rate limiting requests
+
+packages/db/src/index.spec.ts:
+(pass) DB Core Utils (Packages/DB) > should create tenant schema with quoted identifier [1.00ms]
+(pass) DB Core Utils (Packages/DB) > should set search path with quoted identifier
+
+packages/config/src/env.spec.ts:
+(pass) Env Validation (S1) > should validate correct environment variables [1.00ms]
+(pass) Env Validation (S1) > should fail if JWT_SECRET is too short
+
+packages/security/src/security.module.spec.ts:
+(pass) SecurityModule > should be defined
+
+packages/provisioning/src/services/data-seeder.service.spec.ts:
+[32m[Nest] 38382  - [39m01/30/2026, 3:35:40 AM [32m    LOG[39m [38;5;3m[DataSeederService] [39m[32mSeeding data for test-u using blueprint: invalid-bp[39m
+[32m[Nest] 38382  - [39m01/30/2026, 3:35:40 AM [32m    LOG[39m [38;5;3m[DataSeederService] [39m[32mSeeding data for test-u using blueprint: standard[39m
+[95m[Nest] 38382  - [39m01/30/2026, 3:35:40 AM [95m  DEBUG[39m [38;5;3m[DataSeederService] [39m[95mCore tables created for tenant_test-u[39m
+[95m[Nest] 38382  - [39m01/30/2026, 3:35:40 AM [95m  DEBUG[39m [38;5;3m[DataSeederService] [39m[95mSeeded 1 products[39m
+[95m[Nest] 38382  - [39m01/30/2026, 3:35:40 AM [95m  DEBUG[39m [38;5;3m[DataSeederService] [39m[95mSeeded 1 pages[39m
+[95m[Nest] 38382  - [39m01/30/2026, 3:35:40 AM [95m  DEBUG[39m [38;5;3m[DataSeederService] [39m[95mSeeded settings[39m
+[32m[Nest] 38382  - [39m01/30/2026, 3:35:40 AM [32m    LOG[39m [38;5;3m[DataSeederService] [39m[32m✅ Data seeded in 1ms for test-u[39m
+[32m[Nest] 38382  - [39m01/30/2026, 3:35:40 AM [32m    LOG[39m [38;5;3m[SchemaCreatorService] [39m[32mCreating schema: tenant_test-id[39m
+[32m[Nest] 38382  - [39m01/30/2026, 3:35:40 AM [32m    LOG[39m [38;5;3m[SchemaCreatorService] [39m[32m✅ Schema created in 0ms: tenant_test-id[39m
+[32m[Nest] 38382  - [39m01/30/2026, 3:35:40 AM [32m    LOG[39m [38;5;3m[SchemaCreatorService] [39m[32mCreating schema: tenant_test-id[39m
+[33m[Nest] 38382  - [39m01/30/2026, 3:35:40 AM [33m   WARN[39m [38;5;3m[SchemaCreatorService] [39m[33mSchema tenant_test-id already exists (idempotent)[39m
+[31m[Nest] 38382  - [39m01/30/2026, 3:35:40 AM [31m  ERROR[39m [38;5;3m[DataSeederService] [39m[31mFailed to seed data: Blueprint invalid-bp not found[39m
+(pass) DataSeederService > should fail if blueprint not found [4.00ms]
+(pass) DataSeederService > should seed data successfully [2.00ms]
+
+packages/provisioning/src/services/schema-creator.service.spec.ts:
+(pass) SchemaCreatorService > should create schema if not exists [1.00ms]
+(pass) SchemaCreatorService > should return existing schema if idempotent
+[95m[Nest] 38382  - [39m01/30/2026, 3:35:40 AM [95m  DEBUG[39m [38;5;3m[SchemaCreatorService] [39m[95mSearch path set to: tenant_test-id[39m
+[32m[Nest] 38382  - [39m01/30/2026, 3:35:40 AM [32m    LOG[39m [38;5;3m[TraefikRouterService] [39m[32mCreating Traefik route: myshop-route[39m
+[32m[Nest] 38382  - [39m01/30/2026, 3:35:40 AM [32m    LOG[39m [38;5;3m[TraefikRouterService] [39m[32m✅ Traefik route created in 1ms: infra/docker/traefik/dynamic/myshop-route.yml[39m
+[32m[Nest] 38382  - [39m01/30/2026, 3:35:40 AM [32m    LOG[39m [38;5;3m[TraefikRouterService] [39m[32mCreating Traefik route: fail-route[39m
+[32m[Nest] 38382  - [39m01/30/2026, 3:35:40 AM [32m    LOG[39m [38;5;3m[TraefikRouterService] [39m[32mRoute removal scheduled: test-route[39m
+🔄 S8: Secrets Rotation Triggered (Stub)
+(pass) SchemaCreatorService > should set search path [1.00ms]
+
+packages/provisioning/src/services/traefik-router.service.spec.ts:
+(pass) TraefikRouterService > should generate and write yaml config [2.00ms]
+[31m[Nest] 38382  - [39m01/30/2026, 3:35:40 AM [31m  ERROR[39m [38;5;3m[TraefikRouterService] [39m[31mFailed to create Traefik route: Permission denied[39m
+(pass) TraefikRouterService > should handle file write errors
+(pass) TraefikRouterService > should handle removal errors gracefully [1.00ms]
+
+packages/db/src/middleware/tenant-isolation.spec.ts:
+(pass) TenantIsolationMiddleware (S2) Unit Test > should extract subdomain and set tenant schema if tenant exists
+(pass) TenantIsolationMiddleware (S2) Unit Test > should return 404 if tenant not found
+(pass) TenantIsolationMiddleware (S2) Unit Test > should return 503 if schema missing
+(pass) TenantIsolationMiddleware (S2) Unit Test > should instantiate for constructor coverage
+
+packages/db/src/schema/audit-logs.spec.ts:
+(pass) AuditLogs Schema > should have correct metadata
+
+packages/db/src/schema/tenants.spec.ts:
+(pass) Tenants Schema > should have correct metadata
+
+packages/validators/src/provisioning/stripe-webhook.schema.spec.ts:
+(pass) StripeWebhookSchema (S3) > should validate correct webhook payload [4.00ms]
+(pass) StripeWebhookSchema (S3) > should reject invalid event type
+
+packages/validators/src/provisioning/create-tenant.schema.spec.ts:
+(pass) CreateTenantSchema (S3) > should validate correct tenant data
+(pass) CreateTenantSchema (S3) > should reject invalid subdomain [1.00ms]
+(pass) CreateTenantSchema (S3) > should reject invalid email
+
+packages/validators/src/auth/login.schema.spec.ts:
+(pass) Login Schema (S3) > should validate correct login data
+(pass) Login Schema (S3) > should reject invalid email
+(pass) Login Schema (S3) > should reject short password
+
+packages/validators/src/orders/create-order.schema.spec.ts:
+(pass) Order Schema (S3) > should validate correct order data [3.00ms]
+(pass) Order Schema (S3) > should reject empty items
+
+packages/validators/src/products/create-product.schema.spec.ts:
+(pass) Product Schema (S3) > should validate correct product data
+(pass) Product Schema (S3) > should reject invalid price [1.00ms]
+
+packages/security/src/middlewares/security-headers.spec.ts:
+(pass) SecurityHeadersMiddleware (S7) > should set security headers correctly
+
+packages/security/src/middlewares/rate-limiter.middleware.spec.ts:
+(pass) RateLimiterMiddleware (S6) > should permit request if below limit
+(pass) RateLimiterMiddleware (S6) > should block request if above limit
+(pass) RateLimiterMiddleware (S6) > should connect if client is closed
+
+packages/security/src/middlewares/security-headers.middleware.spec.ts:
+(pass) SecurityHeadersMiddleware (S7) Unit Test > should set all security headers
+
+packages/security/src/filters/global-exception.filter.spec.ts:
+(pass) GlobalExceptionFilter (S5) > should format HttpException correctly
+(pass) GlobalExceptionFilter (S5) > should handle generic errors as 500
+
+packages/security/src/interceptors/audit-logger.interceptor.spec.ts:
+(pass) AuditLoggerInterceptor (S3) > should log success audit [5.00ms]
+(pass) AuditLoggerInterceptor (S3) > should log error audit [1.00ms]
+
+packages/security/src/services/secrets-rotator.service.spec.ts:
+(pass) SecretsRotatorService (S8) > should rotate secrets (stub)
+
+apps/api/src/common/pipes/zod-validation.pipe.spec.ts:
+(pass) ZodValidationPipe (S3) > should validate and transform body [1.00ms]
+(pass) ZodValidationPipe (S3) > should throw BadRequestException on validation failure
+(pass) ZodValidationPipe (S3) > should ignore non-body arguments [1.00ms]
+
+1 tests failed:
+
+ 47 pass
+ 1 fail
+ 1 error
+ 77 expect() calls
+Ran 48 tests across 25 files. [530.00ms]

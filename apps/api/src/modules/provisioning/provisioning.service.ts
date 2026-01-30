@@ -3,8 +3,8 @@ import { Pool } from 'pg';
 import { SchemaCreatorService, DataSeederService, TraefikRouterService } from '@apex/provisioning';
 import { CreateTenantDto } from '../../dto/create-tenant.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { TenantProvisionedEvent } from '../../events/tenant-provisioned.event';
-import { TenantFailedEvent } from '../../events/tenant-failed.event';
+import { TenantProvisionedEvent } from './events/tenant-provisioned.event';
+import { TenantFailedEvent } from './events/tenant-failed.event';
 
 @Injectable()
 export class ProvisioningService {
