@@ -28,7 +28,9 @@ export class StorefrontController {
     @ApiResponse({ status: 404, description: 'Tenant not found' })
     @HttpCode(200)
     async getHomePage(@Req() request: any) {
-        this.logger.log(`GET /storefront/home - Tenant: ${request.tenantId || 'unknown'}`);
+        this.logger.log(`GET /storefront/home - Keys: ${Object.keys(request).join(', ')}`);
+        this.logger.log(`GET /storefront/home - Raw Keys: ${request.raw ? Object.keys(request.raw).join(', ') : 'no raw'}`);
+        this.logger.log(`GET /storefront/home - Tenant: ${request.tenantId || 'null'}, Raw Tenant: ${request.raw?.tenantId || 'null'}`);
         return this.storefrontService.getHomePage(request);
     }
 

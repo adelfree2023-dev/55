@@ -11,7 +11,7 @@ export class StorefrontService {
     ) { }
 
     private async query<T = any>(request: any, sql: string, params?: any[]): Promise<QueryResult<T>> {
-        const client = request.dbClient;
+        const client = request.dbClient || request.raw?.dbClient;
         if (!client) {
             throw new Error('Database client not available on request');
         }
@@ -24,7 +24,8 @@ export class StorefrontService {
      * @returns Home page data with sections
      */
     async getHomePage(request: any) {
-        const tenantId = request.tenantId;
+        const tenantId = request.tenantId || request.raw?.tenantId;
+        const tenantSchema = request.tenantSchema || request.raw?.tenantSchema;
         const cacheKey = `storefront:home:${tenantId}`;
 
         // CRITICAL: Validate tenant context integrity
@@ -110,12 +111,13 @@ export class StorefrontService {
      * Get hero banners from tenant schema
      */
     private async getHeroBanners(request: any, tenantId: string) {
+        const tenantSchema = request.tenantSchema || request.raw?.tenantSchema;
         try {
             const result = await this.query(
                 request,
                 `
         SELECT id, title, subtitle, image_url, cta_text, cta_url, priority
-        FROM "${request.tenantSchema}".banners
+        FROM "${tenantSchema}".banners
         WHERE active = true 
         ORDER BY priority ASC, created_at DESC
         LIMIT 5
@@ -131,6 +133,7 @@ export class StorefrontService {
      * Get best selling products
      */
     private async getBestSellers(request: any, tenantId: string) {
+        const tenantSchema = request.tenantSchema || request.raw?.tenantSchema;
         try {
             const result = await this.query(
                 request,
@@ -143,8 +146,8 @@ export class StorefrontService {
           p.image_url,
           p.stock,
           COALESCE(SUM(oi.quantity), 0) as total_sold
-        FROM "${request.tenantSchema}".products p
-        LEFT JOIN "${request.tenantSchema}".order_items oi ON oi.product_id = p.id
+        FROM "${tenantSchema}".products p
+        LEFT JOIN "${tenantSchema}".order_items oi ON oi.product_id = p.id
         WHERE p.status = 'published' AND p.stock > 0
         GROUP BY p.id
         ORDER BY total_sold DESC, p.created_at DESC
@@ -161,12 +164,13 @@ export class StorefrontService {
      * Get featured categories
      */
     private async getFeaturedCategories(request: any, tenantId: string) {
+        const tenantSchema = request.tenantSchema || request.raw?.tenantSchema;
         try {
             const result = await this.query(
                 request,
                 `
         SELECT id, name, slug, image_url, description, product_count
-        FROM "${request.tenantSchema}".categories 
+        FROM "${tenantSchema}".categories 
         WHERE featured = true AND active = true
         ORDER BY priority ASC, name ASC
         LIMIT 6
@@ -182,12 +186,13 @@ export class StorefrontService {
      * Get active promotions
      */
     private async getPromotions(request: any, tenantId: string) {
+        const tenantSchema = request.tenantSchema || request.raw?.tenantSchema;
         try {
             const result = await this.query(
                 request,
                 `
         SELECT id, title, description, discount_percent, banner_url, starts_at, ends_at
-        FROM "${request.tenantSchema}".promotions 
+        FROM "${tenantSchema}".promotions 
         WHERE active = true 
         AND (starts_at IS NULL OR starts_at <= NOW())
         AND (ends_at IS NULL OR ends_at >= NOW())
@@ -205,12 +210,13 @@ export class StorefrontService {
      * Get customer testimonials
      */
     private async getTestimonials(request: any, tenantId: string) {
+        const tenantSchema = request.tenantSchema || request.raw?.tenantSchema;
         try {
             const result = await this.query(
                 request,
                 `
         SELECT id, customer_name, rating, review_text, product_name, created_at
-        FROM "${request.tenantSchema}".testimonials 
+        FROM "${tenantSchema}".testimonials 
         WHERE published = true 
         ORDER BY rating DESC, created_at DESC
         LIMIT 6
@@ -226,7 +232,7 @@ export class StorefrontService {
      * Invalidate cache for tenant home page
      */
     async invalidateCache(request: any): Promise<void> {
-        const tenantId = request.tenantId;
+        const tenantId = request.tenantId || request.raw?.tenantId;
         const cacheKey = `storefront:home:${tenantId}`;
         await this.cacheService.del(cacheKey);
         this.logger.log(`Cache invalidated for tenant: ${tenantId}`);
@@ -236,7 +242,7 @@ export class StorefrontService {
      * Warm up cache for tenant
      */
     async warmCache(request: any): Promise<void> {
-        const tenantId = request.tenantId;
+        const tenantId = request.tenantId || request.raw?.tenantId;
         await this.getHomePage(request);
         this.logger.log(`Cache warmed for tenant: ${tenantId}`);
     }
