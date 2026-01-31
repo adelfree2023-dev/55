@@ -6,19 +6,20 @@ import { CacheService } from '@apex/cache';
 @Injectable({ scope: Scope.REQUEST })
 export class StorefrontService {
     private readonly logger = new Logger(StorefrontService.name);
-    private readonly tenantId: string;
-    private readonly tenantSchema: string;
 
     constructor(
         @Inject(REQUEST) private readonly request: any,
         @Inject('CACHE_SERVICE') private readonly cacheService: CacheService
-    ) {
-        this.tenantId = this.request.tenantId;
-        this.tenantSchema = this.request.tenantSchema;
+    ) { }
 
-        if (!this.tenantId || !this.tenantSchema) {
-            this.logger.error('Tenant context missing - request not processed by TenantMiddleware');
-        }
+    // LAZY GETTERS: Read tenant context at access time, NOT at construction time
+    // This fixes timing issue where constructor runs before TenantMiddleware sets values
+    private get tenantId(): string {
+        return this.request.tenantId;
+    }
+
+    private get tenantSchema(): string {
+        return this.request.tenantSchema;
     }
 
     private async query<T = any>(sql: string, params?: any[]): Promise<QueryResult<T>> {
@@ -39,9 +40,11 @@ export class StorefrontService {
         const cacheKey = `storefront:home:${tenantId}`;
 
         // CRITICAL: Validate tenant context integrity
-        if (!tenantId || tenantId !== this.request.tenantId) {
-            throw new Error('TENANT_CONTEXT_CORRUPTION');
+        if (!tenantId) {
+            this.logger.error('Tenant context missing - request not processed by TenantMiddleware');
+            throw new Error('TENANT_CONTEXT_MISSING');
         }
+
 
         // Try to get from cache first
         const cached = await this.cacheService.get(cacheKey);
