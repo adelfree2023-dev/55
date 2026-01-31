@@ -1,6 +1,6 @@
-import { Controller, Get, Query, Param, Logger } from '@nestjs/common';
+import { Controller, Get, Query, Param, Logger, Patch, Post } from '@nestjs/common';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
-import { TenantQuerySchema, TenantQuery } from './schemas/tenant-query.schema';
+import { TenantQuerySchema, TenantQuery } from './tenants.service';
 import { TenantsService } from './tenants.service';
 
 @Controller('super-admin/tenants')
@@ -20,5 +20,20 @@ export class TenantsController {
     @Get(':id')
     async findOne(@Param('id') id: string) {
         return this.tenantsService.findOne(id);
+    }
+
+    @Patch(':id/suspend')
+    async suspend(@Param('id') id: string) {
+        return this.tenantsService.suspend(id);
+    }
+
+    @Patch(':id/activate')
+    async activate(@Param('id') id: string) {
+        return this.tenantsService.activate(id);
+    }
+
+    @Post(':id/impersonate')
+    async impersonate(@Param('id') id: string) {
+        return this.tenantsService.impersonate(id);
     }
 }

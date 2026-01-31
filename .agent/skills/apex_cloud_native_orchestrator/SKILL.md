@@ -12,6 +12,7 @@ description: Manages complex multi-tenant infrastructure, including subdomain ro
 ## 🏗️ Cloud-Native Protocols
 - **Expert-Level Containerization**: Mandatory multi-stage Docker builds. Use Bun's native performance and minimal image footprints.
 - **Docker Layer Optimization**: Strictly order commands to leverage build caching (S3 Build Performance).
+- **Turbo Build Strategy**: Minimize downtime during emergency remediations. Use targeted container rebuilds (`docker-compose up -d --build <service>`) and incremental layer synchronization to avoid system-wide 'Scorched Earth' resets unless necessary.
 - **Subdomain Orchestration**: Implement dynamic Traefik ingress for SSL/Wildcard support (*.duckdns.org).
 
 ## 🚀 Root Solutions (Deployment)

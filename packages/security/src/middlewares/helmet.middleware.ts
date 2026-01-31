@@ -1,46 +1,61 @@
 import { Injectable, NestMiddleware, Logger } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
 
 @Injectable()
 export class HelmetMiddleware implements NestMiddleware {
     private readonly logger = new Logger(HelmetMiddleware.name);
 
-    use(req: Request, res: Response, next: NextFunction) {
-        // Content Security Policy
-        res.setHeader(
+    use(req: any, res: any, next: () => void) {
+        // Generate a random nonce for scripts
+        const nonce = require('crypto').randomBytes(16).toString('base64');
+        res.locals = res.locals || {};
+        res.locals.nonce = nonce;
+
+        this.logger.debug(`Applying Helmet headers. Nonce: ${nonce.substring(0, 5)}...`);
+
+        // Content Security Policy (ARCH-S8 Fix)
+        const setHeader = (key: string, value: string) => {
+            if (res.setHeader) res.setHeader(key, value);
+            else if (res.header) res.header(key, value);
+        };
+
+        setHeader(
             'Content-Security-Policy',
             [
                 "default-src 'self'",
-                "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
-                "style-src 'self' 'unsafe-inline'",
-                "img-src 'self' data: https:",
+                `script-src 'self' 'nonce-${nonce}' https://cdn.jsdelivr.net`,
+                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+                "img-src 'self' data: https: blob:",
                 "font-src 'self' https://fonts.gstatic.com",
-                "connect-src 'self' https://api.stripe.com",
+                "connect-src 'self' https://api.stripe.com https://*.apex-v2.duckdns.org",
                 "frame-src 'none'",
                 "object-src 'none'",
+                "base-uri 'self'",
+                "form-action 'self'",
+                "frame-ancestors 'none'",
+                "upgrade-insecure-requests"
             ].join('; ')
         );
 
         // HTTP Strict Transport Security
-        res.setHeader(
+        setHeader(
             'Strict-Transport-Security',
             'max-age=31536000; includeSubDomains; preload'
         );
 
         // X-Frame-Options
-        res.setHeader('X-Frame-Options', 'DENY');
+        setHeader('X-Frame-Options', 'DENY');
 
         // X-Content-Type-Options
-        res.setHeader('X-Content-Type-Options', 'nosniff');
+        setHeader('X-Content-Type-Options', 'nosniff');
 
         // X-XSS-Protection
-        res.setHeader('X-XSS-Protection', '1; mode=block');
+        setHeader('X-XSS-Protection', '1; mode=block');
 
         // Referrer-Policy
-        res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+        setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
 
         // Permissions-Policy
-        res.setHeader(
+        setHeader(
             'Permissions-Policy',
             'geolocation=(), microphone=(), camera=()'
         );
@@ -48,13 +63,13 @@ export class HelmetMiddleware implements NestMiddleware {
         // Dynamic CORS per tenant domain (S8 requirement)
         const origin = req.headers.origin;
         if (origin && this.isTrustedOrigin(origin)) {
-            res.setHeader('Access-Control-Allow-Origin', origin);
-            res.setHeader('Access-Control-Allow-Credentials', 'true');
-            res.setHeader(
+            setHeader('Access-Control-Allow-Origin', origin);
+            setHeader('Access-Control-Allow-Credentials', 'true');
+            setHeader(
                 'Access-Control-Allow-Methods',
                 'GET, POST, PUT, DELETE, OPTIONS'
             );
-            res.setHeader(
+            setHeader(
                 'Access-Control-Allow-Headers',
                 'Content-Type, Authorization, X-Tenant-Id'
             );
@@ -62,8 +77,8 @@ export class HelmetMiddleware implements NestMiddleware {
 
         // Add strict CSRF protection for cookie sessions
         if (req.method !== 'OPTIONS') {
-            res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
-            res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+            setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+            setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
         }
 
         next();

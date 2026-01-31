@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject } from '@nestjs/common';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import { AuditLoggerInterceptor } from '@apex/security';
@@ -10,9 +10,12 @@ export class SchemaCreatorService {
   private readonly pool: Pool;
   private readonly db: ReturnType<typeof drizzle>;
 
-  constructor(pool?: Pool, db?: ReturnType<typeof drizzle>) {
-    this.pool = pool || new Pool({ connectionString: process.env.DATABASE_URL });
-    this.db = db || drizzle(this.pool);
+  constructor(
+    @Inject(Pool) pool: Pool,
+    @Inject('DATABASE_CONNECTION') db: ReturnType<typeof drizzle>
+  ) {
+    this.pool = pool;
+    this.db = db;
   }
 
   /**
@@ -50,7 +53,7 @@ export class SchemaCreatorService {
 
       await this.logAudit('SCHEMA_CREATED', tenantId, duration);
       return schemaName;
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(`Failed to create schema ${schemaName}: ${error.message}`);
       throw new Error(`Schema creation failed: ${error.message}`);
     }
@@ -89,7 +92,7 @@ export class SchemaCreatorService {
          VALUES ($1, $2, $3, $4, $5)`,
         ['system', action, tenantId, duration, 'success']
       );
-    } catch (e) {
+    } catch (e: any) {
       this.logger.error(`Failed to log audit: ${e.message}`);
     }
   }

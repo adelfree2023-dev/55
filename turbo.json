@@ -39,6 +39,23 @@
                 "build"
             ],
             "cache": true
+        },
+        "@apex/db#build": {
+            "dependsOn": [
+                "^build"
+            ]
+        },
+        "@apex/security#build": {
+            "dependsOn": [
+                "@apex/db#build"
+            ]
+        },
+        "apps/api#build": {
+            "dependsOn": [
+                "@apex/db#build",
+                "@apex/security#build",
+                "@apex/validators#build"
+            ]
         }
     }
 }

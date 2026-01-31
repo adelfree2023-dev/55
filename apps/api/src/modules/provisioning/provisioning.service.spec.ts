@@ -15,6 +15,7 @@ describe('ProvisioningService', () => {
     let mockSchemaCreator: any;
     let mockDataSeeder: any;
     let mockTraefikRouter: any;
+    let mockEncryptionService: any;
     let mockPool: any;
 
     beforeEach(() => {
@@ -22,6 +23,7 @@ describe('ProvisioningService', () => {
         mockSchemaCreator = { createSchema: jest.fn() };
         mockDataSeeder = { seedData: jest.fn() };
         mockTraefikRouter = { createRoute: jest.fn() };
+        mockEncryptionService = { encrypt: jest.fn().mockImplementation((val) => Promise.resolve(`enc:${val}`)) };
         mockPool = { query: jest.fn().mockResolvedValue({ rows: [] }) };
 
         // Direct instantiation for 100% reliability in Bun
@@ -30,6 +32,7 @@ describe('ProvisioningService', () => {
             mockDataSeeder,
             mockTraefikRouter,
             mockEventEmitter,
+            mockEncryptionService,
             mockPool
         );
     });

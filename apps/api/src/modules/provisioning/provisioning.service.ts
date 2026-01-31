@@ -1,10 +1,11 @@
 import { Injectable, Logger, BadRequestException, InternalServerErrorException, Optional, Inject } from '@nestjs/common';
 import { Pool } from 'pg';
 import { SchemaCreatorService, DataSeederService, TraefikRouterService } from '@apex/provisioning';
-import { CreateTenantDto } from '../../dto/create-tenant.dto';
+import { CreateTenantDto } from './dto/create-tenant.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { TenantProvisionedEvent } from './events/tenant-provisioned.event';
 import { TenantFailedEvent } from './events/tenant-failed.event';
+import { EncryptionService } from '@apex/encryption';
 
 @Injectable()
 export class ProvisioningService {
@@ -19,6 +20,7 @@ export class ProvisioningService {
         private readonly traefikRouter: TraefikRouterService,
         @Inject(EventEmitter2)
         private readonly eventEmitter: EventEmitter2,
+        private readonly encryptionService: EncryptionService,
         @Optional() private readonly pool: Pool = new Pool({ connectionString: process.env.DATABASE_URL }),
     ) { }
 
@@ -99,7 +101,7 @@ export class ProvisioningService {
                 },
                 northStar: totalDuration < 55000 ? '✅ MET' : '❌ MISSED',
             };
-        } catch (error) {
+        } catch (error: any) {
             this.logger.error(`Provisioning failed for ${subdomain}: ${error.message}`);
 
             // Emit failure event
@@ -128,11 +130,14 @@ export class ProvisioningService {
     ): Promise<void> {
         // Use injected pool
         try {
+            // 🔴 ARCH-S7: Encrypt PII before storage
+            const encryptedEmail = await this.encryptionService.encrypt(ownerEmail);
+
             await this.pool.query(
                 `INSERT INTO public.tenants (name, subdomain, owner_email, plan_id, status)
          VALUES ($1, $2, $3, $4, 'active')
          ON CONFLICT (subdomain) DO UPDATE SET updated_at = CURRENT_TIMESTAMP`,
-                [dto.storeName || subdomain, subdomain, ownerEmail, dto.planId || 'basic']
+                [dto.storeName || subdomain, subdomain, encryptedEmail, dto.planId || 'basic']
             );
 
             // Log audit

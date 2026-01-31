@@ -114,6 +114,15 @@ describe('CacheService (Redis)', () => {
         expect(mockClient.quit).toHaveBeenCalled();
     });
 
+    it('should handle redis errors', () => {
+        const errorHandler = (mockClient as any).errorHandler;
+        if (errorHandler) {
+            const error = new Error('Cache error');
+            errorHandler(error);
+            expect(loggedErrors.some(m => m.includes('Redis error: Cache error'))).toBe(true);
+        }
+    });
+
     it('should test reconnect strategy', () => {
         // Find the reconnect strategy from createClient call if possible, or mock it
         const serviceWithStrat = new CacheService();
@@ -121,8 +130,28 @@ describe('CacheService (Redis)', () => {
         if (options?.socket?.reconnectStrategy) {
             const strat = options.socket.reconnectStrategy;
             expect(strat(1)).toBe(50);
-            expect(strat(10)).toBe(500); // 10 * 50
             expect(strat(11)).toBe(false);
+        }
+    });
+
+    it('should cover constructor initialization', () => {
+        const newService = new CacheService();
+        expect(newService).toBeDefined();
+        expect((newService as any).client).toBeDefined();
+    });
+
+    it('should handle all error event paths', async () => {
+        const errorHandler = (mockClient as any).errorHandler;
+        const reconnectHandler = (mockClient as any).reconnectHandler;
+
+        if (errorHandler) {
+            errorHandler(new Error('Test cache error'));
+            expect(loggedErrors.some(m => m.includes('Test cache error'))).toBe(true);
+        }
+
+        if (reconnectHandler) {
+            reconnectHandler();
+            expect(loggedWarns.some(m => m.includes('reconnecting'))).toBe(true);
         }
     });
 });

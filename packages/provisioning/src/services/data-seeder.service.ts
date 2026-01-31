@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject } from '@nestjs/common';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import { sql } from 'drizzle-orm';
@@ -9,9 +9,12 @@ export class DataSeederService {
     private readonly pool: Pool;
     private readonly db: ReturnType<typeof drizzle>;
 
-    constructor(pool?: Pool, db?: ReturnType<typeof drizzle>) {
-        this.pool = pool || new Pool({ connectionString: process.env.DATABASE_URL });
-        this.db = db || drizzle(this.pool);
+    constructor(
+        @Inject(Pool) pool: Pool,
+        @Inject('DATABASE_CONNECTION') db: ReturnType<typeof drizzle>
+    ) {
+        this.pool = pool;
+        this.db = db;
     }
 
     /**
@@ -50,7 +53,7 @@ export class DataSeederService {
 
             const duration = Date.now() - startTime;
             this.logger.log(`✅ Data seeded in ${duration}ms for ${tenantId}`);
-        } catch (error) {
+        } catch (error: any) {
             this.logger.error(`Failed to seed data: ${error.message}`);
             throw error;
         }
@@ -62,7 +65,7 @@ export class DataSeederService {
     private async createCoreTables(schemaName: string): Promise<void> {
         const queries = [
             // Products table
-            `CREATE TABLE IF NOT EXISTS "${schemaName}".products (
+            `CREATE TABLE IF NOT EXISTS format('%I', schemaName).products (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         name VARCHAR(255) NOT NULL,
         slug VARCHAR(255) UNIQUE NOT NULL,
@@ -76,7 +79,7 @@ export class DataSeederService {
       )`,
 
             // Orders table
-            `CREATE TABLE IF NOT EXISTS "${schemaName}".orders (
+            `CREATE TABLE IF NOT EXISTS format('%I', schemaName).orders (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         customer_id UUID,
         status VARCHAR(50) DEFAULT 'pending',
@@ -87,7 +90,7 @@ export class DataSeederService {
       )`,
 
             // Pages table
-            `CREATE TABLE IF NOT EXISTS "${schemaName}".pages (
+            `CREATE TABLE IF NOT EXISTS format('%I', schemaName).pages (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         title VARCHAR(255) NOT NULL,
         slug VARCHAR(255) UNIQUE NOT NULL,
@@ -97,14 +100,14 @@ export class DataSeederService {
       )`,
 
             // Settings table
-            `CREATE TABLE IF NOT EXISTS "${schemaName}".settings (
+            `CREATE TABLE IF NOT EXISTS format('%I', schemaName).settings (
         key VARCHAR(255) PRIMARY KEY,
         value TEXT NOT NULL
       )`,
         ];
 
         for (const query of queries) {
-            await this.db.execute(sql.raw(query));
+            await this.pool.query(query);
         }
 
         this.logger.debug(`Core tables created for ${schemaName}`);
@@ -116,15 +119,13 @@ export class DataSeederService {
     private async seedProducts(schemaName: string, products: any[]): Promise<void> {
         if (products.length === 0) return;
 
-        const values = products.map(p =>
-            `('${p.name}', '${p.slug}', '${p.description || ''}', ${p.price}, ${p.stock || 0}, '${JSON.stringify(p.images || [])}'::jsonb)`
-        ).join(',');
-
-        await this.db.execute(sql.raw(`
-      INSERT INTO "${schemaName}".products (name, slug, description, price, stock, images)
-      VALUES ${values}
-      ON CONFLICT (slug) DO NOTHING
-    `));
+        for (const p of products) {
+            await this.db.execute(sql`
+                INSERT INTO ${sql.identifier(schemaName)}.products (name, slug, description, price, stock, images)
+                VALUES (${p.name}, ${p.slug}, ${p.description || ''}, ${p.price}, ${p.stock || 0}, ${JSON.stringify(p.images || [])}::jsonb)
+                ON CONFLICT (slug) DO NOTHING
+            `);
+        }
 
         this.logger.debug(`Seeded ${products.length} products`);
     }
@@ -135,15 +136,13 @@ export class DataSeederService {
     private async seedPages(schemaName: string, pages: any[]): Promise<void> {
         if (pages.length === 0) return;
 
-        const values = pages.map(p =>
-            `('${p.title}', '${p.slug}', '${p.content || ''}', true)`
-        ).join(',');
-
-        await this.db.execute(sql.raw(`
-      INSERT INTO "${schemaName}".pages (title, slug, content, published)
-      VALUES ${values}
-      ON CONFLICT (slug) DO NOTHING
-    `));
+        for (const p of pages) {
+            await this.db.execute(sql`
+                INSERT INTO ${sql.identifier(schemaName)}.pages (title, slug, content, published)
+                VALUES (${p.title}, ${p.slug}, ${p.content || ''}, true)
+                ON CONFLICT (slug) DO NOTHING
+            `);
+        }
 
         this.logger.debug(`Seeded ${pages.length} pages`);
     }
@@ -152,16 +151,12 @@ export class DataSeederService {
      * Seeds settings
      */
     private async seedSettings(schemaName: string, settings: Record<string, any>): Promise<void> {
-        const entries = Object.entries(settings).map(([key, value]) =>
-            `('${key}', '${JSON.stringify(value)}')`
-        ).join(',');
-
-        if (entries) {
-            await this.db.execute(sql.raw(`
-        INSERT INTO "${schemaName}".settings (key, value)
-        VALUES ${entries}
-        ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value
-      `));
+        for (const [key, value] of Object.entries(settings)) {
+            await this.db.execute(sql`
+                INSERT INTO ${sql.identifier(schemaName)}.settings (key, value)
+                VALUES (${key}, ${JSON.stringify(value)})
+                ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value
+            `);
         }
 
         this.logger.debug(`Seeded settings`);

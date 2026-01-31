@@ -52,7 +52,7 @@ describe('TenantsService (Super-#01)', () => {
 
         await service.findAll({ plan: 'pro', page: 1, limit: 20 });
 
-        expect(mockPool.query.mock.calls[0][0]).toContain('plan = $');
+        expect(mockPool.query.mock.calls[0][0]).toContain('plan_id = $');
     });
 
     it('should search by subdomain or store name', async () => {
@@ -97,7 +97,7 @@ describe('TenantsService (Super-#01)', () => {
 
         const query = mockPool.query.mock.calls[0][0];
         expect(query).toContain('status = $');
-        expect(query).toContain('plan = $');
+        expect(query).toContain('plan_id = $');
         expect(query).toContain('ILIKE');
     });
 

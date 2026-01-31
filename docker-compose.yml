@@ -15,11 +15,13 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./infra/docker/postgres/extensions.sql:/docker-entrypoint-initdb.d/02-extensions.sql:ro
+      - ./infra/docker/postgres/init.sql:/docker-entrypoint-initdb.d/03-init.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U apex"]
+      test: ["CMD-SHELL", "pg_isready -U apex && psql -U apex -d apex -c \"SELECT 1 FROM pg_extension WHERE extname = 'vector'\" | grep -q 1"]
       interval: 10s
-      timeout: 5s
-      retries: 5
+      timeout: 10s
+      retries: 10
+      start_period: 30s
     networks:
       - apex-network
 
@@ -78,7 +80,7 @@ services:
     volumes:
       - mailpit_data:/data
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8025/api/v1/info"]
+      test: ["CMD-SHELL", "curl -sf http://localhost:8025/api/v1/info || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -99,6 +101,7 @@ services:
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
       - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
       - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.myresolver.acme.email=admin@apex-v2.duckdns.org"
@@ -112,7 +115,7 @@ services:
       - ./infra/docker/traefik/dynamic:/etc/traefik/dynamic
       - traefik_certs:/letsencrypt
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/api/overview"]
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:8080/ping || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -140,10 +143,11 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "bun", "-e", "fetch('http://localhost:3000/health').then(r => process.exit(r.ok ? 0 : 1))"]
-      interval: 30s
-      timeout: 10s
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health?skip_tenant_validation=1', r => process.exit(r.statusCode === 200 ? 0 : 1))"]
+      interval: 10s
+      timeout: 5s
       retries: 3
+      start_period: 40s
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.apex-api.rule=Host(`api.apex-v2.duckdns.org`)"
@@ -173,10 +177,11 @@ services:
     depends_on:
       - apex-api
     healthcheck:
-      test: ["CMD", "bun", "-e", "fetch('http://localhost:3002/').then(r => process.exit(r.ok ? 0 : 1))"]
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3002/', r => process.exit(r.statusCode === 200 ? 0 : 1))"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 40s
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.apex-storefront.rule=Host(`apex-v2.duckdns.org`) || HostRegexp(`{subdomain:[a-z0-9-]+}.apex-v2.duckdns.org`)"

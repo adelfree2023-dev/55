@@ -8,6 +8,7 @@ describe('ProvisioningService', () => {
     let dataSeeder: any;
     let traefikRouter: any;
     let eventEmitter: any;
+    let encryptionService: any; // Added mock
     let mockPool: any;
 
     beforeEach(() => {
@@ -15,6 +16,7 @@ describe('ProvisioningService', () => {
         dataSeeder = { seedData: mock(() => Promise.resolve()) };
         traefikRouter = { createRoute: mock(() => Promise.resolve()) };
         eventEmitter = { emit: mock() };
+        encryptionService = { encrypt: mock((val: string) => Promise.resolve(`enc:${val}`)) }; // Mock encrypt
         mockPool = { query: mock(() => Promise.resolve({ rows: [] })) };
 
         service = new ProvisioningService(
@@ -22,6 +24,7 @@ describe('ProvisioningService', () => {
             dataSeeder,
             traefikRouter,
             eventEmitter,
+            encryptionService, // Injected
             mockPool
         );
     });

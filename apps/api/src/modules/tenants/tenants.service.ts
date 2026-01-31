@@ -1,6 +1,22 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Pool } from 'pg';
-import { TenantQuery } from './schemas/tenant-query.schema';
+import { z } from 'zod';
+
+export const TenantQuerySchema = z.object({
+    status: z.enum(['active', 'suspended', 'pending']).optional(),
+    plan: z.enum(['basic', 'pro', 'enterprise']).optional(),
+    search: z.string().optional(),
+    page: z.coerce.number().int().positive().default(1),
+    limit: z.coerce.number().int().positive().max(100).default(20),
+}).strict();
+
+export class TenantQuery {
+    status?: 'active' | 'suspended' | 'pending';
+    plan?: 'basic' | 'pro' | 'enterprise';
+    search?: string;
+    page: number = 1;
+    limit: number = 20;
+}
 
 @Injectable()
 export class TenantsService {
@@ -25,7 +41,7 @@ export class TenantsService {
         }
 
         if (plan) {
-            conditions.push(`plan = $${paramIndex++}`);
+            conditions.push(`plan_id = $${paramIndex++}`);
             values.push(plan);
         }
 
@@ -47,7 +63,7 @@ export class TenantsService {
         // Get paginated results
         values.push(limit, offset);
         const result = await this.pool.query(
-            `SELECT id, subdomain, store_name, owner_email, status, plan, created_at, updated_at
+            `SELECT id, subdomain, name, owner_email, status, plan_id, created_at, updated_at
        FROM public.tenants
        ${whereClause}
        ORDER BY created_at DESC
@@ -73,9 +89,45 @@ export class TenantsService {
         );
 
         if (result.rows.length === 0) {
-            throw new Error(`Tenant "${id}" not found`);
+            throw new NotFoundException(`Tenant "${id}" not found`);
         }
 
         return result.rows[0];
+    }
+
+    async suspend(id: string) {
+        const result = await this.pool.query(
+            `UPDATE public.tenants SET status = 'suspended', updated_at = NOW() WHERE id = $1 RETURNING *`,
+            [id]
+        );
+        if (result.rows.length === 0) {
+            throw new NotFoundException(`Tenant "${id}" not found`);
+        }
+        this.logger.warn(`🛑 Tenant suspended: ${id}`);
+        return result.rows[0];
+    }
+
+    async activate(id: string) {
+        const result = await this.pool.query(
+            `UPDATE public.tenants SET status = 'active', updated_at = NOW() WHERE id = $1 RETURNING *`,
+            [id]
+        );
+        if (result.rows.length === 0) {
+            throw new NotFoundException(`Tenant "${id}" not found`);
+        }
+        this.logger.log(`✅ Tenant activated: ${id}`);
+        return result.rows[0];
+    }
+
+    async impersonate(id: string) {
+        const tenant = await this.findOne(id);
+        this.logger.log(`🎭 Super Admin impersonating tenant: ${tenant.subdomain}`);
+        return {
+            impersonation: true,
+            targetTenantId: tenant.id,
+            targetSubdomain: tenant.subdomain,
+            impersonationToken: `impersonate_${tenant.id}_${Buffer.from(Date.now().toString()).toString('base64')}`,
+            expiresIn: 3600
+        };
     }
 }

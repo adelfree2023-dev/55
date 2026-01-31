@@ -2,33 +2,21 @@
 FROM oven/bun:latest AS base
 WORKDIR /app
 
+# Install build dependencies (git is required for Turborepo)
+RUN apt-get update && apt-get install -y git wget && rm -rf /var/lib/apt/lists/*
+
 # Stage 2: Install dependencies
-# Copy root config and lockfile
-COPY package.json bun.lock turbo.json ./
-
-# Copy all package.jsons to leverage layer caching
-COPY packages/cache/package.json ./packages/cache/
-COPY packages/config/package.json ./packages/config/
-COPY packages/db/package.json ./packages/db/
-COPY packages/security/package.json ./packages/security/
-COPY packages/validators/package.json ./packages/validators/
-COPY packages/provisioning/package.json ./packages/provisioning/
-COPY packages/monitoring/package.json ./packages/monitoring/
-COPY packages/storage/package.json ./packages/storage/
-COPY packages/redis/package.json ./packages/redis/
-COPY packages/encryption/package.json ./packages/encryption/
-
-# Copy app package.jsons
-COPY apps/api/package.json ./apps/api/
-COPY apps/storefront/package.json ./apps/storefront/
-
-# Install dependencies
-RUN bun install --frozen-lockfile
-
-# Stage 3: Build shared packages & apps
+# We copy all files to ensure bun.lock and workspaces are perfectly synced
 COPY . .
-# We build only the apps that need it (Storefront). API will run directly from source.
-RUN bun x turbo run build --filter=@apex/storefront
+
+# Speed up install by skipping sentry download and using production mode
+ENV SENTRYCLI_SKIP_DOWNLOAD=1
+RUN bun install
+
+# Stage 3: Build
+# Run builds directly to confirm paths and dependencies are correct
+RUN cd apps/api && bun run build
+RUN cd apps/storefront && bun run build
 
 # Stage 4: Production Runner for API
 FROM oven/bun:latest AS api-runner
@@ -42,7 +30,7 @@ COPY --from=base /app/package.json ./package.json
 WORKDIR /app/apps/api
 EXPOSE 3001
 
-# Start the API directly from source using Bun's native TS support
+# Start the API directly from source (Bun handles TS)
 CMD ["bun", "src/main.ts"]
 
 # Stage 5: Production Runner for Storefront
@@ -56,5 +44,5 @@ COPY --from=base /app/package.json ./package.json
 WORKDIR /app/apps/storefront
 EXPOSE 3002
 
-# Start the Storefront (Next.js)
+# Start the Storefront (built in Stage 3)
 CMD ["bun", "run", "start"]

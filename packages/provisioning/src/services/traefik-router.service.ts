@@ -62,7 +62,7 @@ export class TraefikRouterService {
 
             const duration = Date.now() - startTime;
             this.logger.log(`✅ Traefik route created in ${duration}ms: ${filePath}`);
-        } catch (error) {
+        } catch (error: any) {
             this.logger.error(`Failed to create Traefik route: ${error.message}`);
             throw error;
         }
@@ -78,7 +78,7 @@ export class TraefikRouterService {
         try {
             // File removal handled by deployment script
             this.logger.log(`Route removal scheduled: ${routeName}`);
-        } catch (error) {
+        } catch (error: any) {
             this.logger.error(`Failed to remove route: ${error.message}`);
         }
     }

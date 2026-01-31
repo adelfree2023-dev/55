@@ -6,7 +6,61 @@ echo '--- [2] Missing Test Files (Files without .spec.ts) ---' && \
 find packages -name '*.ts' ! -name '*.spec.ts' ! -name 'index.ts' | while read file; do [ ! -f \"\${file%.ts}.spec.ts\" ] && echo \"Missing Spec: \$file\"; done"
 
 
+ssh -i "C:/Users/Dell/.ssh/id_ed25519_apex" -o StrictHostKeyChecking=no apex-v2-dev@34.102.116.215 "cd ~/apex-v2 && /home/apex-v2-dev/.bun/bin/bun run scripts/nuclear-test-phase-1.ts"
 
 
+ssh -i "C:/Users/Dell/.ssh/id_ed25519_apex" -o StrictHostKeyChecking=no apex-v2-dev@34.102.116.215 "cd ~/apex-v2 && /home/apex-v2-dev/.bun/bin/bun run scripts/penetration-test.ts"
+
+
+
+ssh -i "C:/Users/Dell/.ssh/id_ed25519_apex" -o StrictHostKeyChecking=no apex-v2-dev@34.102.116.215 "cd ~/apex-v2 && /home/apex-v2-dev/.bun/bin/bun test"
+
+
+-------اختبار المرحلة الاولي -------> ssh -i "C:/Users/Dell/.ssh/id_ed25519_apex" -o StrictHostKeyChecking=no apex-v2-dev@34.102.116.215 "docker rm -f apex-traefik apex-redis apex-postgres apex-minio apex-mailpit || true && cd ~/apex-v2 && docker-compose up -d && sleep 5 && ~/.bun/bin/bun install && ~/.bun/bin/bun scripts/nuclear-test-phase-1.ts"
 ---------------------->  ssh -i "C:/Users/Dell/.ssh/id_ed25519_apex" apex-v2-dev@34.102.116.215 "cd ~/apex-v2/packages && find . -name '*.ts' ! -name '*.spec.ts' ! -name 'index.ts' | while read file; do [ ! -f \"\${file%.ts}.spec.ts\" ] && echo \"Missing Test: \$file\"; done"
 
+
+------------------------- التحقيق --------------------------------
+---------------------------------
+
+Role: Senior Forensic Systems Engineer & Offensive Security Auditor. Mission: Conduct a "No-Mercy" Forensic Audit on the attached codebase for the Apex V2 Multi-Tenant System.
+
+Evaluation Framework:
+
+Zero-Trust Multi-Tenancy: Check for cross-contamination. Any data access not strictly bound to the Host-Header-Resolved Context is a CRITICAL FAILURE.
+
+Security Forensics: Scan for SQL Injections (especially in seeding/raw queries), Secret Leaks, and broken Auth Guards.
+
+Architectural Integrity: Cross-reference with the [APEX-REGISTER-2026-01] blueprint. Identify "Ghost Features" (Planned but not implemented).
+
+Infrastructure Resilience: Audit Docker/Traefik for deployment-killing misconfigurations.
+
+Mandatory Response Structure (Strictly Followed):
+
+🛑 1. CRITICAL SECURITY VULNERABILITIES (Immediate Threat)
+(List every vulnerability that could lead to data breach or system takeover).
+
+🧩 2. ARCHITECTURAL DRIFT & MISSING LOGIC
+(Compare the current files against the master plan. List exactly what's missing or deviates).
+
+🛠️ 3. EXECUTION PLAN (Surgical Fixes)
+[File Name]
+
+Location: (Line number or Function name).
+
+Current Faulty Code: (The exact code block to be removed).
+
+Forensic Fix: (The exact, secure, and production-ready code to be inserted).
+
+📈 4. PRODUCTION READINESS SCORE
+(Score out of 10 for: Security, Scalability, and Stability).
+
+Operating Mode:
+
+DO NOT GREET. > - DO NOT COMPLIMENT. > - If the code is garbage, say it's garbage.
+
+Treat every "TODO" or "Hardcoded" value as a potential exploit.
+
+Analyze how the middleware interacts with the services—look for context loss.
+
+-----------------------

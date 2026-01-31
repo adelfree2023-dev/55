@@ -3,9 +3,9 @@
     "version": "1.0.0",
     "private": true,
     "scripts": {
-        "dev": "nest start --watch",
+        "start:dev": "nest start --watch",
         "build": "nest build",
-        "start": "nest start"
+        "start": "bun dist/main"
     },
     "dependencies": {
         "@nestjs/common": "^10.0.0",
@@ -15,10 +15,13 @@
         "@apex/db": "workspace:*",
         "@apex/validators": "workspace:*",
         "@apex/security": "workspace:*",
+        "@apex/encryption": "workspace:*",
         "@apex/provisioning": "workspace:*",
+        "fastify": "^4.26.1",
         "@apex/cache": "workspace:*",
         "@nestjs/event-emitter": "^2.0.0",
         "@nestjs/swagger": "^7.2.0",
+        "@sentry/node": "^7.100.0",
         "zod": "^3.22.4",
         "reflect-metadata": "^0.1.13",
         "rxjs": "^7.8.1"
@@ -26,6 +29,7 @@
     "devDependencies": {
         "@nestjs/cli": "^10.0.0",
         "@nestjs/schematics": "^10.0.0",
+        "@nestjs/testing": "^10.0.0",
         "@types/node": "^20.0.0",
         "typescript": "^5.0.0"
     }

@@ -8,7 +8,15 @@ import { auditLogs } from '../../../db/src/schema/audit-logs';
 @Injectable()
 export class AuditLoggerInterceptor implements NestInterceptor {
     private static pool = new Pool({ connectionString: process.env.DATABASE_URL });
-    private static db = drizzle(this.pool);
+    private static db = drizzle(AuditLoggerInterceptor.pool);
+
+    private static readonly PII_FIELDS = [
+        'password', 'token', 'secret', 'apiKey', 'cvv', 'creditCard',
+        'email', 'phone', 'address', 'fullName', 'firstName', 'lastName',
+        'ssn', 'taxId', 'iban', 'routingNumber', 'accountNumber', 'stripe',
+        'birthDate', 'passportNumber', 'nationalId', 'driverLicense', 'taxid',
+        'zipCode', 'postalCode', 'city', 'state', 'country', 'latitude', 'longitude'
+    ];
 
     intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
         const request = context.switchToHttp().getRequest();
@@ -20,7 +28,7 @@ export class AuditLoggerInterceptor implements NestInterceptor {
 
         return next.handle().pipe(
             tap({
-                next: (data) => {
+                next: (data: any) => {
                     this.logAudit({
                         tenantId,
                         userId: user,
@@ -33,7 +41,7 @@ export class AuditLoggerInterceptor implements NestInterceptor {
                         response: this.sanitizeResponse(data),
                     });
                 },
-                error: (error) => {
+                error: (error: any) => {
                     this.logAudit({
                         tenantId,
                         userId: user,
@@ -52,20 +60,48 @@ export class AuditLoggerInterceptor implements NestInterceptor {
 
     private async logAudit(entry: any) {
         try {
-            await AuditLoggerInterceptor.db.insert(auditLogs).values(entry);
+            await AuditLoggerInterceptor.pool.query(`
+                INSERT INTO public.audit_logs 
+                (tenant_id, user_id, action, status, duration, ip_address, user_agent, payload, response, error, created_at)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
+            `, [
+                entry.tenantId || 'system',
+                entry.userId,
+                entry.action,
+                entry.status,
+                entry.duration,
+                entry.ipAddress,
+                entry.userAgent,
+                entry.payload,
+                entry.response,
+                entry.error
+            ]);
         } catch (e) {
-            console.error('❌ Failed to write audit log:', e);
+            console.error('🔥 AUDIT LOG FAILURE - SECURITY INCIDENT', e);
         }
     }
 
     private sanitizePayload(payload: any) {
-        if (!payload) return null;
-        const { password, token, secret, ...safe } = payload;
-        return JSON.stringify(safe);
+        if (!payload || typeof payload !== 'object') return payload;
+        return JSON.stringify(this.sanitizeObject(payload));
     }
 
     private sanitizeResponse(response: any) {
-        if (!response || typeof response !== 'object') return null;
-        return JSON.stringify(response);
+        if (!response || typeof response !== 'object') return response;
+        return JSON.stringify(this.sanitizeObject(response));
+    }
+
+    private sanitizeObject(obj: any): any {
+        if (!obj || typeof obj !== 'object') return obj;
+        if (Array.isArray(obj)) return obj.map(item => this.sanitizeObject(item));
+
+        return Object.fromEntries(
+            Object.entries(obj).map(([key, value]) => {
+                const isPII = AuditLoggerInterceptor.PII_FIELDS.some(pii => key.toLowerCase().includes(pii.toLowerCase()));
+                if (isPII) return [key, '[REDACTED]'];
+                if (typeof value === 'object') return [key, this.sanitizeObject(value)];
+                return [key, value];
+            })
+        );
     }
 }

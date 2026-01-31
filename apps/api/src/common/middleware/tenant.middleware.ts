@@ -1,63 +1,136 @@
-import { Injectable, NestMiddleware, BadRequestException, Logger } from '@nestjs/common';
+import { Injectable, NestMiddleware, BadRequestException, ForbiddenException, Logger, Inject } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { FastifyRequest, FastifyReply } from 'fastify';
+import { Pool } from 'pg';
 import { setSchemaPath } from '@apex/db';
-import * as pg from 'pg';
+import { SKIP_TENANT_VALIDATION_KEY } from '../decorators/skip-tenant-validation.decorator';
 
 @Injectable()
 export class TenantMiddleware implements NestMiddleware {
     private readonly logger = new Logger(TenantMiddleware.name);
-    private readonly pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+    private readonly pool: Pool;
+    private readonly whitelistCache = new Map<string, boolean>();
 
-    async use(req: FastifyRequest['raw'], res: FastifyReply['raw'], next: () => void) {
-        // Extract subdomain from X-Tenant-Id header or Host header
-        let subdomain = req.headers['x-tenant-id'] as string;
+    constructor(
+        @Inject('BoundPool') boundPool: Pool,
+        private readonly reflector: Reflector
+    ) {
+        this.pool = boundPool;
+    }
 
-        if (!subdomain) {
-            const host = (req.headers['x-forwarded-host'] || req.headers['host']) as string;
-            if (host) {
-                // Handle patterns like: subdomain.apex-v2.duckdns.org or subdomain.localhost
-                const parts = host.split('.');
-                if (parts.length >= 3) {
-                    // If it's subdomain.apex-v2.duckdns.org, parts are [subdomain, apex-v2, duckdns, org]
-                    // If it's subdomain.localhost, parts are [subdomain, localhost]
-                    subdomain = parts[0];
+    async use(req: any, res: any, next: () => void) {
+        try {
+            // 1. Check for explicit bypass via query (Internal Health Checks)
+            if (req.query?.skip_tenant_validation === '1') {
+                this.logger.debug('Skipping tenant validation via query param');
+                return next();
+            }
+
+            // Extract tenant from HOST header with strict validation
+            const host = (req.headers['x-forwarded-host'] || req.headers['host'] || '') as string;
+
+            // STRICT WHITELIST VALIDATION (prevents injection attacks)
+            const apexPatterns = [
+                /^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)\.apex\.localhost$/,
+                /^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)\.apex-v2\.duckdns\.org$/,
+                /^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)\.localhost$/
+            ];
+
+            let subdomain: string | null = null;
+            for (const pattern of apexPatterns) {
+                const match = host.match(pattern);
+                if (match) {
+                    subdomain = match[1];
+                    break;
                 }
             }
-        }
 
-        // Ignore certain subdomains like 'api', 'www', or if still empty
-        if (!subdomain || ['api', 'www', 'localhost', 'apex-v2'].includes(subdomain.toLowerCase())) {
-            // For provisioning routes, we already exclude them in AppModule
-            // For others, if we need a tenant and don't have one, we MUST fail per test requirement
-            this.logger.debug(`No tenant context for host: ${req.headers['host']}`);
             if (!subdomain) {
-                throw new BadRequestException('X-Tenant-Id header is missing or invalid host');
+                // Allow system routes ONLY on safe hosts
+                const safeHosts = [
+                    'localhost:3000', 'localhost:3001', 'localhost:4000',
+                    '127.0.0.1:3000', '127.0.0.1:3001', '127.0.0.1:4000',
+                    'apex-v2.duckdns.org'
+                ];
+                // Also check if valid IP
+                const isIp = /^(\d{1,3}\.){3}\d{1,3}(:\d+)?$/.test(host);
+
+                if (!safeHosts.some(h => host === h || host.startsWith(h + ':')) && !isIp) {
+                    // If it's not in safe list and not a direct IP (often used for health checks inside network), block
+                    // However, internal docker networking might use IP. 
+                    // Let's trust the whitelist approach from the audit which was specific.
+                    // The audit code was: if (!safeHosts.some(h => host.startsWith(h))) 
+
+                    // Implementing audit logic strictly:
+                    const isSafe = safeHosts.some(h => host.startsWith(h));
+                    if (!isSafe) {
+                        this.logger.warn(`🚨 BLOCKED SUSPICIOUS HOST: ${host}`);
+                        throw new ForbiddenException('Invalid tenant context');
+                    }
+                }
+
+                this.logger.log(`System route access: ${host}${req.url}`);
+                return next();
             }
-            return next();
+
+            // DATABASE WHITELIST CHECK (prevents access to non-existent tenants)
+            const tenantInfo = await this.getTenantInfo(subdomain);
+            if (!tenantInfo) {
+                this.logger.warn(`🚨 BLOCKED INVALID TENANT ACCESS: ${subdomain} from ${req.ip}`);
+                throw new ForbiddenException('Invalid tenant context');
+            }
+
+            // 🔒 CRITICAL FIX: SET search_path ON REQUEST-SCOPED CONNECTION ONLY
+            // NEVER on global pool - this was causing cross-tenant leakage
+            const client = await this.pool.connect();
+            req.dbClient = client; // Attach to request lifecycle for Service usage
+
+            await client.query(`SET search_path TO "tenant_${tenantInfo.id}", public`);
+
+            req.tenantId = tenantInfo.id;
+            req.tenantTier = tenantInfo.plan_id || 'basic';
+            req.tenantSchema = `tenant_${tenantInfo.id}`;
+
+            this.logger.log(`✅ Resolved tenant: ${subdomain} -> ${tenantInfo.id} (Schema: ${req.tenantSchema})`);
+
+            // CRITICAL: Reset search_path AFTER request completes
+            res.on('finish', () => {
+                client.query('SET search_path TO public')
+                    .catch(err => this.logger.error(`Reset failed: ${err.message}`))
+                    .finally(() => client.release());
+            });
+
+            next();
+        } catch (error: any) {
+            if (error instanceof ForbiddenException) throw error;
+            this.logger.error(`Tenant resolution error: ${error.message}`);
+            throw new ForbiddenException('Invalid tenant context');
         }
+    }
+
+    private async getTenantInfo(subdomain: string): Promise<{ id: string, plan_id: string } | null> {
+        // Cache validation for 5 minutes
+        const cached = this.whitelistCache.get(subdomain);
+        if (cached) return cached as any;
 
         try {
-            // Resolve subdomain to tenant ID using direct pool for better error visibility
             const result = await this.pool.query(
-                'SELECT id FROM public.tenants WHERE subdomain = $1 LIMIT 1',
+                `SELECT id, plan_id FROM public.tenants WHERE subdomain = $1 AND status = 'active'`,
                 [subdomain]
             );
 
             if (result.rows.length === 0) {
-                this.logger.warn(`Tenant not found for subdomain: ${subdomain}`);
-                throw new BadRequestException(`Invalid tenant subdomain: ${subdomain}`);
+                return null;
             }
 
-            const tenantId = result.rows[0].id;
+            const tenantInfo = result.rows[0];
+            this.whitelistCache.set(subdomain, tenantInfo);
 
-            // Set the database search path for the current request context
-            await setSchemaPath(tenantId);
-            this.logger.debug(`Resolved tenant ${subdomain} to ID ${tenantId}`);
-            next();
-        } catch (error) {
-            if (error instanceof BadRequestException) throw error;
-            this.logger.error(`Tenant resolution failed for ${subdomain}: ${error.message}`, error.stack);
-            throw new BadRequestException(`Invalid tenant: ${subdomain}`);
+            setTimeout(() => this.whitelistCache.delete(subdomain), 300000);
+            return tenantInfo;
+        } catch (error: any) {
+            this.logger.error(`Whitelist check failed: ${error.message}`);
+            return null;
         }
     }
 }
