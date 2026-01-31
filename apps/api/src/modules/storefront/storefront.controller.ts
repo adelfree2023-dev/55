@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseInterceptors, Logger, HttpCode, Inject } from '@nestjs/common';
+import { Controller, Get, Param, UseInterceptors, Logger, HttpCode, Inject, Req } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { StorefrontService } from './storefront.service';
 
@@ -27,9 +27,9 @@ export class StorefrontController {
     @ApiResponse({ status: 200, description: 'Home page data retrieved successfully' })
     @ApiResponse({ status: 404, description: 'Tenant not found' })
     @HttpCode(200)
-    async getHomePage() {
-        this.logger.log(`GET /storefront/home`);
-        return this.storefrontService.getHomePage();
+    async getHomePage(@Req() request: any) {
+        this.logger.log(`GET /storefront/home - Tenant: ${request.tenantId || 'unknown'}`);
+        return this.storefrontService.getHomePage(request);
     }
 
     @Get('home/refresh')
@@ -39,10 +39,10 @@ export class StorefrontController {
     })
     @ApiResponse({ status: 200, description: 'Cache refreshed successfully' })
     @HttpCode(200)
-    async refreshHomePage() {
+    async refreshHomePage(@Req() request: any) {
         this.logger.log('Refreshing cache for current tenant');
-        await this.storefrontService.invalidateCache();
-        await this.storefrontService.warmCache();
+        await this.storefrontService.invalidateCache(request);
+        await this.storefrontService.warmCache(request);
         return {
             success: true,
             message: 'Cache refreshed for current tenant',
