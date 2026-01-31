@@ -1,7 +1,13 @@
 import React from 'react';
 
 async function getHomePageData(tenantId: string) {
-    const res = await fetch(`${process.env.BACKEND_URL}/storefront/${tenantId}/home`, {
+    // SECURITY FIX: Use Host header for tenant context, not URL parameter
+    const backendUrl = process.env.BACKEND_URL || 'http://localhost:4000';
+    const res = await fetch(`${backendUrl}/storefront/home`, {
+        headers: {
+            'Host': `${tenantId}.apex-v2.duckdns.org`,
+            'X-Tenant-Subdomain': tenantId,
+        },
         next: { revalidate: 300 }
     });
     if (!res.ok) return null;
