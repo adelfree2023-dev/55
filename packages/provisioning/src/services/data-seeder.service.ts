@@ -63,52 +63,56 @@ export class DataSeederService {
      * Creates core tenant tables
      */
     private async createCoreTables(schemaName: string): Promise<void> {
-        const queries = [
-            // Products table
-            `CREATE TABLE IF NOT EXISTS format('%I', schemaName).products (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        name VARCHAR(255) NOT NULL,
-        slug VARCHAR(255) UNIQUE NOT NULL,
-        description TEXT,
-        price DECIMAL(10,2) NOT NULL,
-        stock INTEGER DEFAULT 0,
-        images JSONB DEFAULT '[]'::jsonb,
-        status VARCHAR(50) DEFAULT 'draft',
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-      )`,
+        const schema = sql.identifier(schemaName);
 
-            // Orders table
-            `CREATE TABLE IF NOT EXISTS format('%I', schemaName).orders (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        customer_id UUID,
-        status VARCHAR(50) DEFAULT 'pending',
-        total DECIMAL(10,2) NOT NULL,
-        items JSONB NOT NULL,
-        shipping_address JSONB,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-      )`,
+        // Products table
+        await this.db.execute(sql`
+            CREATE TABLE IF NOT EXISTS ${schema}.products (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                name VARCHAR(255) NOT NULL,
+                slug VARCHAR(255) UNIQUE NOT NULL,
+                description TEXT,
+                price DECIMAL(10,2) NOT NULL,
+                stock INTEGER DEFAULT 0,
+                images JSONB DEFAULT '[]'::jsonb,
+                status VARCHAR(50) DEFAULT 'published',
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
 
-            // Pages table
-            `CREATE TABLE IF NOT EXISTS format('%I', schemaName).pages (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        title VARCHAR(255) NOT NULL,
-        slug VARCHAR(255) UNIQUE NOT NULL,
-        content TEXT,
-        published BOOLEAN DEFAULT false,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-      )`,
+        // Orders table
+        await this.db.execute(sql`
+            CREATE TABLE IF NOT EXISTS ${schema}.orders (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                customer_id UUID,
+                status VARCHAR(50) DEFAULT 'pending',
+                total DECIMAL(10,2) NOT NULL,
+                items JSONB NOT NULL,
+                shipping_address JSONB,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
 
-            // Settings table
-            `CREATE TABLE IF NOT EXISTS format('%I', schemaName).settings (
-        key VARCHAR(255) PRIMARY KEY,
-        value TEXT NOT NULL
-      )`,
-        ];
+        // Pages table
+        await this.db.execute(sql`
+            CREATE TABLE IF NOT EXISTS ${schema}.pages (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                title VARCHAR(255) NOT NULL,
+                slug VARCHAR(255) UNIQUE NOT NULL,
+                content TEXT,
+                published BOOLEAN DEFAULT false,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
 
-        for (const query of queries) {
-            await this.pool.query(query);
-        }
+        // Settings table
+        await this.db.execute(sql`
+            CREATE TABLE IF NOT EXISTS ${schema}.settings (
+                key VARCHAR(255) PRIMARY KEY,
+                value TEXT NOT NULL
+            )
+        `);
 
         this.logger.debug(`Core tables created for ${schemaName}`);
     }
@@ -120,9 +124,10 @@ export class DataSeederService {
         if (products.length === 0) return;
 
         for (const p of products) {
+            const slug = p.slug || p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
             await this.db.execute(sql`
                 INSERT INTO ${sql.identifier(schemaName)}.products (name, slug, description, price, stock, images)
-                VALUES (${p.name}, ${p.slug}, ${p.description || ''}, ${p.price}, ${p.stock || 0}, ${JSON.stringify(p.images || [])}::jsonb)
+                VALUES (${p.name}, ${slug}, ${p.description || ''}, ${p.price}, ${p.stock || 0}, ${JSON.stringify(p.images || [])}::jsonb)
                 ON CONFLICT (slug) DO NOTHING
             `);
         }
@@ -137,9 +142,10 @@ export class DataSeederService {
         if (pages.length === 0) return;
 
         for (const p of pages) {
+            const slug = p.slug || p.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
             await this.db.execute(sql`
                 INSERT INTO ${sql.identifier(schemaName)}.pages (title, slug, content, published)
-                VALUES (${p.title}, ${p.slug}, ${p.content || ''}, true)
+                VALUES (${p.title}, ${slug}, ${p.content || ''}, true)
                 ON CONFLICT (slug) DO NOTHING
             `);
         }

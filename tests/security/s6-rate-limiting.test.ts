@@ -5,8 +5,14 @@ describe('S6 Integration Test', () => {
     it('should handle rate limiting requests', async () => {
         console.log('🔍 Execution: S6 Rate Limiting Test');
 
-        const middleware = new RateLimiterMiddleware();
-        (middleware as any).logger = { log: mock(), warn: mock(), error: mock() };
+        const mockClient = {
+            incr: mock(() => Promise.resolve(1)),
+            expire: mock(() => Promise.resolve()),
+        };
+
+        const mockRedisService = {
+            getClient: mock(() => mockClient)
+        };
 
         const mockReq = { ip: '127.0.0.1', path: '/api/health' } as any;
         const mockRes = {
@@ -17,16 +23,8 @@ describe('S6 Integration Test', () => {
         let nextCalled = 0;
         const mockNext = () => { nextCalled++; };
 
-        // Mock Redis client (Static)
-        (RateLimiterMiddleware as any).client = {
-            isOpen: true,
-            incr: mock(() => Promise.resolve(1)),
-            expire: mock(() => Promise.resolve()),
-            quit: mock(() => Promise.resolve()),
-            connect: mock(() => Promise.resolve()),
-            on: mock()
-        };
-        (RateLimiterMiddleware as any).isConnected = true;
+        const middleware = new RateLimiterMiddleware(mockRedisService as any);
+        (middleware as any).logger = { log: mock(), warn: mock(), error: mock() };
 
         for (let i = 0; i < 5; i++) {
             await middleware.use(mockReq, mockRes, mockNext);

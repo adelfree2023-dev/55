@@ -1,6 +1,7 @@
 import { Module, NestModule, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { APP_INTERCEPTOR, APP_FILTER, APP_GUARD } from '@nestjs/core';
-import { AuditLoggerInterceptor, RateLimiterMiddleware, HelmetMiddleware, GlobalExceptionFilter, TenantScopeGuard } from '@apex/security';
+import { AuditLoggerInterceptor } from '@apex/audit';
+import { RateLimiterMiddleware, HelmetMiddleware, GlobalExceptionFilter, TenantScopeGuard } from '@apex/security';
 import { TenantMiddleware } from './common/middleware/tenant.middleware';
 import { ProvisioningModule } from './modules/provisioning/provisioning.module';
 import { RedisModule } from '@apex/redis';
@@ -18,6 +19,7 @@ import { HealthController } from './common/controllers/health.controller';
         ProvisioningModule,
         StorefrontModule,
         TenantsModule,
+        IdentityModule,
     ],
     controllers: [HealthController],
     providers: [
@@ -43,7 +45,6 @@ export class AppModule implements NestModule {
 
         consumer
             .apply(TenantMiddleware)
-            .exclude('provisioning/(.*)', 'health')
             .forRoutes({ path: '*', method: RequestMethod.ALL });
 
         consumer

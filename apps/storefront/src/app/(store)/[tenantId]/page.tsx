@@ -132,7 +132,12 @@ export default async function StorefrontPage({
             <footer className="bg-gray-50 border-t py-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto text-center">
                     <p className="text-gray-500">© {new Date().getFullYear()} {tenant.name}. All rights reserved.</p>
-                    <p className="mt-2 text-sm text-gray-400">Powered by Apex V2</p>
+                    <p className="mt-2 text-sm text-gray-400">
+                        Powered by Apex V2 •
+                        <a href={`/${tenantId}/admin`} className="ml-1 hover:text-gray-600 transition-colors underline decoration-gray-300">
+                            Manage Store
+                        </a>
+                    </p>
                 </div>
             </footer>
         </div>

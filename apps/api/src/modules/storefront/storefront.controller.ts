@@ -1,6 +1,10 @@
-import { Controller, Get, Param, UseInterceptors, Logger, HttpCode, Inject, Req } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { Controller, Get, Param, UseInterceptors, Logger, HttpCode, Inject, Req, Patch, Put, Body, UseGuards, UsePipes } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 import { StorefrontService } from './storefront.service';
+import { TenantScopeGuard } from '@apex/security';
+import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
+import { UpdateBrandingSchema, UpdateBrandingDto } from './schemas/branding.schema';
+import { UpdateHeroSchema, UpdateHeroDto } from './schemas/hero.schema';
 
 @ApiTags('Storefront')
 @Controller('storefront')
@@ -12,11 +16,6 @@ export class StorefrontController {
         private readonly storefrontService: StorefrontService
     ) {
         this.logger.log('StorefrontController initialized');
-        if (!this.storefrontService) {
-            this.logger.error('CRITICAL: StorefrontService failed to inject!');
-        } else {
-            this.logger.log('StorefrontService successfully injected');
-        }
     }
 
     @Get('home')
@@ -28,10 +27,51 @@ export class StorefrontController {
     @ApiResponse({ status: 404, description: 'Tenant not found' })
     @HttpCode(200)
     async getHomePage(@Req() request: any) {
-        this.logger.log(`GET /storefront/home - Keys: ${Object.keys(request).join(', ')}`);
-        this.logger.log(`GET /storefront/home - Raw Keys: ${request.raw ? Object.keys(request.raw).join(', ') : 'no raw'}`);
-        this.logger.log(`GET /storefront/home - Tenant: ${request.tenantId || 'null'}, Raw Tenant: ${request.raw?.tenantId || 'null'}`);
+        this.logger.log(`GET /storefront/home - Tenant: ${request.tenantId || 'null'}`);
         return this.storefrontService.getHomePage(request);
+    }
+
+    @Get('settings')
+    @ApiOperation({
+        summary: 'Get tenant settings (Load Test Target)',
+        description: 'Returns all settings for the current tenant directly from DB'
+    })
+    @ApiResponse({ status: 200, description: 'Settings retrieved' })
+    @HttpCode(200)
+    async getSettings(@Req() request: any) {
+        return this.storefrontService.getSettings(request);
+    }
+
+    @Patch('branding')
+    @UseGuards(TenantScopeGuard)
+    @UsePipes(new ZodValidationPipe(UpdateBrandingSchema))
+    @ApiOperation({
+        summary: 'Update store branding (Protected)',
+        description: 'Updates tenant name, logo, and primary color. Requires tenant ownership.'
+    })
+    @ApiResponse({ status: 200, description: 'Branding updated successfully' })
+    @ApiResponse({ status: 403, description: 'Access Denied: Cross-tenant operation or unauthenticated' })
+    @ApiBody({ type: Object, description: 'Branding update fields' })
+    @HttpCode(200)
+    async updateBranding(@Req() request: any, @Body() dto: UpdateBrandingDto) {
+        this.logger.log(`PATCH /storefront/branding - Tenant: ${request.tenantId}`);
+        return this.storefrontService.updateBranding(request, dto);
+    }
+
+    @Put('hero')
+    @UseGuards(TenantScopeGuard)
+    @UsePipes(new ZodValidationPipe(UpdateHeroSchema))
+    @ApiOperation({
+        summary: 'Update hero banners (Protected)',
+        description: 'Updates or creates the primary hero banner. Requires tenant ownership.'
+    })
+    @ApiResponse({ status: 200, description: 'Hero banner updated successfully' })
+    @ApiResponse({ status: 403, description: 'Access Denied: Cross-tenant operation' })
+    @ApiBody({ type: Object, description: 'Hero banner content' })
+    @HttpCode(200)
+    async updateHero(@Req() request: any, @Body() dto: UpdateHeroDto) {
+        this.logger.log(`PUT /storefront/hero - Tenant: ${request.tenantId}`);
+        return this.storefrontService.updateHero(request, dto);
     }
 
     @Get('home/refresh')

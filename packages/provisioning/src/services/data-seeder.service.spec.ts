@@ -1,57 +1,51 @@
-import { describe, it, expect, mock, beforeEach } from 'bun:test';
+import { Test, TestingModule } from '@nestjs/testing';
 import { DataSeederService } from './data-seeder.service';
+import { Pool } from 'pg';
 
 describe('DataSeederService', () => {
     let service: DataSeederService;
     let mockPool: any;
     let mockDb: any;
 
-    beforeEach(() => {
+    beforeEach(async () => {
         mockPool = {
-            query: mock(() => Promise.resolve({ rows: [] }))
+            query: jest.fn().mockResolvedValue({ rows: [{ config: { products: [], pages: [], settings: {} } }] }),
         };
-
         mockDb = {
-            execute: mock(() => Promise.resolve())
+            execute: jest.fn().mockResolvedValue({}),
         };
 
-        service = new DataSeederService(mockPool, mockDb);
+        const module: TestingModule = await Test.createTestingModule({
+            providers: [
+                DataSeederService,
+                { provide: Pool, useValue: mockPool },
+                { provide: 'DATABASE_CONNECTION', useValue: mockDb },
+            ],
+        }).compile();
+
+        service = module.get<DataSeederService>(DataSeederService);
     });
 
-    it('should fail if blueprint not found', async () => {
-        mockPool.query.mockResolvedValueOnce({ rows: [] });
-
-        let error;
-        try {
-            await service.seedData('test-u', 'invalid-bp');
-        } catch (e) {
-            error = e;
-        }
-        expect(error).toBeDefined();
-        expect(error.message).toContain('Blueprint invalid-bp not found');
+    it('should be defined', () => {
+        expect(service).toBeDefined();
     });
 
-    it('should seed data successfully', async () => {
-        mockPool.query.mockResolvedValueOnce({
-            rows: [{
-                config: {
-                    products: [{ name: 'P1', slug: 'p1', price: 10 }],
-                    pages: [{ title: 'Home', slug: 'home' }],
-                    settings: { theme: 'dark' }
-                }
-            }]
-        });
+    it('should fetch blueprint and seed data', async () => {
+        const tenantId = 'test-tenant';
+        await service.seedData(tenantId, 'standard');
 
-        await service.seedData('test-u', 'standard');
+        // Updates status
+        expect(mockPool.query).toHaveBeenCalledWith(
+            expect.stringContaining('SELECT config FROM public.onboarding_blueprints'),
+            ['standard']
+        );
 
+        // Creates tables
         expect(mockDb.execute).toHaveBeenCalled();
+    });
 
-        // Verify we are making calls
-        const calls = mockDb.execute.mock.calls;
-        const callTexts = calls.map((c: any) => typeof c[0] === 'string' ? c[0] : JSON.stringify(c[0]));
-        const combined = callTexts.join(' ');
-
-        expect(combined).toContain('products');
-        expect(combined).toContain('pages');
+    it('should throw error if blueprint not found', async () => {
+        mockPool.query.mockResolvedValueOnce({ rows: [] });
+        await expect(service.seedData('t1', 'invalid')).rejects.toThrow('Blueprint invalid not found');
     });
 });

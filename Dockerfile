@@ -1,48 +1,55 @@
 # Stage 1: Base image
 FROM oven/bun:latest AS base
 WORKDIR /app
-
-# Install build dependencies (git is required for Turborepo)
 RUN apt-get update && apt-get install -y git wget && rm -rf /var/lib/apt/lists/*
-
-# Stage 2: Install dependencies
-# We copy all files to ensure bun.lock and workspaces are perfectly synced
-COPY . .
-
-# Speed up install by skipping sentry download and using production mode
 ENV SENTRYCLI_SKIP_DOWNLOAD=1
+
+# Stage 2: Dependencies (FAST CACHE LAYER)
+FROM base AS deps
+COPY package.json bun.lockb* ./
+COPY apps/api/package.json ./apps/api/
+COPY apps/storefront/package.json ./apps/storefront/
+COPY packages/cache/package.json ./packages/cache/
+COPY packages/config/package.json ./packages/config/
+COPY packages/db/package.json ./packages/db/
+COPY packages/encryption/package.json ./packages/encryption/
+COPY packages/monitoring/package.json ./packages/monitoring/
+COPY packages/provisioning/package.json ./packages/provisioning/
+COPY packages/redis/package.json ./packages/redis/
+COPY packages/security/package.json ./packages/security/
+COPY packages/storage/package.json ./packages/storage/
+COPY packages/validators/package.json ./packages/validators/
+
 RUN bun install
 
 # Stage 3: Build
-# Run builds directly to confirm paths and dependencies are correct
+FROM deps AS builder
+COPY . .
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
 RUN cd apps/api && bun run build
 RUN cd apps/storefront && bun run build
 
 # Stage 4: Production Runner for API
 FROM oven/bun:latest AS api-runner
 WORKDIR /app
-
-COPY --from=base /app/node_modules ./node_modules
-COPY --from=base /app/apps/api ./apps/api
-COPY --from=base /app/packages ./packages
-COPY --from=base /app/package.json ./package.json
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/apps/api ./apps/api
+COPY --from=builder /app/packages ./packages
+COPY --from=builder /app/package.json ./package.json
 
 WORKDIR /app/apps/api
 EXPOSE 3001
-
-# Start the API directly from source (Bun handles TS)
 CMD ["bun", "src/main.ts"]
 
 # Stage 5: Production Runner for Storefront
 FROM oven/bun:latest AS storefront-runner
 WORKDIR /app
-
-COPY --from=base /app/node_modules ./node_modules
-COPY --from=base /app/apps/storefront ./apps/storefront
-COPY --from=base /app/package.json ./package.json
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/apps/storefront ./apps/storefront
+COPY --from=builder /app/package.json ./package.json
 
 WORKDIR /app/apps/storefront
 EXPOSE 3002
-
-# Start the Storefront (built in Stage 3)
 CMD ["bun", "run", "start"]

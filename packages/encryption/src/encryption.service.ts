@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { createCipheriv, createDecipheriv, randomBytes, scrypt } from 'crypto';
 import { promisify } from 'util';
 
@@ -8,19 +8,35 @@ const SALT_LENGTH = 16;
 const AUTH_TAG_LENGTH = 16;
 
 @Injectable()
-export class EncryptionService {
+export class EncryptionService implements OnModuleInit {
     private readonly logger = new Logger(EncryptionService.name);
-    private readonly keyPromise: Promise<Buffer>;
+    private keyPromise: Promise<Buffer>;
 
     constructor() {
-        // Derive key from JWT_SECRET (must be 32+ chars per S1)
-        this.keyPromise = this.deriveKey(process.env.JWT_SECRET || '');
+        // S1 Enforcement: Fail-Closed boot-time validation
+        const secret = process.env.JWT_SECRET;
+
+        if (!secret) {
+            console.error('[FATAL] S1 VIOLATION: JWT_SECRET environment variable is MISSING! Application cannot start securely.');
+            process.exit(1);
+        }
+
+        if (secret.length < 32) {
+            console.error(`[FATAL] S1 VIOLATION: JWT_SECRET is UNSAFE! Must be at least 32 characters (current: ${secret.length}).`);
+            process.exit(1);
+        }
+
+        this.logger.log('✅ S1/S7: Encryption key validation passed');
+    }
+
+    onModuleInit() {
+        // Derive key only after validation
+        this.keyPromise = this.deriveKey(process.env.JWT_SECRET!);
     }
 
     private async deriveKey(password: string): Promise<Buffer> {
         const salt = Buffer.from(password.slice(0, SALT_LENGTH).padEnd(SALT_LENGTH, '0'));
-        const key = await promisify(scrypt)(password, salt, 32) as Buffer;
-        return key;
+        return promisify(scrypt)(password, salt, 32) as Promise<Buffer>;
     }
 
     /**

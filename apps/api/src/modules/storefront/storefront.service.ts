@@ -10,6 +10,90 @@ export class StorefrontService {
         @Inject('CACHE_SERVICE') private readonly cacheService: CacheService
     ) { }
 
+    /**
+     * Update tenant branding (logo, colors, name) - Phase 5 Protected
+     */
+    async updateBranding(request: any, dto: any) {
+        const tenantId = request.tenantId || request.raw?.tenantId;
+        if (!tenantId) throw new Error('TENANT_CONTEXT_MISSING');
+
+        const fields: string[] = [];
+        const values: any[] = [];
+        let idx = 1;
+
+        if (dto.name) {
+            fields.push(`name = $${idx++}`);
+            values.push(dto.name);
+        }
+        if (dto.logoUrl !== undefined) {
+            fields.push(`logo_url = $${idx++}`);
+            values.push(dto.logoUrl || null); // Support clearing logo
+        }
+        if (dto.primaryColor) {
+            fields.push(`primary_color = $${idx++}`);
+            values.push(dto.primaryColor);
+        }
+
+        if (fields.length === 0) return { success: true };
+
+        values.push(tenantId);
+        await this.query(
+            request,
+            `UPDATE public.tenants SET ${fields.join(', ')} WHERE id = $${idx}`,
+            values
+        );
+
+        await this.invalidateCache(request);
+        return { success: true };
+    }
+
+    /**
+     * Update or Create Hero Banner - Phase 5 Protected
+     */
+    async updateHero(request: any, dto: any) {
+        const tenantId = request.tenantId || request.raw?.tenantId;
+        const tenantSchema = request.tenantSchema || request.raw?.tenantSchema;
+        if (!tenantId || !tenantSchema) throw new Error('TENANT_CONTEXT_MISSING');
+
+        // Check if a banner exists (limit to 1 for this simple manager)
+        const existing = await this.query(request, `SELECT id FROM "${tenantSchema}".banners ORDER BY priority ASC LIMIT 1`);
+
+        if (existing.rows.length > 0) {
+            const bannerId = existing.rows[0].id;
+            await this.query(
+                request,
+                `UPDATE "${tenantSchema}".banners SET 
+                title = $1, subtitle = $2, image_url = $3, cta_text = $4, cta_url = $5, active = true
+                WHERE id = $6`,
+                [dto.title, dto.subtitle || null, dto.imageUrl || null, dto.ctaText, dto.ctaUrl, bannerId]
+            );
+        } else {
+            await this.query(
+                request,
+                `INSERT INTO "${tenantSchema}".banners 
+                (title, subtitle, image_url, cta_text, cta_url, active, priority)
+                VALUES ($1, $2, $3, $4, $5, true, 0)`,
+                [dto.title, dto.subtitle || null, dto.imageUrl || null, dto.ctaText, dto.ctaUrl]
+            );
+        }
+
+        await this.invalidateCache(request);
+        return { success: true };
+    }
+
+    /**
+     * Get tenant settings (P0 Load Test Target)
+     */
+    async getSettings(request: any) {
+        const tenantSchema = request.tenantSchema || request.raw?.tenantSchema;
+        if (!tenantSchema) throw new Error('TENANT_CONTEXT_MISSING');
+
+        const result = await this.query(request, `SELECT * FROM "${tenantSchema}".settings`);
+        return result.rows;
+    }
+
+
+
     private async query<T = any>(request: any, sql: string, params?: any[]): Promise<QueryResult<T>> {
         const client = request.dbClient || request.raw?.dbClient;
         if (!client) {

@@ -1,82 +1,75 @@
 // Rate Limiter Middleware Spec - S6 Compliant
 import { describe, it, expect, mock, beforeEach } from 'bun:test';
 import { RateLimiterMiddleware } from './rate-limiter.middleware';
+import { RedisService } from '@apex/redis';
 
 describe('RateLimiterMiddleware (S6)', () => {
     let mockReq: any;
     let mockRes: any;
     let mockNext: any;
+    let mockRedisService: any;
+    let mockClient: any;
 
     beforeEach(() => {
-        // Reset static state
-        (RateLimiterMiddleware as any).client = undefined;
-        (RateLimiterMiddleware as any).isConnected = false;
-
-        mockReq = { ip: '127.0.0.1', path: '/test' };
+        mockReq = { ip: '127.0.0.1', path: '/test', headers: {} };
         mockRes = {
             status: mock(() => mockRes),
             json: mock(() => mockRes),
             setHeader: mock(() => { }),
         };
         mockNext = mock(() => { });
+
+        mockClient = {
+            incr: mock(() => Promise.resolve(5)),
+            expire: mock(() => Promise.resolve()),
+        };
+
+        mockRedisService = {
+            getClient: mock(() => mockClient)
+        };
     });
 
     it('should permit request if below limit', async () => {
-        const middleware = new RateLimiterMiddleware();
+        const middleware = new RateLimiterMiddleware(mockRedisService);
         (middleware as any).logger = { log: mock(), warn: mock(), error: mock() };
 
-        const mockClient = {
-            isOpen: true,
-            incr: mock(() => Promise.resolve(5)),
-            expire: mock(() => Promise.resolve()),
-            connect: mock(() => Promise.resolve()),
-            on: mock()
-        };
-        (RateLimiterMiddleware as any).client = mockClient;
-        (RateLimiterMiddleware as any).isConnected = true;
+        mockClient.incr.mockResolvedValue(5);
 
         await middleware.use(mockReq, mockRes, mockNext);
 
         expect(mockNext).toHaveBeenCalled();
-        expect(mockRes.setHeader).toHaveBeenCalledWith('X-RateLimit-Limit', '100');
+        expect(mockRes.setHeader).toHaveBeenCalledWith('X-RateLimit-Limit', '20'); // Basic tier default
     });
 
     it('should block request if above limit', async () => {
-        const middleware = new RateLimiterMiddleware();
+        const middleware = new RateLimiterMiddleware(mockRedisService);
         (middleware as any).logger = { log: mock(), warn: mock(), error: mock() };
 
-        const mockClient = {
-            isOpen: true,
-            incr: mock(() => Promise.resolve(101)),
-            connect: mock(() => Promise.resolve()),
-            on: mock()
-        };
-        (RateLimiterMiddleware as any).client = mockClient;
-        (RateLimiterMiddleware as any).isConnected = true;
+        mockClient.incr.mockResolvedValue(21); // Above basic limit 20
 
-        await expect(middleware.use(mockReq, mockRes, mockNext)).rejects.toThrow(
-            require('@nestjs/common').HttpException
-        );
+        try {
+            await middleware.use(mockReq, mockRes, mockNext);
+            expect(true).toBe(false); // Should not reach here
+        } catch (error: any) {
+            expect(error.status).toBe(429);
+            expect(error.message).toContain('Rate limit exceeded');
+        }
 
         expect(mockNext).not.toHaveBeenCalled();
     });
 
-    it('should connect if client is closed', async () => {
-        const middleware = new RateLimiterMiddleware();
+    it('should handle redis failures by failing closed (S6)', async () => {
+        const middleware = new RateLimiterMiddleware(mockRedisService);
         (middleware as any).logger = { log: mock(), warn: mock(), error: mock() };
 
-        const mockClient = {
-            isOpen: false,
-            connect: mock(() => Promise.resolve()),
-            incr: mock(() => Promise.resolve(1)),
-            expire: mock(() => Promise.resolve()),
-            on: mock()
-        };
-        (RateLimiterMiddleware as any).client = mockClient;
-        (RateLimiterMiddleware as any).isConnected = false;
+        mockRedisService.getClient = mock(() => { throw new Error('Redis down'); });
 
-        await middleware.use(mockReq, mockRes, mockNext);
-
-        expect(mockClient.connect).toHaveBeenCalled();
+        try {
+            await middleware.use(mockReq, mockRes, mockNext);
+            expect(true).toBe(false);
+        } catch (error: any) {
+            expect(error.status).toBe(503);
+            expect(error.message).toContain('Security infrastructure currently unavailable');
+        }
     });
 });

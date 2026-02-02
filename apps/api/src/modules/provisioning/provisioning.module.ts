@@ -6,10 +6,17 @@ import { ProvisioningController } from './provisioning.controller';
 import { ProvisioningService } from './provisioning.service';
 import { SchemaCreatorService, DataSeederService, TraefikRouterService } from '@apex/provisioning';
 
-const dbPool = new Pool({ connectionString: process.env.DATABASE_URL });
+const dbPool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    application_name: 'apex-api',
+    max: 100, // Remediation: Scale pool for 5000 VUs
+    min: 50
+});
+
+import { IdentityModule } from '../identity/identity.module';
 
 @Module({
-    imports: [EncryptionModule],
+    imports: [EncryptionModule, IdentityModule],
     controllers: [ProvisioningController],
     providers: [
         {

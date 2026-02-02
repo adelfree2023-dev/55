@@ -9,6 +9,7 @@ export const CreateTenantSchema = z.object({
     storeName: z.string().min(1, 'Store name is required'),
     planId: z.enum(['basic', 'pro', 'enterprise']).default('basic'),
     blueprintId: z.string().default('standard'),
+    password: z.string().min(8, 'Password must be at least 8 characters'),
 });
 
 export type CreateTenantDto = z.infer<typeof CreateTenantSchema>;

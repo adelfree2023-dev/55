@@ -1,7 +1,7 @@
 import { Injectable, Logger, Inject } from '@nestjs/common';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
-import { AuditLoggerInterceptor } from '@apex/security';
+import format from 'pg-format';
 import { sql } from 'drizzle-orm';
 
 @Injectable()
@@ -25,6 +25,12 @@ export class SchemaCreatorService {
    */
   async createSchema(tenantId: string): Promise<string> {
     const startTime = Date.now();
+
+    // Validation still required as first line of defense
+    if (!/^[a-z0-9-]+$/.test(tenantId)) {
+      throw new Error('Invalid tenant ID format');
+    }
+
     const schemaName = `tenant_${tenantId}`;
 
     this.logger.log(`Creating schema: ${schemaName}`);
@@ -38,15 +44,13 @@ export class SchemaCreatorService {
         return schemaName;
       }
 
-      // Create schema
-      await this.db.execute(
-        `CREATE SCHEMA IF NOT EXISTS "${schemaName}"`
-      );
+      // 🔒 SEC-L4 Fix: Use pg-format for parameterized identifiers (Prevents SQL Injection)
+      const safeSchemaName = format('%I', schemaName);
 
-      // Set default privileges
-      await this.db.execute(
-        `GRANT ALL ON SCHEMA "${schemaName}" TO CURRENT_USER`
-      );
+      await this.pool.query(format('CREATE SCHEMA IF NOT EXISTS %s', safeSchemaName));
+
+      // Grant privileges using the same safe approach
+      await this.pool.query(format('GRANT ALL ON SCHEMA %s TO CURRENT_USER', safeSchemaName));
 
       const duration = Date.now() - startTime;
       this.logger.log(`✅ Schema created in ${duration}ms: ${schemaName}`);
@@ -60,14 +64,33 @@ export class SchemaCreatorService {
   }
 
   /**
+   * Drops tenant schema (irreversible)
+   * @param tenantId - Tenant identifier
+   */
+  async dropSchema(tenantId: string): Promise<void> {
+    const schemaName = `tenant_${tenantId}`;
+    this.logger.warn(`🗑️ DROPPING SCHEMA: ${schemaName}`);
+
+    try {
+      const safeSchemaName = format('%I', schemaName);
+      await this.pool.query(format('DROP SCHEMA IF EXISTS %s CASCADE', safeSchemaName));
+      await this.logAudit('SCHEMA_DROPPED', tenantId, 0);
+    } catch (error: any) {
+      this.logger.error(`Failed to drop schema ${schemaName}: ${error.message}`);
+      throw new Error(`Schema deletion failed: ${error.message}`);
+    }
+  }
+
+  /**
    * Sets search_path for current connection
    * @param tenantId - Tenant identifier
    */
   async setSearchPath(tenantId: string): Promise<void> {
     const schemaName = `tenant_${tenantId}`;
-    await this.db.execute(sql.raw(
-      `SET search_path TO "${schemaName}", public`
-    ));
+    const safeSchemaName = format('%I', schemaName);
+
+    // 🔒 SEC-L4: Use parameterized query for setting search_path
+    await this.pool.query(format('SET search_path TO %s, public', safeSchemaName));
     this.logger.debug(`Search path set to: ${schemaName}`);
   }
 
@@ -75,6 +98,7 @@ export class SchemaCreatorService {
    * Checks if schema exists
    */
   private async schemaExists(schemaName: string): Promise<boolean> {
+    // Also secure this query with parameterized queries
     const result = await this.pool.query(
       `SELECT schema_name FROM information_schema.schemata WHERE schema_name = $1`,
       [schemaName]

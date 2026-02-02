@@ -17,13 +17,13 @@ async function provisionTenant(name: string, email: string) {
     try {
         // PHASE 1: Schema Creation
         console.log('\n🔧 PHASE 1: Schema Creation (S2 Isolation)');
-        const schemaCreator = new SchemaCreatorService();
+        const schemaCreator = new SchemaCreatorService(pool as any, db as any);
         const schemaName = await schemaCreator.createSchema(name);
         console.log(`✅ Schema created: ${schemaName}`);
 
         // PHASE 2: Data Seeding
         console.log('\n🌱 PHASE 2: Data Seeding');
-        const dataSeeder = new DataSeederService();
+        const dataSeeder = new DataSeederService(pool as any, db as any);
         await dataSeeder.seedData(name, 'standard');
         console.log(`✅ Starter data seeded`);
 

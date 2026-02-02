@@ -4,6 +4,7 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import { AppModule } from './app.module';
 import { env } from '@apex/config';
 import * as Sentry from '@sentry/node';
+import fastifyCookie from '@fastify/cookie';
 
 // Initialize Sentry for production error monitoring
 if (process.env.SENTRY_DSN) {
@@ -21,6 +22,22 @@ async function bootstrap() {
         AppModule,
         new FastifyAdapter({ trustProxy: true })
     );
+
+    await app.register(fastifyCookie, {
+        secret: env.JWT_SECRET,
+    });
+
+    app.enableCors({
+        origin: (origin, callback) => {
+            const allowed = /^(https?:\/\/([a-z0-9-]+\.)?apex-v2\.duckdns\.org|http:\/\/localhost:3002)$/;
+            if (!origin || allowed.test(origin)) {
+                callback(null, true);
+            } else {
+                callback(new Error('Not allowed by CORS'));
+            }
+        },
+        credentials: true,
+    });
 
     await app.listen(env.PORT, '0.0.0.0');
     console.log(`🚀 API is running on: http://localhost:${env.PORT}`);

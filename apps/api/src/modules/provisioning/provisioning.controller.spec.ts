@@ -6,6 +6,7 @@ process.env.MINIO_ENDPOINT = 'localhost';
 process.env.MINIO_ACCESS_KEY = 'minio';
 process.env.MINIO_SECRET_KEY = 'minio123';
 
+import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { ProvisioningController } from './provisioning.controller';
 
 describe('ProvisioningController', () => {
@@ -14,7 +15,8 @@ describe('ProvisioningController', () => {
 
     beforeEach(() => {
         mockService = {
-            provisionTenant: jest.fn(),
+            provisionTenant: mock(() => Promise.resolve({ success: true, id: 'tenant_123' })),
+            validateSubdomain: mock(() => Promise.resolve(true)),
         };
 
         // Direct instantiation
@@ -32,7 +34,7 @@ describe('ProvisioningController', () => {
                 ownerEmail: 'test@example.com',
             };
 
-            mockService.provisionTenant.mockResolvedValue({ success: true, id: 'tenant_123' });
+            mockService.provisionTenant = mock(() => Promise.resolve({ success: true, id: 'tenant_123' }));
 
             const result = await controller.createTenant(dto);
 
@@ -42,23 +44,38 @@ describe('ProvisioningController', () => {
 
         it('should handle service level errors', async () => {
             const dto: any = { subdomain: 'fail' };
-            mockService.provisionTenant.mockRejectedValue(new Error('Prov Error'));
+            mockService.provisionTenant = mock(() => Promise.reject(new Error('Prov Error')));
 
-            await expect(controller.createTenant(dto)).rejects.toThrow('Prov Error');
+            try {
+                await controller.createTenant(dto);
+                expect(true).toBe(false);
+            } catch (err: any) {
+                expect(err.message).toBe('Prov Error');
+            }
         });
 
         it('should handle service level errors (e.g. repeated domain)', async () => {
             const dto: any = { subdomain: 'existing' };
-            mockService.provisionTenant.mockRejectedValue(new Error('Domain already exists'));
+            mockService.provisionTenant = mock(() => Promise.reject(new Error('Domain already exists')));
 
-            await expect(controller.createTenant(dto)).rejects.toThrow('Domain already exists');
+            try {
+                await controller.createTenant(dto);
+                expect(true).toBe(false);
+            } catch (err: any) {
+                expect(err.message).toBe('Domain already exists');
+            }
         });
 
         it('should handle stripe failure simulation', async () => {
             const dto: any = { subdomain: 'stripe-fail' };
-            mockService.provisionTenant.mockRejectedValue(new Error('Stripe payment failed'));
+            mockService.provisionTenant = mock(() => Promise.reject(new Error('Stripe payment failed')));
 
-            await expect(controller.createTenant(dto)).rejects.toThrow('Stripe payment failed');
+            try {
+                await controller.createTenant(dto);
+                expect(true).toBe(false);
+            } catch (err: any) {
+                expect(err.message).toBe('Stripe payment failed');
+            }
         });
     });
 

@@ -7,6 +7,15 @@ describe('StorefrontService', () => {
     let service: StorefrontService;
     let cacheService: CacheService;
     let mockPool: any;
+    let mockClient: any;
+
+    const mockRequest = {
+        tenantId: 'tenant-123',
+        tenantSchema: 'tenant_tenant-123',
+        dbClient: {
+            query: mock(() => Promise.resolve({ rows: [] }))
+        }
+    };
 
     beforeEach(() => {
         // Mock CacheService
@@ -16,8 +25,7 @@ describe('StorefrontService', () => {
             del: mock(() => Promise.resolve(1)),
         } as any;
 
-        // Mock PostgreSQL Pool
-        mockPool = {
+        mockClient = {
             query: mock((sql: string) => {
                 if (sql.includes('public.tenants')) {
                     return Promise.resolve({
@@ -27,6 +35,7 @@ describe('StorefrontService', () => {
                             subdomain: 'test-store',
                             logo_url: 'https://example.com/logo.png',
                             primary_color: '#FF5733',
+                            status: 'active'
                         }]
                     });
                 }
@@ -35,8 +44,22 @@ describe('StorefrontService', () => {
             }),
         };
 
+        // Update mockRequest with fresh mockClient
+        mockRequest.dbClient = mockClient;
+
+        mockPool = {
+            connect: mock(() => Promise.resolve(mockClient)),
+            query: mock((sql, params) => mockClient.query(sql, params)),
+        };
+
         service = new StorefrontService(cacheService);
-        (service as any).pool = mockPool;
+        // Inject logger mock to suppress console output during tests
+        (service as any).logger = {
+            log: mock(),
+            error: mock(),
+            debug: mock(),
+            warn: mock(),
+        };
     });
 
     it('should return cached data if available', async () => {
@@ -48,48 +71,65 @@ describe('StorefrontService', () => {
 
         cacheService.get = mock(() => Promise.resolve(cachedData));
 
-        const result = await service.getHomePage('test-store');
+        const result = await service.getHomePage(mockRequest);
 
         expect(result).toEqual(cachedData);
-        expect(cacheService.get).toHaveBeenCalledWith('storefront:home:test-store');
+        expect(cacheService.get).toHaveBeenCalledWith('storefront:home:tenant-123');
     });
 
     it('should fetch from database on cache miss', async () => {
-        const result = await service.getHomePage('test-store');
+        const result = await service.getHomePage(mockRequest);
 
-        expect(mockPool.query).toHaveBeenCalled();
+        expect(mockClient.query).toHaveBeenCalled();
         expect(result.tenant.name).toBe('Test Store');
         expect(cacheService.set).toHaveBeenCalled();
     });
 
+    it('should throw Error if tenant context missing', async () => {
+        try {
+            await service.getHomePage({});
+            expect(true).toBe(false); // Should not reach here
+        } catch (error) {
+            expect(error.message).toBe('TENANT_CONTEXT_MISSING');
+        }
+    });
+
     it('should throw NotFoundException for non-existent tenant', async () => {
-        mockPool.query = mock(() => Promise.resolve({ rows: [] }));
+        // We need to simulate the query returning no rows for the tenant lookup
+        // But getHomePage relies on tenantId being in the request, implying it exists?
+        // The service code `getHomePage` implementation does a query:
+        // `SELECT * FROM public.tenants WHERE id = $1` using `tenantId`.
+
+        mockClient.query = mock((sql: string) => {
+            // If querying tenants, return empty
+            if (sql.includes('public.tenants')) return Promise.resolve({ rows: [] });
+            return Promise.resolve({ rows: [] });
+        });
+        mockRequest.dbClient = mockClient;
 
         try {
-            await service.getHomePage('non-existent');
+            await service.getHomePage(mockRequest);
             expect(true).toBe(false); // Should not reach here
         } catch (error) {
             expect(error).toBeInstanceOf(NotFoundException);
-            expect(error.message).toContain('non-existent');
         }
     });
 
     it('should invalidate cache', async () => {
-        await service.invalidateCache('test-store');
+        await service.invalidateCache(mockRequest);
 
-        expect(cacheService.del).toHaveBeenCalledWith('storefront:home:test-store');
+        expect(cacheService.del).toHaveBeenCalledWith('storefront:home:tenant-123');
     });
 
     it('should warm cache', async () => {
-        // Mock pool to return valid data
-        await service.warmCache('test-store');
+        await service.warmCache(mockRequest);
 
-        expect(mockPool.query).toHaveBeenCalled();
+        expect(mockClient.query).toHaveBeenCalled();
         expect(cacheService.set).toHaveBeenCalled();
     });
 
     it('should handle missing sections gracefully', async () => {
-        const result = await service.getHomePage('test-store');
+        const result = await service.getHomePage(mockRequest);
 
         expect(result.sections.hero).toEqual([]);
         expect(result.sections.bestSellers).toEqual([]);
@@ -99,7 +139,7 @@ describe('StorefrontService', () => {
     });
 
     it('should include metadata in response', async () => {
-        const result = await service.getHomePage('test-store');
+        const result = await service.getHomePage(mockRequest);
 
         expect(result.metadata).toBeDefined();
         expect(result.metadata.cacheTTL).toBe(300);

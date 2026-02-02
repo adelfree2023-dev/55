@@ -19,103 +19,113 @@ export class TenantMiddleware implements NestMiddleware {
     }
 
     async use(req: any, res: any, next: () => void) {
+        const url = req.url || req.raw?.url || '';
+        const host = (req.headers['x-forwarded-host'] || req.headers['host'] || '') as string;
+        let client: any = null;
+        let released = false;
+
+        const cleanup = (eventType: string) => {
+            if (client && !released) {
+                released = true;
+                this.logger.debug(`[OPS-L3] Client released via ${eventType}`);
+                // Zero-trust reset: Fire and forget search_path reset
+                client.query('SET search_path TO public')
+                    .catch(() => {/* ignore reset errors */ })
+                    .finally(() => client.release());
+            }
+        };
+
         try {
-            // 1. Check for explicit bypass via query (Internal Health Checks)
-            if (req.query?.skip_tenant_validation === '1') {
-                this.logger.debug('Skipping tenant validation via query param');
+            // 1. SYSTEM BYPASS (Internal Health Checks & System Routes)
+            const isSystemRoute =
+                url === '/health' ||
+                url.startsWith('/provisioning') ||
+                url.startsWith('/super-admin') ||
+                req.query?.skip_tenant_validation === '1';
+
+            if (isSystemRoute) {
                 return next();
             }
 
-            // Extract tenant from HOST header with strict validation
-            const host = (req.headers['x-forwarded-host'] || req.headers['host'] || '') as string;
+            let subdomain: string | null = (req.headers['x-tenant-subdomain'] || null) as string | null;
 
-            // STRICT WHITELIST VALIDATION (prevents injection attacks)
-            const apexPatterns = [
-                /^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)\.apex\.localhost$/,
-                /^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)\.apex-v2\.duckdns\.org$/,
-                /^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)\.localhost$/
-            ];
+            if (!subdomain) {
+                const apexPatterns = [
+                    /^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)\.apex\.localhost$/,
+                    /^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)\.apex-v2\.duckdns\.org$/,
+                    /^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)\.localhost$/
+                ];
 
-            let subdomain: string | null = null;
-            for (const pattern of apexPatterns) {
-                const match = host.match(pattern);
-                if (match) {
-                    subdomain = match[1];
-                    break;
+                for (const pattern of apexPatterns) {
+                    const match = host.match(pattern);
+                    if (match) {
+                        subdomain = match[1];
+                        if (subdomain === 'api') subdomain = null;
+                        break;
+                    }
                 }
             }
 
             if (!subdomain) {
-                // Allow system routes ONLY on safe hosts
-                const safeHosts = [
-                    'localhost:3000', 'localhost:3001', 'localhost:4000',
-                    '127.0.0.1:3000', '127.0.0.1:3001', '127.0.0.1:4000',
-                    'apex-v2.duckdns.org'
-                ];
-                // Also check if valid IP
-                const isIp = /^(\d{1,3}\.){3}\d{1,3}(:\d+)?$/.test(host);
-
-                if (!safeHosts.some(h => host === h || host.startsWith(h + ':')) && !isIp) {
-                    // If it's not in safe list and not a direct IP (often used for health checks inside network), block
-                    // However, internal docker networking might use IP. 
-                    // Let's trust the whitelist approach from the audit which was specific.
-                    // The audit code was: if (!safeHosts.some(h => host.startsWith(h))) 
-
-                    // Implementing audit logic strictly:
-                    const isSafe = safeHosts.some(h => host.startsWith(h));
-                    if (!isSafe) {
-                        this.logger.warn(`🚨 BLOCKED SUSPICIOUS HOST: ${host}`);
-                        throw new ForbiddenException('Invalid tenant context');
-                    }
-                }
-
-                this.logger.log(`System route access: ${host}${req.url}`);
                 return next();
             }
 
-            // DATABASE WHITELIST CHECK (prevents access to non-existent tenants)
             const tenantInfo = await this.getTenantInfo(subdomain);
+
             if (!tenantInfo) {
                 this.logger.warn(`🚨 BLOCKED INVALID TENANT ACCESS: ${subdomain} from ${req.ip}`);
                 throw new ForbiddenException('Invalid tenant context');
             }
 
-            // 🔒 CRITICAL FIX: SET search_path ON REQUEST-SCOPED CONNECTION ONLY
-            // NEVER on global pool - this was causing cross-tenant leakage
-            const client = await this.pool.connect();
-            req.dbClient = client; // Attach to request lifecycle for Service usage
+            // 🔒 PHASE 2 HARDENING: Connection pool acquisition with 5s timeout
+            const acquisitionPromise = this.pool.connect();
+            const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Connection acquisition timeout')), 5000)
+            );
 
-            await client.query(`SET search_path TO "tenant_${tenantInfo.id}", public`);
+            client = await Promise.race([acquisitionPromise, timeoutPromise]) as any;
+            req.dbClient = client;
+
+            // Use subdomain for schema name to match provisioning logic
+            await client.query(`SET search_path TO "tenant_${tenantInfo.subdomain}", public`);
 
             req.tenantId = tenantInfo.id;
+            req.tenantSubdomain = tenantInfo.subdomain;
             req.tenantTier = tenantInfo.plan_id || 'basic';
-            req.tenantSchema = `tenant_${tenantInfo.id}`;
+            req.tenantSchema = `tenant_${tenantInfo.subdomain}`;
 
-            this.logger.log(`✅ Resolved tenant: ${subdomain} -> ${tenantInfo.id} (Schema: ${req.tenantSchema})`);
-
-            // CRITICAL: Reset search_path AFTER request completes
-            res.on('finish', () => {
-                client.query('SET search_path TO public')
-                    .catch(err => this.logger.error(`Reset failed: ${err.message}`))
-                    .finally(() => client.release());
-            });
+            // 🛡️ TRIPLICATE EVENT CLEANUP (OPS-L3 Strategy)
+            res.on('finish', () => cleanup('finish')); // Response sent
+            res.on('close', () => cleanup('close'));   // Client disconnected early
+            res.on('error', () => cleanup('error'));   // Stream error
 
             next();
         } catch (error: any) {
+
+            if (client) cleanup('error-pre-next');
             if (error instanceof ForbiddenException) throw error;
-            this.logger.error(`Tenant resolution error: ${error.message}`);
+            this.logger.error(`Tenant resolution error [Host: ${host}]: ${error.message}`);
             throw new ForbiddenException('Invalid tenant context');
         }
     }
 
-    private async getTenantInfo(subdomain: string): Promise<{ id: string, plan_id: string } | null> {
+    private async getTenantInfo(subdomain: string): Promise<{ id: string, subdomain: string, plan_id: string, status: string } | null> {
         // Cache validation for 5 minutes
         const cached = this.whitelistCache.get(subdomain);
-        if (cached) return cached as any;
+        if (cached) {
+            const cachedInfo = cached as any;
+            // 🛡️ Always check status even for cached items
+            if (cachedInfo.status !== 'active') {
+                this.logger.warn(`🚨 BLOCKED CACHED INACTIVE TENANT ACCESS: ${subdomain} (Status: ${cachedInfo.status})`);
+                throw new ForbiddenException(`Tenant store is ${cachedInfo.status}. Access to this site is temporarily restricted.`);
+            }
+            return cachedInfo;
+        }
 
         try {
+            // Include status in selection
             const result = await this.pool.query(
-                `SELECT id, plan_id FROM public.tenants WHERE subdomain = $1 AND status = 'active'`,
+                `SELECT id, subdomain, plan_id, status FROM public.tenants WHERE subdomain = $1 AND deleted_at IS NULL`,
                 [subdomain]
             );
 
@@ -124,11 +134,20 @@ export class TenantMiddleware implements NestMiddleware {
             }
 
             const tenantInfo = result.rows[0];
+
+            // 🛡️ Phase 8: Immediate access block for non-active tenants
+            if (tenantInfo.status !== 'active') {
+                this.logger.warn(`🚨 BLOCKED INACTIVE TENANT ACCESS: ${subdomain} (Status: ${tenantInfo.status})`);
+                throw new ForbiddenException(`Tenant store is ${tenantInfo.status}. Access to this site is temporarily restricted.`);
+            }
+
             this.whitelistCache.set(subdomain, tenantInfo);
 
             setTimeout(() => this.whitelistCache.delete(subdomain), 300000);
             return tenantInfo;
         } catch (error: any) {
+
+            if (error instanceof ForbiddenException) throw error;
             this.logger.error(`Whitelist check failed: ${error.message}`);
             return null;
         }

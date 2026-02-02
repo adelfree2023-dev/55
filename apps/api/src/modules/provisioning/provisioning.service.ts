@@ -21,6 +21,7 @@ export class ProvisioningService {
         @Inject(EventEmitter2)
         private readonly eventEmitter: EventEmitter2,
         private readonly encryptionService: EncryptionService,
+        private readonly identityService: IdentityService,
         @Optional() private readonly pool: Pool = new Pool({ connectionString: process.env.DATABASE_URL }),
     ) { }
 
@@ -104,6 +105,9 @@ export class ProvisioningService {
         } catch (error: any) {
             this.logger.error(`Provisioning failed for ${subdomain}: ${error.message}`);
 
+            // Re-throw if it's already a clean business exception
+            if (error instanceof BadRequestException) throw error;
+
             // Emit failure event
             this.eventEmitter.emit(
                 'tenant.failed',
@@ -128,27 +132,75 @@ export class ProvisioningService {
         ownerEmail: string,
         dto: CreateTenantDto,
     ): Promise<void> {
-        // Use injected pool
+        const client = await this.pool.connect();
         try {
-            // 🔴 ARCH-S7: Encrypt PII before storage
-            const encryptedEmail = await this.encryptionService.encrypt(ownerEmail);
+            await client.query('BEGIN');
 
-            await this.pool.query(
-                `INSERT INTO public.tenants (name, subdomain, owner_email, plan_id, status)
-         VALUES ($1, $2, $3, $4, 'active')
-         ON CONFLICT (subdomain) DO UPDATE SET updated_at = CURRENT_TIMESTAMP`,
-                [dto.storeName || subdomain, subdomain, encryptedEmail, dto.planId || 'basic']
+            const tenantId = crypto.randomUUID();
+            const passwordHash = await this.identityService.hashPassword(dto.password);
+
+            // 1. Insert into Tenants (S1-S8 Hardened)
+            await client.query(
+                `INSERT INTO public.tenants (id, name, subdomain, owner_email, plan_id, status)
+                 VALUES ($1, $2, $3, $4, $5, 'pending')`,
+                [tenantId, dto.storeName || subdomain, subdomain, ownerEmail, dto.planId || 'basic']
             );
 
-            // Log audit
-            await this.pool.query(
+            // 2. Insert into Users (Centralized Identity)
+            await client.query(
+                `INSERT INTO public.users (email, password_hash, role, tenant_id, is_verified)
+                 VALUES ($1, $2, 'tenant-admin', $3, false)`,
+                [ownerEmail, passwordHash, tenantId]
+            );
+
+            // 3. Request Verification Token
+            const verificationToken = await this.identityService.requestVerification(
+                (await client.query('SELECT id FROM public.users WHERE email = $1 AND tenant_id = $2', [ownerEmail, tenantId])).rows[0].id
+            );
+
+            // 4. [SIMULATION] "Send" Email
+            this.logger.log(`📧 [EMAIL SIMULATION] To: ${ownerEmail} | Link: https://apex-v2.duckdns.org/verify?token=${verificationToken}`);
+
+            // 5. Log audit
+            await client.query(
                 `INSERT INTO public.audit_logs (user_id, action, tenant_id, status)
-         VALUES ('system', 'TENANT_REGISTERED', $1, 'success')`,
-                [subdomain]
+                 VALUES ('system', 'TENANT_REGISTERED', $1, 'success')`,
+                [tenantId]
             );
-        } catch (error) {
+
+            await client.query('COMMIT');
+        } catch (error: any) {
+            await client.query('ROLLBACK');
+            this.logger.error(`Failed to register tenant ${subdomain}: ${error.message}`);
+            if (error.code === '23505') {
+                throw new BadRequestException('Subdomain or Email already exists');
+            }
             throw error;
+        } finally {
+            client.release();
         }
+    }
+
+    /**
+     * Validates email availability via blind index
+     */
+    async validateEmail(email: string): Promise<boolean> {
+        const hash = this.hashEmail(email);
+        const result = await this.pool.query(
+            `SELECT id FROM public.tenants WHERE owner_email_hash = $1`,
+            [hash]
+        );
+
+        if (result.rows.length > 0) {
+            throw new BadRequestException(`Email is already registered to another store`);
+        }
+
+        return true;
+    }
+
+    private hashEmail(email: string): string {
+        const crypto = require('crypto');
+        return crypto.createHash('sha256').update(email.toLowerCase().trim()).digest('hex');
     }
 
     /**

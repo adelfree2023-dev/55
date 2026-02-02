@@ -6,4 +6,5 @@ export class CreateTenantDto implements ICreateTenantDto {
     storeName: string;
     planId: 'basic' | 'pro' | 'enterprise';
     blueprintId: string;
+    password: string;
 }

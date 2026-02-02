@@ -38,6 +38,17 @@ export function middleware(req: NextRequest) {
         return NextResponse.next();
     }
 
+    // 🛡️ Phase 10: Protect Admin Routes
+    if (url.pathname.includes('/admin')) {
+        const token = req.cookies.get('apex_admin_token');
+        if (!token) {
+            const loginUrl = new URL('/login', req.url);
+            // Optional: Store returnUrl for better UX
+            // loginUrl.searchParams.set('returnUrl', url.pathname);
+            return NextResponse.redirect(loginUrl);
+        }
+    }
+
     // Rewrite if not already rewritten
     if (!url.pathname.startsWith(`/${subdomain}`)) {
         url.pathname = `/${subdomain}${url.pathname}`;

@@ -1,0 +1,17 @@
+﻿========================================================
+🗺️  PROJECT STRUCTURE MAP
+========================================================
+📅 Generated: 2026-02-02 00:44
+📂 Files Included: 8
+🚫 Noise Filtered: Lockfiles, Logs, Assets
+🔒 Security Filter: ACTIVE
+========================================================
+
+├── 📄 admin-dashboard-masterlist.md ➤ 🎛️ Apex v2 Admin Dashboard: World-Class Contro...
+├── 📄 Apex v2 Engineering Constitution & Modular Protocol .md ➤ 📜 Apex v2 Engineering Constitution & Modular P...
+├── 📄 architecture.md ➤ 🏗️ Apex v2: Modern Secure Multi-Tenant Archite...
+├── 📄 landing-page-masterlist.md ➤ 🌐 Apex v2 Marketing Website: Master Page List
+├── 📄 plan.md ➤ 📜 APEX V2 FINAL MASTER EXECUTION REGISTER
+├── 📄 store-features-masterlist.md ➤ 🛒 Apex v2 Storefront: Master Page & Feature List
+├── 📄 super-admin-masterlist.md ➤ 👑 Apex v2 Super Admin: Platform Governance (Go...
+└── 📄 🧱 Apex v2 Strategic Roadmap & Lego-Architecture Blueprint .md ➤ 🧱 Apex v2 Strategic Roadmap & Lego-Architectur...

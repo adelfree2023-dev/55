@@ -2,7 +2,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { env } from "@apex/config";
 
-export const client = postgres(env.DATABASE_URL);
+export const client = postgres(env.DATABASE_URL, { max: 100 });
 export const db = drizzle(client);
 
 export async function createTenantSchema(tenantId: string) {

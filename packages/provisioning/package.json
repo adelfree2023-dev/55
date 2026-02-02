@@ -5,14 +5,16 @@
     "types": "./src/index.ts",
     "dependencies": {
         "@nestjs/common": "^10.0.0",
-        "@apex/security": "workspace:*",
+        "@apex/audit": "workspace:*",
         "@apex/config": "workspace:*",
         "drizzle-orm": "latest",
-        "pg": "^8.11.0"
+        "pg": "^8.11.0",
+        "pg-format": "^1.0.4"
     },
     "devDependencies": {
         "bun-types": "latest",
         "@types/pg": "latest",
+        "@types/pg-format": "latest",
         "@types/node": "latest"
     }
 }

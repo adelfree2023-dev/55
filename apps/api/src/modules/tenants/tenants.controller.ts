@@ -1,4 +1,5 @@
-import { Controller, Get, Query, Param, Logger, Patch, Post } from '@nestjs/common';
+import { Controller, Get, Query, Param, Logger, Patch, Post, Delete } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { TenantQuerySchema, TenantQuery } from './tenants.service';
 import { TenantsService } from './tenants.service';
@@ -35,5 +36,16 @@ export class TenantsController {
     @Post(':id/impersonate')
     async impersonate(@Param('id') id: string) {
         return this.tenantsService.impersonate(id);
+    }
+
+    @Delete(':id')
+    @ApiOperation({ summary: 'Delete tenant and its schema' })
+    async delete(@Param('id') id: string) {
+        return this.tenantsService.delete(id);
+    }
+
+    @Patch(':id/restore')
+    async restore(@Param('id') id: string) {
+        return this.tenantsService.restore(id);
     }
 }

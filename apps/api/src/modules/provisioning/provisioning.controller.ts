@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { CreateTenantDto } from './dto/create-tenant.dto';
 import { ProvisioningService } from './provisioning.service';
-import { AuditLoggerInterceptor } from '@apex/security';
+import { AuditLoggerInterceptor } from '@apex/audit';
 import { CreateTenantSchema } from '@apex/validators';
 
 @ApiTags('Provisioning')
@@ -25,6 +25,10 @@ export class ProvisioningController {
         @Body(new ZodValidationPipe(CreateTenantSchema)) dto: CreateTenantDto,
     ) {
         this.logger.log(`POST /provisioning/tenants - ${dto.subdomain}`);
+
+        // PRE-CHECK: Validate subdomain and email before starting complex provisioning
+        await this.provisioningService.validateSubdomain(dto.subdomain);
+        await this.provisioningService.validateEmail(dto.ownerEmail);
 
         return this.provisioningService.provisionTenant(dto);
     }

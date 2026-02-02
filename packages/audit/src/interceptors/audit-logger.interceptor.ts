@@ -3,7 +3,6 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
-import { auditLogs } from '../../../db/src/schema/audit-logs';
 
 @Injectable()
 export class AuditLoggerInterceptor implements NestInterceptor {

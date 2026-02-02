@@ -21,18 +21,20 @@ describe('StorefrontController', () => {
     });
 
     it('should get home page data', async () => {
-        const result = await controller.getHomePage('test-tenant');
+        const mockRequest = { tenantId: 'test-tenant' };
+        const result = await controller.getHomePage(mockRequest);
 
-        expect(service.getHomePage).toHaveBeenCalledWith('test-tenant');
+        expect(service.getHomePage).toHaveBeenCalledWith(mockRequest);
         expect(result.tenant.name).toBe('Test Store');
     });
 
     it('should refresh home page cache', async () => {
-        const result = await controller.refreshHomePage('test-tenant');
+        const mockRequest = { tenantId: 'test-tenant' };
+        const result = await controller.refreshHomePage(mockRequest);
 
-        expect(service.invalidateCache).toHaveBeenCalledWith('test-tenant');
-        expect(service.warmCache).toHaveBeenCalledWith('test-tenant');
+        expect(service.invalidateCache).toHaveBeenCalledWith(mockRequest);
+        expect(service.warmCache).toHaveBeenCalledWith(mockRequest);
         expect(result.success).toBe(true);
-        expect(result.message).toContain('test-tenant');
+        expect(result.message).toContain('refreshed');
     });
 });

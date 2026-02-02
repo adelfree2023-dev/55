@@ -12,6 +12,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-apex2026}
       POSTGRES_DB: apex
       PGDATA: /var/lib/postgresql/data/pgdata
+    command: ["postgres", "-c", "max_connections=500"]
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./infra/docker/postgres/extensions.sql:/docker-entrypoint-initdb.d/02-extensions.sql:ro
@@ -128,6 +129,8 @@ services:
       context: .
       dockerfile: Dockerfile
       target: api-runner
+      args:
+        - NEXT_PUBLIC_API_URL=https://api.apex-v2.duckdns.org
     container_name: apex-api
     ports:
       - "3001:3000" # Map host 3001 to container 3000 (NestJS default)
@@ -137,6 +140,10 @@ services:
       - REDIS_URL=redis://apex-redis:6379
       - MINIO_ENDPOINT=apex-minio
       - PORT=3000
+    deploy:
+      resources:
+        limits:
+          memory: 2G
     depends_on:
       postgres:
         condition: service_healthy
@@ -144,8 +151,8 @@ services:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health?skip_tenant_validation=1', r => process.exit(r.statusCode === 200 ? 0 : 1))"]
-      interval: 10s
-      timeout: 5s
+      interval: 5s
+      timeout: 3s
       retries: 3
       start_period: 40s
     labels:
@@ -164,6 +171,8 @@ services:
       context: .
       dockerfile: Dockerfile
       target: storefront-runner
+      args:
+        - NEXT_PUBLIC_API_URL=https://api.apex-v2.duckdns.org
     container_name: apex-storefront
     ports:
       - "3002:3002"
@@ -172,14 +181,14 @@ services:
       - REDIS_URL=redis://apex-redis:6379
       - DATABASE_URL=postgresql://apex:apex2026@apex-postgres:5432/apex
       - BACKEND_URL=http://apex-api:3000
-      - NEXT_PUBLIC_API_URL=http://apex-api:3000
+      - NEXT_PUBLIC_API_URL=https://api.apex-v2.duckdns.org
       - NODE_ENV=production
     depends_on:
       - apex-api
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3002/', r => process.exit(r.statusCode === 200 ? 0 : 1))"]
-      interval: 30s
-      timeout: 10s
+      interval: 10s
+      timeout: 5s
       retries: 3
       start_period: 40s
     labels:
